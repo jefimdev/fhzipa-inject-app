@@ -12,16 +12,24 @@ function App() {
   return (
     <main className="container">
       <h1>iloader</h1>
-      <div className="buttons">
-        <button onClick={() => setOpenModal("sidestore")}>
-          Install SideStore
-        </button>
-        <button onClick={() => setOpenModal("other")}>Install Other</button>
-        <button>Manage Pairing File</button>
+      <div className="card-dark">
+        <AppleID />
+      </div>
+      <div className="card-dark buttons-container">
+        <h2>Actions</h2>
+        <div className="buttons">
+          <button onClick={() => setOpenModal("sidestore")}>
+            Install SideStore
+          </button>
+          <button onClick={() => setOpenModal("other")}>Install Other</button>
+          <button>Manage Pairing File</button>
+          <button>Manage Certificates</button>
+          <button>Manage App IDs</button>
+        </div>
       </div>
       <Modal
         isOpen={openModal === "sidestore" || openModal === "other"}
-        pages={[<AppleID />, <Install />]}
+        pages={[<Install />]}
         close={() => setOpenModal(null)}
       />
     </main>

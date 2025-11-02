@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1em;
+  min-width: 45vw;
 }
 
 .credentials {
@@ -33,10 +35,7 @@
 }
 
 .logged-in-as {
-  background-color: var(--interface-secondary);
   width: fit-content;
-  padding: 0.5em 1em;
-  border-radius: 8px;
   display: flex;
   justify-content: space-between;
 }
@@ -61,11 +60,7 @@
 }
 
 .stored-container {
-  border-radius: 8px;
   width: fit-content;
-  padding: 0.5em 1em;
-  margin: 0;
-  background-color: var(--interface-secondary);
 }
 
 .stored {

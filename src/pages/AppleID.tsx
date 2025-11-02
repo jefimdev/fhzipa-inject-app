@@ -8,6 +8,7 @@ import { toast } from "sonner";
 export const AppleID = () => {
   const [loggedInAs, setLoggedInAs] = useState<string | null>(null);
   const [storedIds, setStoredIds] = useState<string[]>([]);
+  const [forceUpdateIds, setForceUpdateIds] = useState<number>(0);
   const [emailInput, setEmailInput] = useState<string>("");
   const [passwordInput, setPasswordInput] = useState<string>("");
   const [saveCredentials, setSaveCredentials] = useState<boolean>(false);
@@ -26,7 +27,7 @@ export const AppleID = () => {
 
     getLoggedInAs();
     getStoredIds();
-  }, []);
+  }, [forceUpdateIds]);
 
   const listenerAdded = useRef<boolean>(false);
   const unlisten = useRef<() => void>(() => {});
@@ -48,20 +49,17 @@ export const AppleID = () => {
 
   return (
     <>
-      <h1>Apple ID</h1>
-      <p>
-        Login to your Apple ID. Your credentials will only be sent to Apple.
-      </p>
+      <h2>Apple ID</h2>
       <div className="credentials-container">
         {loggedInAs && (
-          <div className="logged-in-as">
+          <div className="logged-in-as card">
             Logged in as: {loggedInAs}
             <div
               className="sign-out"
               onClick={async () => {
                 let promise = async () => {
                   await invoke("invalidate_account");
-                  setLoggedInAs(null);
+                  setForceUpdateIds((v) => v + 1);
                 };
                 toast.promise(promise, {
                   loading: "Signing Out...",
@@ -76,8 +74,8 @@ export const AppleID = () => {
         )}
         {storedIds.length > 0 && (
           <div className="stored-ids">
-            <h3>Stored Credentials:</h3>
-            <div className="stored-container">
+            <h3>Saved Logins</h3>
+            <div className="stored-container card">
               {storedIds.map((id) => (
                 <div className="stored">
                   {id}
@@ -86,11 +84,11 @@ export const AppleID = () => {
                       className="sign-out"
                       onClick={() => {
                         let promise = async () => {
-                          let email = await invoke("login_stored_pass", {
+                          await invoke("login_stored_pass", {
                             email: id,
                             anisetteServer: "ani.sidestore.io",
                           });
-                          setLoggedInAs(email as string);
+                          setForceUpdateIds((v) => v + 1);
                         };
                         toast.promise(promise, {
                           loading: "Logging in...",
@@ -107,8 +105,7 @@ export const AppleID = () => {
                     onClick={async () => {
                       let promise = async () => {
                         await invoke("delete_account", { email: id });
-                        let ids = await invoke<string[]>("list_stored_ids");
-                        setStoredIds(ids);
+                        setForceUpdateIds((v) => v + 1);
                       };
                       toast.promise(promise, {
                         loading: "Deleting...",
@@ -125,49 +122,51 @@ export const AppleID = () => {
           </div>
         )}
         {loggedInAs === null && (
-          <div className="credentials">
+          <div className="new-login">
             {storedIds.length > 0 && <h3>New Login</h3>}
-            <input
-              type="email"
-              placeholder="Apple ID Email..."
-              value={emailInput}
-              onChange={(e) => setEmailInput(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Apple ID Password..."
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-            />
-            <div className="save-credentials">
+            <div className="credentials">
               <input
-                type="checkbox"
-                id="save-credentials"
-                checked={saveCredentials}
-                onChange={(e) => setSaveCredentials(e.target.checked)}
+                type="email"
+                placeholder="Apple ID Email..."
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
               />
-              <label htmlFor="save-credentials">Save Credentials</label>
-            </div>
-            <button
-              onClick={async () => {
-                let promise = async () => {
-                  let email = await invoke("login_email_pass", {
-                    email: emailInput,
-                    password: passwordInput,
-                    saveCredentials: saveCredentials,
-                    anisetteServer: "ani.sidestore.io",
+              <input
+                type="password"
+                placeholder="Apple ID Password..."
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+              />
+              <div className="save-credentials">
+                <input
+                  type="checkbox"
+                  id="save-credentials"
+                  checked={saveCredentials}
+                  onChange={(e) => setSaveCredentials(e.target.checked)}
+                />
+                <label htmlFor="save-credentials">Save Credentials</label>
+              </div>
+              <button
+                onClick={async () => {
+                  let promise = async () => {
+                    await invoke("login_email_pass", {
+                      email: emailInput,
+                      password: passwordInput,
+                      saveCredentials: saveCredentials,
+                      anisetteServer: "ani.sidestore.io",
+                    });
+                    setForceUpdateIds((v) => v + 1);
+                  };
+                  toast.promise(promise, {
+                    loading: "Logging in...",
+                    success: "Logged in successfully!",
+                    error: (e) => `Login failed: ${e}`,
                   });
-                  setLoggedInAs(email as string);
-                };
-                toast.promise(promise, {
-                  loading: "Logging in...",
-                  success: "Logged in successfully!",
-                  error: (e) => `Login failed: ${e}`,
-                });
-              }}
-            >
-              Login
-            </button>
+                }}
+              >
+                Login
+              </button>
+            </div>
           </div>
         )}
       </div>
