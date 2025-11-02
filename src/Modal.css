@@ -1,0 +1,86 @@
+.modal-container {
+  position: absolute;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background-color: var(--interface-color);
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.6);
+  padding: 2em;
+  min-width: 80%;
+  min-height: 65%;
+  max-height: 80%;
+  max-width: 90%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  position: relative;
+}
+
+.size-fit {
+  min-width: fit-content !important;
+  min-height: fit-content !important;
+  width: fit-content !important;
+  height: fit-content !important;
+}
+
+.modal button,
+.modal input {
+  background-color: var(--interface-secondary);
+}
+
+.modal-close {
+  font-size: 1.5rem;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  margin: 0;
+  width: 1.7rem;
+  height: 1.7rem;
+  text-align: center;
+  line-height: 1.7rem;
+  background-color: transparent !important;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+}
+
+.modal-circles {
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.modal-next {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+}
+
+.modal-prev {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+}
+
+.page-circle {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: #00000080;
+  transition: all 0.2s;
+  align-self: center;
+  position: relative;
+}

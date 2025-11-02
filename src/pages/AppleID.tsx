@@ -1,0 +1,126 @@
+import { useEffect, useRef, useState } from "react";
+import "./AppleID.css";
+import { invoke } from "@tauri-apps/api/core";
+import { emit, listen } from "@tauri-apps/api/event";
+import { Modal } from "../Modal";
+import { toast } from "sonner";
+
+export const AppleID = () => {
+  const [loggedInAs, setLoggedInAs] = useState<string | null>(null);
+  const [emailInput, setEmailInput] = useState<string>("");
+  const [passwordInput, setPasswordInput] = useState<string>("");
+  const [saveCredentials, setSaveCredentials] = useState<boolean>(false);
+  const [tfaOpen, setTfaOpen] = useState<boolean>(false);
+  const [tfaCode, setTfaCode] = useState<string>("");
+
+  useEffect(() => {
+    (async () => {
+      let account = await invoke<string | null>("logged_in_as");
+      setLoggedInAs(account);
+    })();
+  }, []);
+
+  const listenerAdded = useRef<boolean>(false);
+  const unlisten = useRef<() => void>(() => {});
+
+  useEffect(() => {
+    if (!listenerAdded.current) {
+      (async () => {
+        const unlistenFn = await listen("2fa-required", () => {
+          setTfaOpen(true);
+        });
+        unlisten.current = unlistenFn;
+      })();
+      listenerAdded.current = true;
+    }
+    return () => {
+      unlisten.current();
+    };
+  }, []);
+
+  return (
+    <>
+      <h1>Apple ID</h1>
+      <p>
+        Enter your Apple ID credentials. Your credentials will only be sent to
+        Apple.
+      </p>
+      <p>Logged in as: {loggedInAs}</p>
+      <div className="credentials-container">
+        <div className="credentials">
+          <input
+            type="email"
+            placeholder="Apple ID Email..."
+            value={emailInput}
+            onChange={(e) => setEmailInput(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Apple ID Password..."
+            value={passwordInput}
+            onChange={(e) => setPasswordInput(e.target.value)}
+          />
+          <div className="save-credentials">
+            <input
+              type="checkbox"
+              id="save-credentials"
+              checked={saveCredentials}
+              onChange={(e) => setSaveCredentials(e.target.checked)}
+            />
+            <label htmlFor="save-credentials">Save Credentials</label>
+          </div>
+          <button
+            onClick={async () => {
+              let promise = async () => {
+                let email = await invoke("login_email_pass", {
+                  email: emailInput,
+                  password: passwordInput,
+                  saveCredentials: saveCredentials,
+                  anisetteServer: "ani.sidestore.io",
+                });
+                setLoggedInAs(email as string);
+              };
+              toast.promise(promise, {
+                loading: "Logging in...",
+                success: "Logged in successfully!",
+                error: (e) => `Login failed: ${e}`,
+              });
+            }}
+          >
+            Login
+          </button>
+        </div>
+      </div>
+      <Modal
+        sizeFit
+        isOpen={tfaOpen}
+        pages={[
+          <>
+            <h2>Two-Factor Authentication</h2>
+            <p>Please enter the verification code sent to your device.</p>
+            <input
+              type="text"
+              placeholder="Verification Code..."
+              value={tfaCode}
+              onChange={(e) => setTfaCode(e.target.value)}
+              style={{ marginRight: "0.5em" }}
+            />
+            <button
+              onClick={async () => {
+                if (tfaCode.length !== 6) {
+                  toast.warning("Please enter a valid 6-digit code.");
+                  return;
+                }
+                await emit("2fa-recieved", tfaCode);
+                setTfaOpen(false);
+                setTfaCode("");
+              }}
+            >
+              Submit
+            </button>
+          </>,
+        ]}
+      />
+    </>
+  );
+};
