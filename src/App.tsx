@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import { Modal } from "./Modal";
 import { AppleID } from "./pages/AppleID";
+import { Install } from "./pages/Install";
 
 function App() {
   const [openModal, setOpenModal] = useState<
@@ -20,7 +21,7 @@ function App() {
       </div>
       <Modal
         isOpen={openModal === "sidestore" || openModal === "other"}
-        pages={[<AppleID />]}
+        pages={[<AppleID />, <Install />]}
         close={() => setOpenModal(null)}
       />
     </main>

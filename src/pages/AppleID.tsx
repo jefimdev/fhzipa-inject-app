@@ -45,51 +45,73 @@ export const AppleID = () => {
         Enter your Apple ID credentials. Your credentials will only be sent to
         Apple.
       </p>
-      <p>Logged in as: {loggedInAs}</p>
       <div className="credentials-container">
-        <div className="credentials">
-          <input
-            type="email"
-            placeholder="Apple ID Email..."
-            value={emailInput}
-            onChange={(e) => setEmailInput(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Apple ID Password..."
-            value={passwordInput}
-            onChange={(e) => setPasswordInput(e.target.value)}
-          />
-          <div className="save-credentials">
-            <input
-              type="checkbox"
-              id="save-credentials"
-              checked={saveCredentials}
-              onChange={(e) => setSaveCredentials(e.target.checked)}
-            />
-            <label htmlFor="save-credentials">Save Credentials</label>
-          </div>
-          <button
-            onClick={async () => {
-              let promise = async () => {
-                let email = await invoke("login_email_pass", {
-                  email: emailInput,
-                  password: passwordInput,
-                  saveCredentials: saveCredentials,
-                  anisetteServer: "ani.sidestore.io",
+        {loggedInAs && (
+          <div className="logged-in-as">
+            Logged in as: {loggedInAs}
+            <div
+              className="sign-out"
+              onClick={async () => {
+                let promise = async () => {
+                  await invoke("invalidate_account");
+                  setLoggedInAs(null);
+                };
+                toast.promise(promise, {
+                  loading: "Signing Out...",
+                  error: (e) => `Sign out failed: ${e}`,
+                  success: "Signed out successfully!",
                 });
-                setLoggedInAs(email as string);
-              };
-              toast.promise(promise, {
-                loading: "Logging in...",
-                success: "Logged in successfully!",
-                error: (e) => `Login failed: ${e}`,
-              });
-            }}
-          >
-            Login
-          </button>
-        </div>
+              }}
+            >
+              Sign Out
+            </div>
+          </div>
+        )}
+        {loggedInAs === null && (
+          <div className="credentials">
+            <input
+              type="email"
+              placeholder="Apple ID Email..."
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Apple ID Password..."
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+            />
+            <div className="save-credentials">
+              <input
+                type="checkbox"
+                id="save-credentials"
+                checked={saveCredentials}
+                onChange={(e) => setSaveCredentials(e.target.checked)}
+              />
+              <label htmlFor="save-credentials">Save Credentials</label>
+            </div>
+            <button
+              onClick={async () => {
+                let promise = async () => {
+                  let email = await invoke("login_email_pass", {
+                    email: emailInput,
+                    password: passwordInput,
+                    saveCredentials: saveCredentials,
+                    anisetteServer: "ani.sidestore.io",
+                  });
+                  setLoggedInAs(email as string);
+                };
+                toast.promise(promise, {
+                  loading: "Logging in...",
+                  success: "Logged in successfully!",
+                  error: (e) => `Login failed: ${e}`,
+                });
+              }}
+            >
+              Login
+            </button>
+          </div>
+        )}
       </div>
       <Modal
         sizeFit

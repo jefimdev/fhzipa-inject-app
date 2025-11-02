@@ -31,3 +31,20 @@
 .save-credentials input {
   width: fit-content;
 }
+
+.logged-in-as {
+  background-color: var(--interface-secondary);
+  width: fit-content;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.sign-out {
+  margin-left: 1em;
+  padding-left: 1em;
+  border-left: 1px solid #00000060;
+  text-decoration: underline;
+  cursor: pointer;
+}
