@@ -2,48 +2,18 @@
 mod account;
 #[macro_use]
 mod device;
+#[macro_use]
+mod sideload;
+mod operation;
 
 use crate::{
     account::{
-        delete_account, get_developer_session, invalidate_account, logged_in_as, login_email_pass,
-        login_stored_pass,
+        delete_account, invalidate_account, logged_in_as, login_email_pass, login_stored_pass,
     },
-    device::{get_provider, list_devices, set_selected_device, DeviceInfoMutex},
+    device::{list_devices, set_selected_device, DeviceInfoMutex},
+    sideload::{install_sidestore_operation, sideload},
 };
-use isideload::{sideload::sideload_app, SideloadConfiguration};
-use tauri::{AppHandle, Manager, State};
-
-#[tauri::command]
-async fn sideload(
-    handle: AppHandle,
-    device_state: State<'_, DeviceInfoMutex>,
-    app_path: String,
-) -> Result<(), String> {
-    let device = {
-        let device_lock = device_state.lock().unwrap();
-        match &*device_lock {
-            Some(d) => d.clone(),
-            None => return Err("No device selected".to_string()),
-        }
-    };
-
-    let provider = get_provider(&device).await?;
-
-    let config = SideloadConfiguration::default()
-        .set_machine_name("iloader".to_string())
-        .set_store_dir(
-            handle
-                .path()
-                .app_data_dir()
-                .map_err(|e| format!("Failed to get app data dir: {:?}", e))?,
-        );
-
-    let dev_session = get_developer_session().await.map_err(|e| e.to_string())?;
-
-    sideload_app(&provider, &dev_session, app_path.into(), config)
-        .await
-        .map_err(|e| format!("Failed to sideload app: {:?}", e))
-}
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -64,6 +34,7 @@ pub fn run() {
             list_devices,
             sideload,
             set_selected_device,
+            install_sidestore_operation,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

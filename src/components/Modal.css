@@ -1,7 +1,7 @@
 .modal-container {
   position: fixed;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px) brightness(0.75);
+  -webkit-backdrop-filter: blur(4px) brightness(0.75);
   top: 0;
   left: 0;
   bottom: 0;
