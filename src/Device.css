@@ -1,0 +1,20 @@
+.select-device {
+  margin-left: 1em;
+  padding-left: 1em;
+  border-left: 1px solid #00000060;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.uuid {
+  margin-left: 1em;
+  padding-left: 1em;
+  border-left: 1px solid #00000060;
+}
+
+.device-card {
+  width: fit-content;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

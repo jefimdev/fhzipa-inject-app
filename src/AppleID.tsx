@@ -55,7 +55,7 @@ export const AppleID = () => {
       <h2>Apple ID</h2>
       <div className="credentials-container">
         {loggedInAs && (
-          <div className="logged-in-as card">
+          <div className="logged-in-as card green">
             Logged in as: {loggedInAs}
             <div
               className="sign-out"

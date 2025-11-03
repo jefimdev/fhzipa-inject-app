@@ -58,7 +58,6 @@ pub async fn login_stored_pass(
     anisette_server: String,
 ) -> Result<String, String> {
     let cell = APPLE_ACCOUNT.get_or_init(|| Mutex::new(None));
-    println!("Accessing credentials from keyring: '{}'", &email);
     let pass_entry = Entry::new("iloader", &email)
         .map_err(|e| format!("Failed to create keyring entry for credentials: {:?}.", e))?;
     let password = pass_entry
@@ -187,9 +186,6 @@ async fn login(
     let config =
         config.set_configuration_path(handle.path().app_config_dir().map_err(|e| e.to_string())?);
     let config = config.set_anisette_url(format!("https://{}", anisette_server));
-    window
-        .emit("build-output", "Logging in...")
-        .map_err(|e| e.to_string())?;
 
     let account = AppleAccount::login(
         || Ok((email.clone(), password.clone())),
@@ -198,16 +194,9 @@ async fn login(
     )
     .await;
     if let Err(e) = account {
-        window
-            .emit("build-output", "Login failed or cancelled".to_string())
-            .ok();
-        window.emit("build-output", format!("{:?}", e)).ok();
-        return Err(format!("{:?}", e));
+        return Err(e.to_string());
     }
     let account = Arc::new(account.unwrap());
-    window
-        .emit("build-output", "Successfully logged in".to_string())
-        .map_err(|e| e.to_string())?;
 
     Ok(account)
 }

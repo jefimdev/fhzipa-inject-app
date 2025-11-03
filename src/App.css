@@ -26,7 +26,6 @@
 
 .container {
   margin: 0;
-  padding-top: 5vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -93,8 +92,6 @@ button {
   padding: 1em;
   background-color: var(--background-secondary);
   color: var(--foreground);
-  min-width: 45vw;
-  margin-bottom: 2em;
 }
 
 h3 {
@@ -108,4 +105,15 @@ h2 {
   margin-bottom: 0.5em;
   border-bottom: 2px solid #fff3;
   width: 100%;
+}
+
+.green {
+  background-color: #bfb;
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  min-width: 45vw;
 }
