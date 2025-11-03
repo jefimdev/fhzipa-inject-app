@@ -40,7 +40,6 @@ h1 {
 }
 
 .buttons-container {
-  margin-top: 2em;
   min-width: 45vw;
   display: flex;
   align-items: center;
@@ -94,6 +93,8 @@ button {
   padding: 1em;
   background-color: var(--background-secondary);
   color: var(--foreground);
+  min-width: 45vw;
+  margin-bottom: 2em;
 }
 
 h3 {

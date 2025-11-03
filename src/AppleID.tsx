@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import "./AppleID.css";
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen } from "@tauri-apps/api/event";
-import { Modal } from "../Modal";
+import { load } from "@tauri-apps/plugin-store";
+import { Modal } from "./Modal";
 import { toast } from "sonner";
+
+const store = await load("data.json");
 
 export const AppleID = () => {
   const [loggedInAs, setLoggedInAs] = useState<string | null>(null);
@@ -21,7 +24,7 @@ export const AppleID = () => {
       setLoggedInAs(account);
     };
     let getStoredIds = async () => {
-      let ids = await invoke<string[]>("list_stored_ids");
+      let ids = (await store.get<string[]>("ids")) ?? [];
       setStoredIds(ids);
     };
 

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 import { Modal } from "./Modal";
-import { AppleID } from "./pages/AppleID";
-import { Install } from "./pages/Install";
+import { AppleID } from "./AppleID";
+import { Device } from "./Device";
 
 function App() {
   const [openModal, setOpenModal] = useState<
@@ -14,6 +14,9 @@ function App() {
       <h1>iloader</h1>
       <div className="card-dark">
         <AppleID />
+      </div>
+      <div className="card-dark">
+        <Device />
       </div>
       <div className="card-dark buttons-container">
         <h2>Actions</h2>
@@ -29,7 +32,7 @@ function App() {
       </div>
       <Modal
         isOpen={openModal === "sidestore" || openModal === "other"}
-        pages={[<Install />]}
+        pages={[]}
         close={() => setOpenModal(null)}
       />
     </main>
