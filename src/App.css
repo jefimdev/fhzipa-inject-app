@@ -116,4 +116,5 @@ h2 {
   flex-direction: column;
   gap: 2em;
   min-width: 45vw;
+  margin-bottom: 2em;
 }

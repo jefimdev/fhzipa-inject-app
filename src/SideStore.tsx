@@ -2,10 +2,10 @@ import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { toast } from "sonner";
 
-export const Sideload = () => {
+export const SideStore = () => {
   return (
     <>
-      <h2>Sideload .IPA</h2>
+      <h2>Install SideStore</h2>
       <div>
         <button
           onClick={async () => {

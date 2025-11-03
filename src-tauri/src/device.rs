@@ -72,10 +72,10 @@ pub async fn list_devices() -> Result<Vec<DeviceInfo>, String> {
 #[tauri::command]
 pub async fn set_selected_device(
     device_state: State<'_, DeviceInfoMutex>,
-    device: DeviceInfo,
+    device: Option<DeviceInfo>,
 ) -> Result<(), String> {
     let mut device_state = device_state.lock().unwrap();
-    *device_state = Some(device);
+    *device_state = device;
     Ok(())
 }
 
