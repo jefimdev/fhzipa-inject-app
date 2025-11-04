@@ -1,8 +1,11 @@
-use isideload::{developer_session::{DeveloperDeviceType, DeveloperSession}, AnisetteConfiguration, AppleAccount};
+use isideload::{
+    developer_session::{DeveloperDeviceType, DeveloperSession, ListAppIdsResponse},
+    AnisetteConfiguration, AppleAccount,
+};
 use keyring::Entry;
 use once_cell::sync::OnceCell;
-use serde_json::Value;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::{
     sync::{mpsc::RecvTimeoutError, Arc, Mutex},
     time::Duration,
@@ -212,9 +215,7 @@ pub struct CertificateInfo {
 
 #[tauri::command]
 pub async fn get_certificates() -> Result<Vec<CertificateInfo>, String> {
-    let dev_session =
-        get_developer_session()
-            .await?;
+    let dev_session = get_developer_session().await?;
     let team = dev_session
         .get_team()
         .await
@@ -235,9 +236,7 @@ pub async fn get_certificates() -> Result<Vec<CertificateInfo>, String> {
 }
 
 #[tauri::command]
-pub async fn revoke_certificate(
-    serial_number: String,
-) -> Result<(), String> {
+pub async fn revoke_certificate(serial_number: String) -> Result<(), String> {
     let dev_session = get_developer_session().await?;
     let team = dev_session
         .get_team()
@@ -247,5 +246,35 @@ pub async fn revoke_certificate(
         .revoke_development_cert(DeveloperDeviceType::Ios, &team, &serial_number)
         .await
         .map_err(|e| format!("Failed to revoke development certificates: {:?}", e))?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn list_app_ids() -> Result<ListAppIdsResponse, String> {
+    let dev_session = get_developer_session().await?;
+    let team = dev_session
+        .get_team()
+        .await
+        .map_err(|e| format!("Failed to get developer team: {:?}", e))?;
+    let app_ids = dev_session
+        .list_app_ids(DeveloperDeviceType::Ios, &team)
+        .await
+        .map_err(|e| format!("Failed to list App IDs: {:?}", e))?;
+    Ok(app_ids)
+}
+
+#[tauri::command]
+pub async fn delete_app_id(
+    app_id_id: String,
+) -> Result<(), String> {
+    let dev_session = get_developer_session().await?;
+    let team = dev_session
+        .get_team()
+        .await
+        .map_err(|e| format!("Failed to get developer team: {:?}", e))?;
+    dev_session
+        .delete_app_id(DeveloperDeviceType::Ios, &team, app_id_id)
+        .await
+        .map_err(|e| format!("Failed to delete App ID: {:?}", e))?;
     Ok(())
 }

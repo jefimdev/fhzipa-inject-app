@@ -50,10 +50,7 @@ pub async fn sideload_operation(
 ) -> Result<(), String> {
     let op = Operation::new("sideload".to_string(), &window);
     op.start("install")?;
-    op.fail_if_err(
-        "install",
-        sideload(handle, device_state, app_path).await,
-    )?;
+    op.fail_if_err("install", sideload(handle, device_state, app_path).await)?;
     op.complete("install")?;
     Ok(())
 }

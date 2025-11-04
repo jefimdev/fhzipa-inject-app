@@ -86,7 +86,7 @@ export const AppleID = ({
             <h3>Saved Logins</h3>
             <div className="stored-container card">
               {storedIds.map((id) => (
-                <div className="stored">
+                <div key={id} className="stored">
                   {id}
                   {!loggedInAs && (
                     <div

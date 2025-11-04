@@ -77,6 +77,8 @@
 
 .modal-content {
   overflow-y: auto;
+  overflow-x: hidden;
+  max-width: 100%;
   max-height: calc(80vh - 4em);
   padding: 5px;
   box-sizing: border-box;

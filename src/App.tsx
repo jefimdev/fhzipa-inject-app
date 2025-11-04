@@ -16,6 +16,7 @@ import OperationView from "./components/OperationView";
 import { toast } from "sonner";
 import { Modal } from "./components/Modal";
 import { Certificates } from "./Certificates";
+import { AppIds } from "./AppIds";
 
 function App() {
   const [operationState, setOperationState] = useState<OperationState | null>(
@@ -155,7 +156,14 @@ function App() {
             >
               Manage Certificates
             </button>
-            <button>Manage App IDs</button>
+            <button
+              onClick={() => {
+                if (!ensuredLoggedIn()) return;
+                setOpenModal("appids");
+              }}
+            >
+              Manage App IDs
+            </button>
           </div>
         </div>
       </div>
@@ -170,6 +178,9 @@ function App() {
         close={() => setOpenModal(null)}
       >
         <Certificates />
+      </Modal>
+      <Modal isOpen={openModal === "appids"} close={() => setOpenModal(null)}>
+        <AppIds />
       </Modal>
     </main>
   );

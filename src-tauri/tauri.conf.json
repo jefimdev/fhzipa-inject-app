@@ -13,10 +13,10 @@
     "windows": [
       {
         "title": "iloader",
-        "width": 1000,
-        "height": 800,
-        "minHeight": 400,
-        "minWidth": 600
+        "width": 800,
+        "height": 600,
+        "minHeight": 300,
+        "minWidth": 400
       }
     ],
     "security": {

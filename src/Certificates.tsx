@@ -59,33 +59,41 @@ export const Certificates = () => {
           {loading ? "Loading certificates..." : "No certificates found."}
         </div>
       ) : (
-        <table className="card certificate-table">
-          <tr className="certificate-item">
-            <th className="cert-item-part">Name</th>
-            <th className="cert-item-part">Serial Number</th>
-            <th className="cert-item-part">Machine Name</th>
-            <th>Revoke</th>
-          </tr>
-          {certificates.map((cert, i) => (
-            <tr
-              key={cert.certificateId}
-              className={
-                "certificate-item" +
-                (i === certificates.length - 1 ? " cert-item-last" : "")
-              }
-            >
-              <td className="cert-item-part">{cert.name}</td>
-              <td className="cert-item-part">{cert.serialNumber}</td>
-              <td className="cert-item-part">{cert.machineName}</td>
-              <td
-                className="cert-item-revoke"
-                onClick={() => revokeCertificate(cert.serialNumber)}
-              >
-                Revoke
-              </td>
-            </tr>
-          ))}
-        </table>
+        <div className="card">
+          <div className="certificate-table-container">
+            <table className="certificate-table">
+              <thead>
+                <tr className="certificate-item">
+                  <th className="cert-item-part">Name</th>
+                  <th className="cert-item-part">Serial Number</th>
+                  <th className="cert-item-part">Machine Name</th>
+                  <th>Revoke</th>
+                </tr>
+              </thead>
+              <tbody>
+                {certificates.map((cert, i) => (
+                  <tr
+                    key={cert.certificateId}
+                    className={
+                      "certificate-item" +
+                      (i === certificates.length - 1 ? " cert-item-last" : "")
+                    }
+                  >
+                    <td className="cert-item-part">{cert.name}</td>
+                    <td className="cert-item-part">{cert.serialNumber}</td>
+                    <td className="cert-item-part">{cert.machineName}</td>
+                    <td
+                      className="cert-item-revoke"
+                      onClick={() => revokeCertificate(cert.serialNumber)}
+                    >
+                      Revoke
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
       <button
         style={{ marginTop: "1em" }}
