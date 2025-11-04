@@ -2,7 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: 1.25em;
-  overflow: hidden;
+  overflow-y: hidden;
+  overflow-x: auto;
 }
 
 .operation-step-icon {

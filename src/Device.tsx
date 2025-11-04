@@ -26,14 +26,21 @@ export const Device = () => {
 
   const loadDevices = useCallback(async () => {
     if (listingDevices.current) return;
-    const promise = async () => {
+    const promise = new Promise<number>(async (resolve, reject) => {
       listingDevices.current = true;
-      const devices = await invoke<DeviceInfo[]>("list_devices");
-      setDevices(devices);
-      selectDevice(devices.length > 0 ? devices[0] : null);
-      listingDevices.current = false;
-      return devices.length;
-    };
+      try {
+        const devices = await invoke<DeviceInfo[]>("list_devices");
+        setDevices(devices);
+        selectDevice(devices.length > 0 ? devices[0] : null);
+        listingDevices.current = false;
+        resolve(devices.length);
+      } catch (e) {
+        setDevices([]);
+        selectDevice(null);
+        listingDevices.current = false;
+        reject(e);
+      }
+    });
 
     toast.promise(promise, {
       loading: "Loading devices...",
@@ -64,7 +71,6 @@ export const Device = () => {
             }
           >
             {device.name}
-            <div className="uuid">{device.uuid}</div>
             <div className="select-device" onClick={() => selectDevice(device)}>
               Select
             </div>

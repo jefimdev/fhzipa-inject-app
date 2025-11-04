@@ -35,6 +35,8 @@ pub async fn sideload(
 
     let dev_session = get_developer_session().await.map_err(|e| e.to_string())?;
 
+    println!("Sideloading app at path: {}", app_path);
+
     sideload_app(&provider, &dev_session, app_path.into(), config)
         .await
         .map_err(|e| format!("Failed to sideload app: {:?}", e))
@@ -49,6 +51,7 @@ pub async fn install_sidestore_operation(
 ) -> Result<(), String> {
     let op = Operation::new("install_sidestore".to_string(), &window);
     op.start("download")?;
+    // TODO: Cache & check version to avoid re-downloading
     let url = if nightly {
         "https://github.com/SideStore/SideStore/releases/download/nightly/SideStore.ipa"
     } else {

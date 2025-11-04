@@ -16,19 +16,10 @@
   border-radius: 12px;
   box-shadow: var(--box-shadow);
   padding: 2em;
-  min-width: 80%;
-  min-height: 65%;
-  max-height: 80%;
-  max-width: 90%;
+  max-width: 95vw;
+  max-height: 90vh;
   box-sizing: border-box;
   position: relative;
-}
-
-.size-fit {
-  min-width: fit-content !important;
-  min-height: fit-content !important;
-  width: fit-content !important;
-  height: fit-content !important;
 }
 
 .modal-close {
