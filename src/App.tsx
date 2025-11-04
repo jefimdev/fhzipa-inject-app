@@ -15,8 +15,8 @@ import { listen } from "@tauri-apps/api/event";
 import OperationView from "./components/OperationView";
 import { toast } from "sonner";
 import { Modal } from "./components/Modal";
-import { Certificates } from "./Certificates";
-import { AppIds } from "./AppIds";
+import { Certificates } from "./pages/Certificates";
+import { AppIds } from "./pages/AppIds";
 
 function App() {
   const [operationState, setOperationState] = useState<OperationState | null>(
