@@ -67,7 +67,8 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 0.5em 0;
+  padding: 0.2em 0;
+  border-bottom: 1px solid #00000060;
 }
 
 .add-account {
@@ -75,6 +76,7 @@
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid #00000060;
   padding-bottom: 0;
+  border-bottom: none;
+  padding-top: 0.4em;
 }

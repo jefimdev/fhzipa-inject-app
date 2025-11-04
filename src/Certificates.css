@@ -1,0 +1,29 @@
+.certificate-table {
+  border-collapse: collapse;
+  padding: 0.5em;
+}
+
+.certificate-table td,
+.certificate-table th {
+  padding: 0.5em 1em;
+}
+
+.certificate-item {
+  border-bottom: 1px solid #00000060;
+  margin: 0;
+  padding: 0.5em;
+}
+
+.cert-item-last {
+  border-bottom: none;
+}
+
+.cert-item-part {
+  border-right: 1px solid #00000060;
+  padding-right: 0.5em;
+}
+
+.cert-item-revoke {
+  cursor: pointer;
+  text-decoration: underline;
+}

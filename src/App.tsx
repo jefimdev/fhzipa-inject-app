@@ -14,6 +14,8 @@ import {
 import { listen } from "@tauri-apps/api/event";
 import OperationView from "./components/OperationView";
 import { toast } from "sonner";
+import { Modal } from "./components/Modal";
+import { Certificates } from "./Certificates";
 
 function App() {
   const [operationState, setOperationState] = useState<OperationState | null>(
@@ -21,6 +23,9 @@ function App() {
   );
   const [loggedInAs, setLoggedInAs] = useState<string | null>(null);
   const [selectedDevice, setSelectedDevice] = useState<DeviceInfo | null>(null);
+  const [openModal, setOpenModal] = useState<null | "certificates" | "appids">(
+    null
+  );
 
   const startOperation = useCallback(
     async (
@@ -142,7 +147,14 @@ function App() {
               Install Other
             </button>
             <button>Manage Pairing File</button>
-            <button>Manage Certificates</button>
+            <button
+              onClick={() => {
+                if (!ensuredLoggedIn()) return;
+                setOpenModal("certificates");
+              }}
+            >
+              Manage Certificates
+            </button>
             <button>Manage App IDs</button>
           </div>
         </div>
@@ -153,6 +165,12 @@ function App() {
           closeMenu={() => setOperationState(null)}
         />
       )}
+      <Modal
+        isOpen={openModal === "certificates"}
+        close={() => setOpenModal(null)}
+      >
+        <Certificates />
+      </Modal>
     </main>
   );
 }

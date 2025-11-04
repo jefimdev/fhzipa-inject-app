@@ -8,7 +8,7 @@ mod operation;
 
 use crate::{
     account::{
-        delete_account, invalidate_account, logged_in_as, login_email_pass, login_stored_pass,
+        delete_account, invalidate_account, logged_in_as, login_email_pass, login_stored_pass, get_certificates, revoke_certificate
     },
     device::{list_devices, set_selected_device, DeviceInfoMutex},
     sideload::{install_sidestore_operation, sideload_operation},
@@ -35,6 +35,8 @@ pub fn run() {
             sideload_operation,
             set_selected_device,
             install_sidestore_operation,
+            get_certificates,
+            revoke_certificate,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

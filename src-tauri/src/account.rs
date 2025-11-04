@@ -1,7 +1,8 @@
-use isideload::{developer_session::DeveloperSession, AnisetteConfiguration, AppleAccount};
+use isideload::{developer_session::{DeveloperDeviceType, DeveloperSession}, AnisetteConfiguration, AppleAccount};
 use keyring::Entry;
 use once_cell::sync::OnceCell;
 use serde_json::Value;
+use serde::{Deserialize, Serialize};
 use std::{
     sync::{mpsc::RecvTimeoutError, Arc, Mutex},
     time::Duration,
@@ -198,4 +199,53 @@ async fn login(
     let account = Arc::new(account.unwrap());
 
     Ok(account)
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CertificateInfo {
+    pub name: String,
+    pub certificate_id: String,
+    pub serial_number: String,
+    pub machine_name: String,
+}
+
+#[tauri::command]
+pub async fn get_certificates() -> Result<Vec<CertificateInfo>, String> {
+    let dev_session =
+        get_developer_session()
+            .await?;
+    let team = dev_session
+        .get_team()
+        .await
+        .map_err(|e| format!("Failed to get developer team: {:?}", e))?;
+    let certificates = dev_session
+        .list_all_development_certs(DeveloperDeviceType::Ios, &team)
+        .await
+        .map_err(|e| format!("Failed to get development certificates: {:?}", e))?;
+    Ok(certificates
+        .into_iter()
+        .map(|cert| CertificateInfo {
+            name: cert.name,
+            certificate_id: cert.certificate_id,
+            serial_number: cert.serial_number,
+            machine_name: cert.machine_name,
+        })
+        .collect())
+}
+
+#[tauri::command]
+pub async fn revoke_certificate(
+    serial_number: String,
+) -> Result<(), String> {
+    let dev_session = get_developer_session().await?;
+    let team = dev_session
+        .get_team()
+        .await
+        .map_err(|e| format!("Failed to get developer team: {:?}", e))?;
+    dev_session
+        .revoke_development_cert(DeveloperDeviceType::Ios, &team, &serial_number)
+        .await
+        .map_err(|e| format!("Failed to revoke development certificates: {:?}", e))?;
+    Ok(())
 }
