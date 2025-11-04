@@ -1,0 +1,96 @@
+.operation-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25em;
+  overflow: hidden;
+}
+
+.operation-step-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  font-size: 1.5rem;
+  padding: 0;
+  margin: 0;
+}
+
+.operation-step {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.operation-extra-details {
+  background-color: black;
+  overflow-x: auto;
+  padding: 0.5em;
+  border-radius: 1px;
+  margin: 0;
+}
+
+.operation-step-internal {
+  flex-shrink: 1;
+  text-align: left;
+}
+
+.operation-step-internal p {
+  margin: 0;
+}
+
+.loading-icon {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  border-radius: 50%;
+  border-color: var(--foreground) var(--foreground) transparent transparent;
+  border-style: solid;
+  border-width: 3px;
+  width: 1.5rem;
+  height: 1.5rem;
+  box-sizing: border-box;
+  line-height: 1.5rem;
+  overflow: hidden;
+  background-clip: padding-box;
+}
+
+.waiting-icon {
+  display: inline-block;
+  border-radius: 50%;
+  border: 3px solid gray;
+  width: 1.5rem;
+  height: 1.5rem;
+  box-sizing: border-box;
+  line-height: 1.5rem;
+  overflow: hidden;
+  background-clip: padding-box;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.operation-check {
+  color: limegreen;
+}
+
+.operation-error {
+  color: red;
+}
+
+.operation-skipped {
+  color: gray;
+}
+
+.operation-header {
+  margin-bottom: 2em;
+}
+
+.operation-header p {
+  margin: 0;
+}

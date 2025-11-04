@@ -1,17 +1,79 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import "./App.css";
-import { Modal } from "./components/Modal";
 import { AppleID } from "./AppleID";
 import { Device } from "./Device";
-import { SideStore } from "./SideStore";
 import { toast } from "sonner";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
+import {
+  installSideStoreOperation,
+  Operation,
+  OperationState,
+  OperationUpdate,
+} from "./components/operations";
+import { listen } from "@tauri-apps/api/event";
+import OperationView from "./components/OperationView";
 
 function App() {
-  const [openModal, setOpenModal] = useState<
-    "sidestore" | "pairing" | "certificates" | "ids" | null
-  >(null);
+  const [operationState, setOperationState] = useState<OperationState | null>(
+    null
+  );
+
+  const startOperation = useCallback(
+    async (
+      operation: Operation,
+      params: { [key: string]: any }
+    ): Promise<void> => {
+      setOperationState({
+        current: operation,
+        started: [],
+        failed: [],
+        completed: [],
+      });
+      return new Promise<void>(async (resolve, reject) => {
+        const unlistenFn = await listen<OperationUpdate>(
+          "operation_" + operation.id,
+          (event) => {
+            setOperationState((old) => {
+              if (old == null) return null;
+              if (event.payload.updateType === "started") {
+                return {
+                  ...old,
+                  started: [...old.started, event.payload.stepId],
+                };
+              } else if (event.payload.updateType === "finished") {
+                return {
+                  ...old,
+                  completed: [...old.completed, event.payload.stepId],
+                };
+              } else if (event.payload.updateType === "failed") {
+                return {
+                  ...old,
+                  failed: [
+                    ...old.failed,
+                    {
+                      stepId: event.payload.stepId,
+                      extraDetails: event.payload.extraDetails,
+                    },
+                  ],
+                };
+              }
+              return old;
+            });
+          }
+        );
+        try {
+          await invoke(operation.id + "_operation", params);
+          unlistenFn();
+          resolve();
+        } catch (e) {
+          unlistenFn();
+          reject(e);
+        }
+      });
+    },
+    [setOperationState]
+  );
 
   return (
     <main className="container">
@@ -26,7 +88,13 @@ function App() {
         <div className="card-dark buttons-container">
           <h2>Actions</h2>
           <div className="buttons">
-            <button onClick={() => setOpenModal("sidestore")}>
+            <button
+              onClick={() =>
+                startOperation(installSideStoreOperation, {
+                  nightly: false,
+                })
+              }
+            >
               Install SideStore
             </button>
             <button
@@ -54,11 +122,12 @@ function App() {
           </div>
         </div>
       </div>
-      <Modal
-        isOpen={openModal === "sidestore"}
-        pages={[<SideStore />]}
-        close={() => setOpenModal(null)}
-      />
+      {operationState && (
+        <OperationView
+          operationState={operationState}
+          closeMenu={() => setOperationState(null)}
+        />
+      )}
     </main>
   );
 }

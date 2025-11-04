@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use crate::{
     account::get_developer_session,
     device::{get_provider, DeviceInfoMutex},
@@ -43,7 +45,46 @@ pub async fn install_sidestore_operation(
     handle: AppHandle,
     window: Window,
     device_state: State<'_, DeviceInfoMutex>,
+    nightly: bool,
 ) -> Result<(), String> {
     let op = Operation::new("install_sidestore".to_string(), &window);
+    op.start("download")?;
+    let url = if nightly {
+        "https://github.com/SideStore/SideStore/releases/download/nightly/SideStore.ipa"
+    } else {
+        "https://github.com/SideStore/SideStore/releases/latest/download/SideStore.ipa"
+    };
+    let dest = handle
+        .path()
+        .temp_dir()
+        .map_err(|e| format!("Failed to get temp dir: {:?}", e))?
+        .join("SideStore.ipa");
+    op.fail_if_err("download", download(url, &dest).await)?;
+    op.move_on("download", "install")?;
+    op.fail_if_err(
+        "install",
+        sideload(handle, device_state, dest.to_string_lossy().to_string()).await,
+    )?;
+    op.move_on("install", "pairing")?;
+    op.fail("pairing", "I haven't done this yet!".to_string())?;
+    Ok(())
+}
+
+pub async fn download(url: impl AsRef<str>, dest: &PathBuf) -> Result<(), String> {
+    let response = reqwest::get(url.as_ref())
+        .await
+        .map_err(|e| e.to_string())?;
+    if !response.status().is_success() {
+        return Err(format!(
+            "Failed to download file: HTTP {}",
+            response.status()
+        ));
+    }
+
+    let bytes = response.bytes().await.map_err(|e| e.to_string())?;
+    tokio::fs::write(dest, &bytes)
+        .await
+        .map_err(|e| e.to_string())?;
+
     Ok(())
 }

@@ -26,7 +26,6 @@ pub async fn login_email_pass(
     *account_guard = Some(account.clone());
 
     if save_credentials {
-        println!("Saving credentials to keyring: '{}'", &account.apple_id);
         let pass_entry = Entry::new("iloader", &account.apple_id)
             .map_err(|e| format!("Failed to create keyring entry for credentials: {:?}.", e))?;
         pass_entry

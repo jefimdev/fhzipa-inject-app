@@ -193,36 +193,30 @@ export const AppleID = () => {
           </div>
         )}
       </div>
-      <Modal
-        sizeFit
-        isOpen={tfaOpen}
-        pages={[
-          <>
-            <h2>Two-Factor Authentication</h2>
-            <p>Please enter the verification code sent to your device.</p>
-            <input
-              type="text"
-              placeholder="Verification Code..."
-              value={tfaCode}
-              onChange={(e) => setTfaCode(e.target.value)}
-              style={{ marginRight: "0.5em" }}
-            />
-            <button
-              onClick={async () => {
-                if (tfaCode.length !== 6) {
-                  toast.warning("Please enter a valid 6-digit code.");
-                  return;
-                }
-                await emit("2fa-recieved", tfaCode);
-                setTfaOpen(false);
-                setTfaCode("");
-              }}
-            >
-              Submit
-            </button>
-          </>,
-        ]}
-      />
+      <Modal sizeFit isOpen={tfaOpen}>
+        <h2>Two-Factor Authentication</h2>
+        <p>Please enter the verification code sent to your device.</p>
+        <input
+          type="text"
+          placeholder="Verification Code..."
+          value={tfaCode}
+          onChange={(e) => setTfaCode(e.target.value)}
+          style={{ marginRight: "0.5em" }}
+        />
+        <button
+          onClick={async () => {
+            if (tfaCode.length !== 6) {
+              toast.warning("Please enter a valid 6-digit code.");
+              return;
+            }
+            await emit("2fa-recieved", tfaCode);
+            setTfaOpen(false);
+            setTfaCode("");
+          }}
+        >
+          Submit
+        </button>
+      </Modal>
     </>
   );
 };
