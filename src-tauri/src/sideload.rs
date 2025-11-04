@@ -8,7 +8,6 @@ use crate::{
 use isideload::{sideload::sideload_app, SideloadConfiguration};
 use tauri::{AppHandle, Manager, State, Window};
 
-#[tauri::command]
 pub async fn sideload(
     handle: AppHandle,
     device_state: State<'_, DeviceInfoMutex>,
@@ -40,6 +39,23 @@ pub async fn sideload(
     sideload_app(&provider, &dev_session, app_path.into(), config)
         .await
         .map_err(|e| format!("Failed to sideload app: {:?}", e))
+}
+
+#[tauri::command]
+pub async fn sideload_operation(
+    handle: AppHandle,
+    window: Window,
+    device_state: State<'_, DeviceInfoMutex>,
+    app_path: String,
+) -> Result<(), String> {
+    let op = Operation::new("sideload".to_string(), &window);
+    op.start("install")?;
+    op.fail_if_err(
+        "install",
+        sideload(handle, device_state, app_path).await,
+    )?;
+    op.complete("install")?;
+    Ok(())
 }
 
 #[tauri::command]

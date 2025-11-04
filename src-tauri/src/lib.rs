@@ -11,7 +11,7 @@ use crate::{
         delete_account, invalidate_account, logged_in_as, login_email_pass, login_stored_pass,
     },
     device::{list_devices, set_selected_device, DeviceInfoMutex},
-    sideload::{install_sidestore_operation, sideload},
+    sideload::{install_sidestore_operation, sideload_operation},
 };
 use tauri::Manager;
 
@@ -32,7 +32,7 @@ pub fn run() {
             login_stored_pass,
             delete_account,
             list_devices,
-            sideload,
+            sideload_operation,
             set_selected_device,
             install_sidestore_operation,
         ])

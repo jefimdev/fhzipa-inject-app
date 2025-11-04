@@ -3,14 +3,20 @@ import "./Device.css";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
 
-type DeviceInfo = {
+export type DeviceInfo = {
   name: string;
   id: number;
   uuid: string;
 };
-export const Device = () => {
+
+export const Device = ({
+  selectedDevice,
+  setSelectedDevice,
+}: {
+  selectedDevice: DeviceInfo | null;
+  setSelectedDevice: (device: DeviceInfo | null) => void;
+}) => {
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
-  const [selectedDevice, setSelectedDevice] = useState<DeviceInfo | null>(null);
 
   const listingDevices = useRef<boolean>(false);
 

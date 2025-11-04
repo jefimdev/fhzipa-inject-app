@@ -8,8 +8,13 @@ import { toast } from "sonner";
 
 const store = await load("data.json");
 
-export const AppleID = () => {
-  const [loggedInAs, setLoggedInAs] = useState<string | null>(null);
+export const AppleID = ({
+  loggedInAs,
+  setLoggedInAs,
+}: {
+  loggedInAs: string | null;
+  setLoggedInAs: (id: string | null) => void;
+}) => {
   const [storedIds, setStoredIds] = useState<string[]>([]);
   const [forceUpdateIds, setForceUpdateIds] = useState<number>(0);
   const [emailInput, setEmailInput] = useState<string>("");

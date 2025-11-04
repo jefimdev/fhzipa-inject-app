@@ -1,11 +1,11 @@
 import { useCallback, useState } from "react";
 import "./App.css";
 import { AppleID } from "./AppleID";
-import { Device } from "./Device";
-import { toast } from "sonner";
+import { Device, DeviceInfo } from "./Device";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import {
+  sideloadOperation,
   installSideStoreOperation,
   Operation,
   OperationState,
@@ -13,11 +13,14 @@ import {
 } from "./components/operations";
 import { listen } from "@tauri-apps/api/event";
 import OperationView from "./components/OperationView";
+import { toast } from "sonner";
 
 function App() {
   const [operationState, setOperationState] = useState<OperationState | null>(
     null
   );
+  const [loggedInAs, setLoggedInAs] = useState<string | null>(null);
+  const [selectedDevice, setSelectedDevice] = useState<DeviceInfo | null>(null);
 
   const startOperation = useCallback(
     async (
@@ -75,42 +78,64 @@ function App() {
     [setOperationState]
   );
 
+  const ensuredLoggedIn = useCallback((): boolean => {
+    if (loggedInAs) return true;
+    toast.error("You must be logged in!");
+    return false;
+  }, [loggedInAs]);
+
+  const ensureSelectedDevice = useCallback((): boolean => {
+    if (selectedDevice) return true;
+    toast.error("You must select a device!");
+    return false;
+  }, [selectedDevice]);
+
   return (
     <main className="container">
       <h1>iloader</h1>
       <div className="cards-container">
         <div className="card-dark">
-          <AppleID />
+          <AppleID loggedInAs={loggedInAs} setLoggedInAs={setLoggedInAs} />
         </div>
         <div className="card-dark">
-          <Device />
+          <Device
+            selectedDevice={selectedDevice}
+            setSelectedDevice={setSelectedDevice}
+          />
         </div>
         <div className="card-dark buttons-container">
           <h2>Actions</h2>
           <div className="buttons">
             <button
-              onClick={() =>
+              onClick={() => {
+                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
                 startOperation(installSideStoreOperation, {
                   nightly: false,
-                })
-              }
+                });
+              }}
             >
-              Install SideStore
+              Install SideStore (Stable)
+            </button>
+            <button
+              onClick={() => {
+                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                startOperation(installSideStoreOperation, {
+                  nightly: true,
+                });
+              }}
+            >
+              Install SideStore (Nightly)
             </button>
             <button
               onClick={async () => {
+                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
                 let path = await open({
                   multiple: false,
                   filters: [{ name: "IPA Files", extensions: ["ipa"] }],
                 });
                 if (!path) return;
-                toast.promise(invoke("sideload", { appPath: path as string }), {
-                  loading: "Installing...",
-                  success: "App installed successfully!",
-                  error: (e) => {
-                    console.error(e);
-                    return e;
-                  },
+                startOperation(sideloadOperation, {
+                  appPath: path as string,
                 });
               }}
             >

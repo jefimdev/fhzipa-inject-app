@@ -50,3 +50,14 @@ export const installSideStoreOperation: Operation = {
     },
   ],
 };
+
+export const sideloadOperation = {
+  id: "sideload",
+  title: "Installing App",
+  steps: [
+    {
+      id: "install",
+      title: "Sign & Install App",
+    },
+  ],
+};
