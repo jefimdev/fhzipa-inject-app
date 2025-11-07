@@ -1,6 +1,26 @@
-# iloader
+<img align="left" width="120" height="120" src="/app-icon.png">
+
+<div id="user-content-toc">
+  <ul style="list-style: none;">
+    <summary>
+      <h1>iloader</h1>
+    </summary>
+  </ul>
+</div>
+
+---
+
+[![Build iloader](https://github.com/nab138/iloader/actions/workflows/build.yml/badge.svg)](https://github.com/nab138/iloader/actions/workflows/build.yml)
 
 Install SideStore (or other apps) and import your pairing file with ease
+
+## How to use
+
+- Install the latest version for your platform from the [releases](https://github.com/nab138/iloader/releases)
+- Plug in your iDevice to your computer
+- Open the app
+- Sign into your Apple ID
+- Select your action (e.x. install SideStore)
 
 ## Features
 
@@ -16,3 +36,4 @@ Install SideStore (or other apps) and import your pairing file with ease
 - [idevice](https://github.com/jkcarter/idevice) for communicating with iOS devices
 - [isideload](https://github.com/nab138/isideload) for installing apps
 - [idevice_pair](https://github.com/jkcoxson/idevice_pair) was used as a reference for pairing file management
+- App made in [tauri](https://tauri.app) 
