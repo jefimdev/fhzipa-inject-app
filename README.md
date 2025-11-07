@@ -33,7 +33,7 @@ Install SideStore (or other apps) and import your pairing file with ease
 ## Credits
 
 - Icon made by [Transistor](https://github.com/transistor-exe)
-- [idevice](https://github.com/jkcarter/idevice) for communicating with iOS devices
+- [idevice](https://github.com/jkcoxson/idevice) for communicating with iOS devices
 - [isideload](https://github.com/nab138/isideload) for installing apps
 - [idevice_pair](https://github.com/jkcoxson/idevice_pair) was used as a reference for pairing file management
 - App made in [tauri](https://tauri.app) 
