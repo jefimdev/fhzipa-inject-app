@@ -22,8 +22,8 @@ tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-idevice = { version = "0.1.45", features = ["usbmuxd", "house_arrest", "afc"] }
-isideload = { version = "0.1.15", features = ["vendored-botan", "vendored-openssl"] }
+idevice = { version = "0.1.46", features = ["usbmuxd", "house_arrest", "afc", "ring"], default-features = false}
+isideload = { version = "0.1.16", features = ["vendored-openssl"] }
 keyring = { version = "3.6.3", features = ["apple-native", "windows-native", "linux-native"] }
 tauri-plugin-store = "2"
 futures = "0.3.31"
@@ -32,7 +32,6 @@ tauri-plugin-dialog = "2"
 reqwest = "0.12.23"
 tokio = "1.48.0"
 tauri-plugin-process = "2"
-rustls = { version = "0.23.31", default-features = false, features = ["ring"] }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-updater = "2"
