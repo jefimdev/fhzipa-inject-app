@@ -132,6 +132,7 @@ function App() {
                 if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
                 startOperation(installSideStoreOperation, {
                   nightly: false,
+                  liveContainer: false,
                   revokeCert,
                 });
               }}
@@ -144,11 +145,24 @@ function App() {
                 startOperation(installSideStoreOperation, {
                   nightly: true,
                   revokeCert,
+                  liveContainer: false,
                 });
               }}
             >
               Install SideStore (Nightly)
             </button>
+            {/* <button
+              onClick={() => {
+                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                startOperation(installSideStoreOperation, {
+                  nightly: true,
+                  liveContainer: true,
+                  revokeCert,
+                });
+              }}
+            >
+              Install LiveContainer+SideStore
+            </button> */}
             <button
               onClick={async () => {
                 if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;

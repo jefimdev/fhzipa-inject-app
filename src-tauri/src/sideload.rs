@@ -81,6 +81,7 @@ pub async fn install_sidestore_operation(
     window: Window,
     device_state: State<'_, DeviceInfoMutex>,
     nightly: bool,
+    live_container: bool,
     revoke_cert: bool,
 ) -> Result<(), String> {
     let op = Operation::new("install_sidestore".to_string(), &window);
@@ -93,7 +94,9 @@ pub async fn install_sidestore_operation(
     };
     op.start("download")?;
     // TODO: Cache & check version to avoid re-downloading
-    let url = if nightly {
+    let url = if live_container {
+        "https://github.com/LiveContainer/LiveContainer/releases/latest/download/LiveContainer+SideStore.ipa"
+    } else if nightly {
         "https://github.com/SideStore/SideStore/releases/download/nightly/SideStore.ipa"
     } else {
         "https://github.com/SideStore/SideStore/releases/latest/download/SideStore.ipa"
@@ -102,7 +105,9 @@ pub async fn install_sidestore_operation(
         .path()
         .temp_dir()
         .map_err(|e| format!("Failed to get temp dir: {:?}", e))?
-        .join(if nightly {
+        .join(if live_container {
+            "LiveContainerSideStore.ipa"
+        } else if nightly {
             "SideStore-Nightly.ipa"
         } else {
             "SideStore.ipa"
@@ -120,7 +125,10 @@ pub async fn install_sidestore_operation(
         .await,
     )?;
     op.move_on("install", "pairing")?;
-    let sidestore_info = op.fail_if_err("pairing", get_sidestore_info(device.clone()).await)?;
+    let sidestore_info = op.fail_if_err(
+        "pairing",
+        get_sidestore_info(device.clone(), live_container).await,
+    )?;
     if let Some(info) = sidestore_info {
         op.fail_if_err(
             "pairing",

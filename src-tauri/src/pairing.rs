@@ -14,6 +14,10 @@ use crate::device::{
 
 const PAIRING_APPS: &[(&str, &str)] = &[
     ("SideStore", "ALTPairingFile.mobiledevicepairing"),
+    (
+        "LiveContainer",
+        "SideStore/Documents/ALTPairingFile.mobiledevicepairing",
+    ),
     ("Feather", "pairingFile.plist"),
     ("StikDebug", "pairingFile.plist"),
     ("Protokolle", "pairingFile.plist"),
@@ -150,7 +154,10 @@ pub async fn installed_pairing_apps(
     Ok(result)
 }
 
-pub async fn get_sidestore_info(device: DeviceInfo) -> Result<Option<PairingAppInfo>, String> {
+pub async fn get_sidestore_info(
+    device: DeviceInfo,
+    live_container: bool,
+) -> Result<Option<PairingAppInfo>, String> {
     let provider = get_provider(&device).await?;
     let mut installation_proxy = InstallationProxyClient::connect(&provider)
         .await
@@ -167,7 +174,7 @@ pub async fn get_sidestore_info(device: DeviceInfo) -> Result<Option<PairingAppI
             .and_then(|x| x.get("CFBundleDisplayName").and_then(|x| x.as_string()))
             .ok_or("Failed to parse installed apps".to_string())?;
 
-        if n == "SideStore" {
+        if n == "SideStore" || (live_container && n == "LiveContainer") {
             return Ok(Some(PairingAppInfo {
                 name: n.to_string(),
                 bundle_id: bundle_id.to_string(),
