@@ -43,14 +43,14 @@ pub async fn login_email_pass(
             .unwrap_or_else(|| Value::Array(vec![]))
             .as_array()
             .cloned()
-            .unwrap_or_else(|| vec![]);
+            .unwrap_or_else(std::vec::Vec::new);
         let value = Value::String(account.apple_id.clone());
         if !existing_ids.contains(&value) {
             existing_ids.push(value);
         }
         store.set("ids", Value::Array(existing_ids));
     }
-    return Ok(account.apple_id.clone());
+    Ok(account.apple_id.clone())
 }
 
 #[tauri::command]
@@ -70,7 +70,7 @@ pub async fn login_stored_pass(
     let mut account_guard = cell.lock().unwrap();
     *account_guard = Some(account.clone());
 
-    return Ok(account.apple_id.clone());
+    Ok(account.apple_id.clone())
 }
 
 #[tauri::command]
@@ -88,8 +88,8 @@ pub fn delete_account(handle: AppHandle, email: String) -> Result<(), String> {
         .unwrap_or_else(|| Value::Array(vec![]))
         .as_array()
         .cloned()
-        .unwrap_or_else(|| vec![]);
-    existing_ids.retain(|v| v.as_str().map_or(true, |s| s != email));
+        .unwrap_or_else(std::vec::Vec::new);
+    existing_ids.retain(|v| v.as_str().is_none_or(|s| s != email));
     store.set("ids", Value::Array(existing_ids));
     Ok(())
 }
@@ -121,7 +121,7 @@ pub fn get_account() -> Result<Arc<AppleAccount>, String> {
         }
     }
 
-    return Err("Not logged in".to_string());
+    Err("Not logged in".to_string())
 }
 
 pub async fn get_developer_session() -> Result<DeveloperSession, String> {
