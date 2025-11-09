@@ -18,7 +18,10 @@ Install SideStore (or other apps) and import your pairing file with ease
 
 ## How to use
 
-- Install usbmuxd for your platform. (macOS: included. Windows: [iTunes](https://apple.co/ms). Linux: install and enable usbmuxd via your package manager.)
+- Install usbmuxd for your platform
+  - Windows: [iTunes](https://apple.co/ms)
+  - macOS: Included
+  - Linux: Potentially included, if not install via your package manager
 - Install the latest version for your platform from the [releases](https://github.com/nab138/iloader/releases)
 - Plug in your iDevice to your computer
 - Open the app
