@@ -8,9 +8,7 @@ use idevice::{
 use serde::Serialize;
 use tauri::State;
 
-use crate::device::{
-    get_provider, get_provider_from_connection, get_udid, DeviceInfo, DeviceInfoMutex,
-};
+use crate::device::{get_provider, get_provider_from_connection, DeviceInfo, DeviceInfoMutex};
 
 const PAIRING_APPS: &[(&str, &str)] = &[
     ("SideStore", "ALTPairingFile.mobiledevicepairing"),
@@ -28,16 +26,16 @@ async fn pairing_file(
     device: DeviceInfo,
     usbmuxd: &mut UsbmuxdConnection,
 ) -> Result<PairingFile, String> {
-    let udid = get_udid(&device, usbmuxd).await?;
+    let provider = get_provider(&device).await?;
 
-    let mut pairing_file = usbmuxd.get_pair_record(&udid).await.map_err(|e| {
+    let mut pairing_file = usbmuxd.get_pair_record(&provider.udid).await.map_err(|e| {
         format!(
             "Failed to get pairing record for device {}: {}",
             device.name, e
         )
     })?;
 
-    pairing_file.udid = Some(udid);
+    pairing_file.udid = Some(provider.udid.clone());
 
     Ok(pairing_file)
 }

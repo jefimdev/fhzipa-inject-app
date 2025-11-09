@@ -109,29 +109,3 @@ pub async fn get_provider_from_connection(
     let provider = device.to_provider(UsbmuxdAddr::from_env_var().unwrap(), "iloader");
     Ok(provider)
 }
-
-pub async fn get_udid(
-    device: &DeviceInfo,
-    connection: &mut UsbmuxdConnection,
-) -> Result<String, String> {
-    let provider = get_provider_from_connection(device, connection).await?;
-    let mut lockdown_client = LockdownClient::connect(&provider).await.map_err(|e| {
-        format!(
-            "Unable to connect to lockdown for device {}: {:?}",
-            device.name, e
-        )
-    })?;
-    let udid = lockdown_client
-        .get_value(Some("UniqueDeviceID"), None)
-        .await
-        .map_err(|e| format!("Failed to get UDID for device {}: {:?}", device.name, e))?
-        .as_string()
-        .ok_or_else(|| {
-            format!(
-                "Failed to convert UDID to string for device {}",
-                device.name
-            )
-        })?
-        .to_string();
-    Ok(udid)
-}
