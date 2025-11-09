@@ -13,20 +13,15 @@ export async function checkForUpdates() {
     )
       return;
 
-    let downloaded = 0;
-    let contentLength: number | undefined = 0;
-
     let promise = update.downloadAndInstall((event) => {
       switch (event.event) {
         case "Started":
-          contentLength = event.data.contentLength;
-          console.log(`started downloading ${event.data.contentLength} bytes`);
+          console.log("Started download");
           break;
         case "Progress":
-          downloaded += event.data.chunkLength;
           break;
         case "Finished":
-          console.log("download finished");
+          console.log("Download finished");
           break;
       }
     });
