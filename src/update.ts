@@ -1,6 +1,7 @@
 import { check } from "@tauri-apps/plugin-updater";
 import { ask } from "@tauri-apps/plugin-dialog";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { toast } from "sonner";
 
 export async function checkForUpdates() {
   const update = await check();
@@ -15,7 +16,7 @@ export async function checkForUpdates() {
     let downloaded = 0;
     let contentLength: number | undefined = 0;
 
-    await update.downloadAndInstall((event) => {
+    let promise = update.downloadAndInstall((event) => {
       switch (event.event) {
         case "Started":
           contentLength = event.data.contentLength;
@@ -23,7 +24,6 @@ export async function checkForUpdates() {
           break;
         case "Progress":
           downloaded += event.data.chunkLength;
-          console.log(`downloaded ${downloaded} from ${contentLength}`);
           break;
         case "Finished":
           console.log("download finished");
@@ -31,6 +31,14 @@ export async function checkForUpdates() {
       }
     });
 
-    await relaunch();
+    promise.then(async () => {
+      await relaunch();
+    });
+
+    toast.promise(promise, {
+      loading: "Updating...",
+      success: "Update downloaded! Restarting app...",
+      error: (e) => `Failed to download update: ${e}`,
+    });
   }
 }
