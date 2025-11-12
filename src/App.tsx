@@ -220,7 +220,7 @@ function App() {
               Settings
             </button>
           </div>
-        </div>
+        </GlassCard>
       </div>
       {operationState && (
         <OperationView
