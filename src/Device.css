@@ -1,14 +1,21 @@
 .select-device {
-  margin-left: 1em;
-  padding-left: 1em;
-  border-left: 1px solid #00000060;
-  text-decoration: underline;
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  text-decoration: none;
   cursor: pointer;
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.select-device:hover {
+  color: #fff;
 }
 
 .device-card {
-  width: fit-content;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.75rem;
 }

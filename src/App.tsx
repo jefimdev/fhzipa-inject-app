@@ -23,6 +23,7 @@ import { useStore } from "./StoreContext";
 import { getVersion } from "@tauri-apps/api/app";
 import { checkForUpdates } from "./update";
 import logo from "./iloader.svg";
+import { GlassCard } from "./components/GlassCard";
 
 function App() {
   const [operationState, setOperationState] = useState<OperationState | null>(
@@ -124,16 +125,16 @@ function App() {
       </h1>
       <h4>Version {version}</h4>
       <div className="cards-container">
-        <div className="card-dark">
+        <GlassCard>
           <AppleID loggedInAs={loggedInAs} setLoggedInAs={setLoggedInAs} />
-        </div>
-        <div className="card-dark">
+        </GlassCard>
+        <GlassCard>
           <Device
             selectedDevice={selectedDevice}
             setSelectedDevice={setSelectedDevice}
           />
-        </div>
-        <div className="card-dark buttons-container">
+        </GlassCard>
+        <GlassCard className="buttons-container">
           <h2>Actions</h2>
           <div className="buttons">
             <button

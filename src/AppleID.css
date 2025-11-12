@@ -1,82 +1,98 @@
 .credentials-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1em;
+  align-items: stretch;
+  gap: 1.1rem;
+  width: 100%;
 }
 
 .credentials {
-  min-width: 30%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1em;
+  gap: 0.85rem;
 }
 
 .credentials button,
 .credentials input,
 .credentials .save-credentials {
   width: 100%;
-  box-sizing: border-box;
 }
 
 .credentials .save-credentials {
   margin: 0;
-  padding: 0;
+  padding: 0.25rem 0;
   display: flex;
-  align-items: baseline;
-  justify-content: left;
-  gap: 0.5em;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
 .save-credentials input {
   width: fit-content;
+  accent-color: var(--accent-secondary);
 }
 
 .logged-in-as {
-  width: fit-content;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
 }
 
 .sign-out {
-  margin-left: 1em;
-  padding-left: 1em;
-  border-left: 1px solid #00000060;
-  text-decoration: underline;
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  color: var(--accent-primary);
   cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sign-out:hover {
+  color: #fff;
 }
 
 .credentials h3 {
-  margin-bottom: 0;
+  margin-bottom: 0.25em;
   margin-top: 1.5em;
 }
 
 .stored-ids {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .stored-container {
-  width: fit-content;
+  width: 100%;
 }
 
 .stored {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 0.2em 0;
-  border-bottom: 1px solid #00000060;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .add-account {
-  text-decoration: underline;
+  text-decoration: none;
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  padding-bottom: 0;
+  padding: 0.6rem 0 0;
   border-bottom: none;
-  padding-top: 0.4em;
+  color: var(--accent-secondary);
+  font-weight: 600;
+}
+
+.add-account:hover {
+  color: #fff;
 }
