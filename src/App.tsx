@@ -170,15 +170,119 @@ function App() {
   }, [platform, ensureSelectedDevice, ensuredLoggedIn]);
 
   return (
-    <main className="workspace">
-      <header className="workspace-header">
-        <div className="header-left">
-          <div className="title-block">
-            <img src={logo} alt="iloader logo" className="logo" />
-            <div>
-              <h1 className="title">iloader</h1>
-              <p className="subtitle">Device tools</p>
-            </div>
+    <main className="container">
+      <h1 className="title">
+        <img src={logo} alt="iloader logo" className="logo" />
+        iloader
+      </h1>
+      <h4>Version {version}</h4>
+      <div className="cards-container">
+        <div className="card-dark">
+          <AppleID loggedInAs={loggedInAs} setLoggedInAs={setLoggedInAs} />
+        </div>
+        <div className="card-dark">
+          <Device
+            selectedDevice={selectedDevice}
+            setSelectedDevice={setSelectedDevice}
+          />
+        </div>
+        <div className="card-dark buttons-container">
+          <h2>Actions</h2>
+          <div className="buttons">
+            <button
+              onClick={() => {
+                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                startOperation(installSideStoreOperation, {
+                  nightly: false,
+                  liveContainer: false,
+                  revokeCert,
+                });
+              }}
+            >
+              Install SideStore
+            </button>
+            <button
+              onClick={() => {
+                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                startOperation(installSideStoreOperation, {
+                  nightly: true,
+                  revokeCert,
+                  liveContainer: false,
+                });
+              }}
+            >
+              Install SideStore (Nightly)
+            </button>
+            <button
+              onClick={() => {
+                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                startOperation(installSideStoreOperation, {
+                  nightly: false,
+                  liveContainer: true,
+                  revokeCert,
+                });
+              }}
+            >
+              Install LiveContainer+SideStore
+            </button>
+            <button
+              onClick={() => {
+                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                startOperation(installSideStoreOperation, {
+                  nightly: true,
+                  liveContainer: true,
+                  revokeCert,
+                });
+              }}
+            >
+              Install LiveContainer+SideStore (Nightly)
+            </button>
+            <button
+              onClick={async () => {
+                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                let path = await open({
+                  multiple: false,
+                  filters: [{ name: "IPA Files", extensions: ["ipa"] }],
+                });
+                if (!path) return;
+                startOperation(sideloadOperation, {
+                  appPath: path as string,
+                });
+              }}
+            >
+              Install Other
+            </button>
+            <button
+              onClick={() => {
+                if (!ensureSelectedDevice()) return;
+                setOpenModal("pairing");
+              }}
+            >
+              Manage Pairing File
+            </button>
+            <button
+              onClick={() => {
+                if (!ensuredLoggedIn()) return;
+                setOpenModal("certificates");
+              }}
+            >
+              Manage Certificates
+            </button>
+            <button
+              onClick={() => {
+                if (!ensuredLoggedIn()) return;
+                setOpenModal("appids");
+              }}
+            >
+              Manage App IDs
+            </button>
+            <button
+              onClick={() => {
+                setOpenModal("settings");
+              }}
+            >
+              Settings
+            </button>
           </div>
           <span className="version-pill">Version {version}</span>
         </div>
