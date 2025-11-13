@@ -37,24 +37,35 @@
 .logged-in-as {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
   font-weight: 600;
 }
 
 .sign-out {
-  margin-left: 1rem;
-  padding-left: 1rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  text-decoration: none;
-  color: var(--accent-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  margin-left: 0;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
   cursor: pointer;
   transition: color 0.2s ease;
+  font-size: 0.9rem;
+  line-height: 1.2;
 }
 
 .sign-out:hover {
-  color: #fff;
+  color: var(--accent-primary);
+}
+
+.logged-in-as .sign-out {
+  margin-left: auto;
 }
 
 .credentials h3 {
@@ -78,6 +89,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
   padding: 0.6rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }

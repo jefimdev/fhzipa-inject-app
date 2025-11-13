@@ -2,6 +2,10 @@ import "./Settings.css";
 import { useStore } from "../StoreContext";
 import { useState } from "react";
 
+type SettingsProps = {
+  showHeading?: boolean;
+};
+
 let anisetteServers = [
   ["ani.sidestore.io", "SideStore (.io)"],
   ["ani.sidestore.app", "SideStore (.app)"],
@@ -10,7 +14,7 @@ let anisetteServers = [
   ["anisette.seasi.dev", "SeasiDev"],
   ["ani.xu30.top", "SteX"],
 ];
-export const Settings = () => {
+export const Settings = ({ showHeading = true }: SettingsProps) => {
   const [anisetteServer, setAnisetteServer] = useStore<string>(
     "anisetteServer",
     "ani.sidestore.io"
@@ -28,7 +32,7 @@ export const Settings = () => {
 
   return (
     <>
-      <h2>Settings</h2>
+      {showHeading && <h2>Settings</h2>}
       <div className="settings-container">
         <div>
           <label className="settings-label">

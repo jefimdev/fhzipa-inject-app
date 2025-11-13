@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import { AppleID } from "./AppleID";
 import { Device, DeviceInfo } from "./Device";
@@ -32,10 +32,12 @@ function App() {
   const [loggedInAs, setLoggedInAs] = useState<string | null>(null);
   const [selectedDevice, setSelectedDevice] = useState<DeviceInfo | null>(null);
   const [openModal, setOpenModal] = useState<
-    null | "certificates" | "appids" | "pairing" | "settings"
+    null | "certificates" | "appids" | "pairing"
   >(null);
   const [version, setVersion] = useState<string>("");
   const [revokeCert] = useStore<boolean>("revokeCert", true);
+  const [platform, setPlatform] = useState<"mac" | "windows" | "linux">("windows");
+  const refreshDevicesRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const fetchVersion = async () => {
@@ -48,6 +50,27 @@ function App() {
   useEffect(() => {
     checkForUpdates();
   }, []);
+
+  useEffect(() => {
+    if (typeof navigator === "undefined") return;
+    const ua = navigator.userAgent || "";
+    if (ua.includes("Mac")) {
+      setPlatform("mac");
+    } else if (ua.includes("Win")) {
+      setPlatform("windows");
+    } else if (ua.includes("Linux")) {
+      setPlatform("linux");
+    }
+  }, []);
+
+  const shortcutLabel = useCallback(
+    (mac: string, windows: string, linux?: string) => {
+      if (platform === "mac") return mac;
+      if (platform === "linux") return linux ?? windows;
+      return windows;
+    },
+    [platform]
+  );
 
   const startOperation = useCallback(
     async (
@@ -117,117 +140,218 @@ function App() {
     return false;
   }, [selectedDevice]);
 
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      const primaryPressed =
+        platform === "mac" ? event.metaKey : event.ctrlKey;
+      if (!primaryPressed) return;
+
+      if (!event.shiftKey && key === "p") {
+        event.preventDefault();
+        if (!ensureSelectedDevice()) return;
+        setOpenModal("pairing");
+      } else if (event.shiftKey && key === "c") {
+        event.preventDefault();
+        if (!ensuredLoggedIn()) return;
+        setOpenModal("certificates");
+      } else if (event.shiftKey && key === "a") {
+        event.preventDefault();
+        if (!ensuredLoggedIn()) return;
+        setOpenModal("appids");
+      } else if (!event.shiftKey && key === "r") {
+        event.preventDefault();
+        refreshDevicesRef.current?.();
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [platform, ensureSelectedDevice, ensuredLoggedIn]);
+
   return (
-    <main className="container">
-      <h1 className="title">
-        <img src={logo} alt="iloader logo" className="logo" />
-        iloader
-      </h1>
-      <h4>Version {version}</h4>
-      <div className="cards-container">
-        <GlassCard>
-          <AppleID loggedInAs={loggedInAs} setLoggedInAs={setLoggedInAs} />
-        </GlassCard>
-        <GlassCard>
-          <Device
-            selectedDevice={selectedDevice}
-            setSelectedDevice={setSelectedDevice}
-          />
-        </GlassCard>
-        <GlassCard className="buttons-container">
-          <h2>Actions</h2>
-          <div className="buttons">
-            <button
-              onClick={() => {
-                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
-                startOperation(installSideStoreOperation, {
-                  nightly: false,
-                  liveContainer: false,
-                  revokeCert,
-                });
-              }}
-            >
-              Install SideStore (Stable)
-            </button>
-            <button
-              onClick={() => {
-                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
-                startOperation(installSideStoreOperation, {
-                  nightly: true,
-                  revokeCert,
-                  liveContainer: false,
-                });
-              }}
-            >
-              Install SideStore (Nightly)
-            </button>
-            <button
-              onClick={() => {
-                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
-                startOperation(installSideStoreOperation, {
-                  nightly: true,
-                  liveContainer: true,
-                  revokeCert,
-                });
-              }}
-            >
-              Install LiveContainer+SideStore
-            </button>
-            <button
-              onClick={async () => {
-                if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
-                let path = await open({
-                  multiple: false,
-                  filters: [{ name: "IPA Files", extensions: ["ipa"] }],
-                });
-                if (!path) return;
-                startOperation(sideloadOperation, {
-                  appPath: path as string,
-                });
-              }}
-            >
-              Install Other
-            </button>
-            <button
-              onClick={() => {
-                if (!ensureSelectedDevice()) return;
-                setOpenModal("pairing");
-              }}
-            >
-              Manage Pairing File
-            </button>
-            <button
-              onClick={() => {
-                if (!ensuredLoggedIn()) return;
-                setOpenModal("certificates");
-              }}
-            >
-              Manage Certificates
-            </button>
-            <button
-              onClick={() => {
-                if (!ensuredLoggedIn()) return;
-                setOpenModal("appids");
-              }}
-            >
-              Manage App IDs
-            </button>
-            <button
-              onClick={() => {
-                setOpenModal("settings");
-              }}
-            >
-              Settings
-            </button>
+    <main className="workspace">
+      <header className="workspace-header">
+        <div className="header-left">
+          <div className="title-block">
+            <img src={logo} alt="iloader logo" className="logo" />
+            <div>
+              <h1 className="title">iloader</h1>
+              <p className="subtitle">Device tools</p>
+            </div>
           </div>
-        </GlassCard>
+          <span className="version-pill">Version {version}</span>
+        </div>
+        <div className="header-actions">
+          <button
+            className="toolbar-button"
+            onClick={() =>
+              window.open("https://github.com/nab138/iloader", "_blank", "noreferrer")
+            }
+          >
+            GitHub
+          </button>
+        </div>
+      </header>
+      <div className="workspace-body">
+        <aside className="workspace-sidebar">
+          <section className="workspace-section">
+            <p className="section-label">Account</p>
+            <GlassCard className="panel">
+              <AppleID loggedInAs={loggedInAs} setLoggedInAs={setLoggedInAs} />
+            </GlassCard>
+          </section>
+          <section className="workspace-section">
+            <p className="section-label">Management</p>
+            <div className="workspace-list">
+              <button
+                className="workspace-list-item"
+                onClick={() => {
+                  if (!ensureSelectedDevice()) return;
+                  setOpenModal("pairing");
+                }}
+              >
+                Manage Pairing File{" "}
+                <span aria-hidden="true">
+                  {shortcutLabel("⌘P", "Ctrl+P")}
+                </span>
+              </button>
+              <button
+                className="workspace-list-item"
+                onClick={() => {
+                  refreshDevicesRef.current?.();
+                }}
+              >
+                Refresh Devices{" "}
+                <span aria-hidden="true">
+                  {shortcutLabel("⌘R", "Ctrl+R")}
+                </span>
+              </button>
+              <button
+                className="workspace-list-item"
+                onClick={() => {
+                  if (!ensuredLoggedIn()) return;
+                  setOpenModal("certificates");
+                }}
+              >
+                Certificates{" "}
+                <span aria-hidden="true">
+                  {shortcutLabel("⌘⇧C", "Ctrl+Shift+C")}
+                </span>
+              </button>
+              <button
+                className="workspace-list-item"
+                onClick={() => {
+                  if (!ensuredLoggedIn()) return;
+                  setOpenModal("appids");
+                }}
+              >
+                App IDs{" "}
+                <span aria-hidden="true">
+                  {shortcutLabel("⌘⇧A", "Ctrl+Shift+A")}
+                </span>
+              </button>
+            </div>
+          </section>
+        </aside>
+        <section className="workspace-content">
+          <section className="workspace-section">
+            <div className="section-header">
+              <p className="section-label">Devices</p>
+              <span className="section-hint">
+                {selectedDevice ? `Active: ${selectedDevice.name}` : "Select a device"}
+              </span>
+            </div>
+            <GlassCard className="panel">
+              <Device
+                selectedDevice={selectedDevice}
+                setSelectedDevice={setSelectedDevice}
+                registerRefresh={(fn) => {
+                  refreshDevicesRef.current = fn ?? null;
+                }}
+              />
+            </GlassCard>
+          </section>
+          <section className="workspace-section">
+            <div className="section-header">
+              <p className="section-label">Installers</p>
+              <span className="section-hint">Choose a build</span>
+            </div>
+            <GlassCard className="panel">
+              <div className="action-grid">
+                <button
+                  onClick={() => {
+                    if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                    startOperation(installSideStoreOperation, {
+                      nightly: false,
+                      liveContainer: false,
+                      revokeCert,
+                    });
+                  }}
+                >
+                  SideStore (Stable)
+                </button>
+                <button
+                  onClick={() => {
+                    if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                    startOperation(installSideStoreOperation, {
+                      nightly: true,
+                      revokeCert,
+                      liveContainer: false,
+                    });
+                  }}
+                >
+                  SideStore (Nightly)
+                </button>
+                <button
+                  onClick={() => {
+                    if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                    startOperation(installSideStoreOperation, {
+                      nightly: true,
+                      liveContainer: true,
+                      revokeCert,
+                    });
+                  }}
+                >
+                  LiveContainer + SideStore
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
+                    let path = await open({
+                      multiple: false,
+                      filters: [{ name: "IPA Files", extensions: ["ipa"] }],
+                    });
+                    if (!path) return;
+                    startOperation(sideloadOperation, {
+                      appPath: path as string,
+                    });
+                  }}
+                >
+                  Import IPA
+                </button>
+              </div>
+            </GlassCard>
+          </section>
+          <section className="workspace-section">
+            <p className="section-label">Settings</p>
+            <GlassCard className="panel settings-panel">
+              <Settings showHeading={false} />
+            </GlassCard>
+          </section>
+            {operationState && (
+              <section className="workspace-section">
+                <p className="section-label">Activity</p>
+                <GlassCard className="panel">
+                  <OperationView
+                  operationState={operationState}
+                  closeMenu={() => setOperationState(null)}
+                />
+              </GlassCard>
+            </section>
+          )}
+        </section>
       </div>
-      {operationState && (
-        <OperationView
-          operationState={operationState}
-          closeMenu={() => setOperationState(null)}
-        />
-      )}
       <Modal
         isOpen={openModal === "certificates"}
         close={() => setOpenModal(null)}
@@ -236,9 +360,6 @@ function App() {
       </Modal>
       <Modal isOpen={openModal === "appids"} close={() => setOpenModal(null)}>
         <AppIds />
-      </Modal>
-      <Modal isOpen={openModal === "settings"} close={() => setOpenModal(null)}>
-        <Settings />
       </Modal>
       <Modal isOpen={openModal === "pairing"} close={() => setOpenModal(null)}>
         <Pairing />
