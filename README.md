@@ -1,4 +1,7 @@
-<img align="left" width="120" height="120" src="/app-icon.png">
+<picture align="left" >
+  <source media="(prefers-color-scheme: dark)" srcset="/iloader.svg">
+  <img align="left" width="90" height="90" src="/iloader-dark.svg">
+</picture>
 
 <div id="user-content-toc">
   <ul style="list-style: none;">
@@ -14,6 +17,8 @@
 
 Install SideStore (or other apps) and import your pairing file with ease
 
+<img width="1918" height="998" alt="iloader0" src="https://github.com/user-attachments/assets/93cd135d-6d89-46ee-9b9f-12c596806911" />
+
 ## How to use
 
 - Install usbmuxd for your platform
@@ -21,6 +26,7 @@ Install SideStore (or other apps) and import your pairing file with ease
   - macOS: Included
   - Linux: Potentially included, if not, install via your package manager
 - Install the latest version for your platform from the [releases](https://github.com/nab138/iloader/releases)
+  - macOS: This app is unsigned and macOS may say it is "broken", you need to run `sudo xattr -c ./Applications/iloader.app` to use it
 - Plug in your iDevice to your computer
 - Open the app
 - Sign into your Apple ID
