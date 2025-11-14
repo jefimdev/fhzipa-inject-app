@@ -3,7 +3,8 @@ import "./App.css";
 import { AppleID } from "./AppleID";
 import { Device, DeviceInfo } from "./Device";
 import { invoke } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
+import { open as openFileDialog } from "@tauri-apps/plugin-dialog";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   sideloadOperation,
   installSideStoreOperation,
@@ -185,9 +186,14 @@ function App() {
         <div className="header-actions">
           <button
             className="toolbar-button"
-            onClick={() =>
-              window.open("https://github.com/nab138/iloader", "_blank", "noreferrer")
-            }
+            onClick={async () => {
+              try {
+                await openUrl("https://github.com/nab138/iloader");
+              } catch (error) {
+                console.error("Failed to open GitHub link", error);
+                toast.error("Unable to open GitHub link");
+              }
+            }}
           >
             GitHub
           </button>
@@ -335,7 +341,7 @@ function App() {
                 <button
                   onClick={async () => {
                     if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
-                    let path = await open({
+                    let path = await openFileDialog({
                       multiple: false,
                       filters: [{ name: "IPA Files", extensions: ["ipa"] }],
                     });
