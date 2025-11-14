@@ -1,12 +1,6 @@
-<!--
-Source - https://stackoverflow.com/a
-Posted by Giorgos Xou, modified by community. See post 'Timeline' for change history
-Retrieved 2025-11-14, License - CC BY-SA 4.0
--->
-
-<picture>
+<picture align="left" >
   <source media="(prefers-color-scheme: dark)" srcset="/iloader.svg">
-  <img align="left" width="120" height="120" src="/iloader-dark.svg">
+  <img align="left" width="90" height="90" src="/iloader-dark.svg">
 </picture>
 
 <div id="user-content-toc">
