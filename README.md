@@ -14,8 +14,6 @@
 
 Install SideStore (or other apps) and import your pairing file with ease
 
-<img width="2857" height="1642" alt="iloader0" src="https://github.com/user-attachments/assets/d19630a2-be06-466b-a27d-8d9cbde37e60" />
-
 ## How to use
 
 - Install usbmuxd for your platform
