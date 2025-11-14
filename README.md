@@ -5,7 +5,7 @@ Retrieved 2025-11-14, License - CC BY-SA 4.0
 -->
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="/iloader.svg" width="100%" height="100">
+  <source media="(prefers-color-scheme: dark)" srcset="/iloader.svg">
   <img align="left" width="120" height="120" src="/iloader-dark.svg">
 </picture>
 
