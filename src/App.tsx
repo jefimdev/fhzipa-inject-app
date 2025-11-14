@@ -37,7 +37,9 @@ function App() {
   >(null);
   const [version, setVersion] = useState<string>("");
   const [revokeCert] = useStore<boolean>("revokeCert", true);
-  const [platform, setPlatform] = useState<"mac" | "windows" | "linux">("windows");
+  const [platform, setPlatform] = useState<"mac" | "windows" | "linux">(
+    "windows"
+  );
   const refreshDevicesRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
@@ -144,8 +146,7 @@ function App() {
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
-      const primaryPressed =
-        platform === "mac" ? event.metaKey : event.ctrlKey;
+      const primaryPressed = platform === "mac" ? event.metaKey : event.ctrlKey;
       if (!primaryPressed) return;
 
       if (!event.shiftKey && key === "p") {
@@ -223,9 +224,7 @@ function App() {
                 }}
               >
                 Manage Pairing File{" "}
-                <span aria-hidden="true">
-                  {shortcutLabel("⌘P", "Ctrl+P")}
-                </span>
+                <span aria-hidden="true">{shortcutLabel("⌘P", "Ctrl+P")}</span>
               </button>
               <button
                 className="workspace-list-item"
@@ -234,9 +233,7 @@ function App() {
                 }}
               >
                 Refresh Devices{" "}
-                <span aria-hidden="true">
-                  {shortcutLabel("⌘R", "Ctrl+R")}
-                </span>
+                <span aria-hidden="true">{shortcutLabel("⌘R", "Ctrl+R")}</span>
               </button>
               <button
                 className="workspace-list-item"
@@ -270,7 +267,9 @@ function App() {
             <div className="section-header">
               <p className="section-label">Devices</p>
               <span className="section-hint">
-                {selectedDevice ? `Active: ${selectedDevice.name}` : "Select a device"}
+                {selectedDevice
+                  ? `Active: ${selectedDevice.name}`
+                  : "Select a device"}
               </span>
             </div>
             <GlassCard className="panel">

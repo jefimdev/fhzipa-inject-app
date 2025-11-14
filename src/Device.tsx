@@ -90,7 +90,9 @@ export const Device = ({
                   {device.connectionType}
                 </span>
               </div>
-              {isActive && <span className="device-selected-pill">Selected</span>}
+              {isActive && (
+                <span className="device-selected-pill">Selected</span>
+              )}
             </button>
           );
         })}

@@ -21,7 +21,7 @@ Install SideStore (or other apps) and import your pairing file with ease
 - Install usbmuxd for your platform
   - Windows: [iTunes](https://apple.co/ms)
   - macOS: Included
-  - Linux: Potentially included, if not install via your package manager
+  - Linux: Potentially included, if not, install via your package manager
 - Install the latest version for your platform from the [releases](https://github.com/nab138/iloader/releases)
 - Plug in your iDevice to your computer
 - Open the app
@@ -30,16 +30,24 @@ Install SideStore (or other apps) and import your pairing file with ease
 
 ## Features
 
-- Install SideStore and place pairing file automatically
+- Install SideStore (or LiveContainer + SideStore) and place pairing file automatically
 - Install other IPAs
 - Manage pairing files in common apps like StikDebug, SideStore, Protokolle, etc
 - See and revoke development certificates
 - See App IDs
+- Save multiple apple ID credentials
 
 ## Credits
 
 - Icon made by [Transistor](https://github.com/transistor-exe)
-- [idevice](https://github.com/jkcoxson/idevice) for communicating with iOS devices
+- UI improved by [StephenDev0](https://github.com/StephenDev0)
+- [idevice](https://github.com/jkcoxson/idevice) by [jkcoxson](https://github.com/jkcoxson) for communicating with iOS devices
 - [isideload](https://github.com/nab138/isideload) for installing apps
 - [idevice_pair](https://github.com/jkcoxson/idevice_pair) was used as a reference for pairing file management
-- App made in [tauri](https://tauri.app) 
+- App made with [tauri](https://tauri.app)
+
+## Future Plans
+
+- Set a "default" account to automatically log into
+- Import SideStore certificates/account info automatically
+- Mount DDI and open sidestore after installation
