@@ -1,4 +1,13 @@
-<img align="left" width="120" height="120" src="/app-icon.png">
+<!--
+Source - https://stackoverflow.com/a
+Posted by Giorgos Xou, modified by community. See post 'Timeline' for change history
+Retrieved 2025-11-14, License - CC BY-SA 4.0
+-->
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="/iloader.svg" width="100%" height="100">
+  <img align="left" width="120" height="120" src="/iloader-dark.svg">
+</picture>
 
 <div id="user-content-toc">
   <ul style="list-style: none;">
@@ -21,6 +30,7 @@ Install SideStore (or other apps) and import your pairing file with ease
   - macOS: Included
   - Linux: Potentially included, if not, install via your package manager
 - Install the latest version for your platform from the [releases](https://github.com/nab138/iloader/releases)
+  - macOS: This app is unsigned and macOS may say it is "broken", you need to run `sudo xattr -c ./Applications/iloader.app` to use it
 - Plug in your iDevice to your computer
 - Open the app
 - Sign into your Apple ID
