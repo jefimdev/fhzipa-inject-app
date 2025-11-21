@@ -17,6 +17,8 @@
 
 Install SideStore (or other apps) and import your pairing file with ease
 
+Currently, due to a bug, iloader can't correctly allocate keychain access entitlements for LiveContainer. The Multiple LiveContainers feature will not work and apps will all share keychain data (for example, Google account credentials). To avoid this, install SideStore first, then install LiveContainer through SideStore. This will be fixed in a future update.
+
 <img width="1918" height="998" alt="iloader0" src="https://github.com/user-attachments/assets/93cd135d-6d89-46ee-9b9f-12c596806911" />
 
 ## How to use
