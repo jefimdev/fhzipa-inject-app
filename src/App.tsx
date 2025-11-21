@@ -8,6 +8,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   sideloadOperation,
   installSideStoreOperation,
+  installLiveContainerOperation,
   Operation,
   OperationState,
   OperationUpdate,
@@ -312,7 +313,7 @@ function App() {
                 <button
                   onClick={() => {
                     if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
-                    startOperation(installSideStoreOperation, {
+                    startOperation(installLiveContainerOperation, {
                       nightly: false,
                       liveContainer: true,
                     });
@@ -323,7 +324,7 @@ function App() {
                 <button
                   onClick={() => {
                     if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
-                    startOperation(installSideStoreOperation, {
+                    startOperation(installLiveContainerOperation, {
                       nightly: true,
                       liveContainer: true,
                     });

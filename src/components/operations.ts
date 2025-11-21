@@ -55,6 +55,28 @@ export const installSideStoreOperation: Operation = {
   ],
 };
 
+export const installLiveContainerOperation: Operation = {
+  id: "install_sidestore",
+  title: "Installing LiveContainer+SideStore",
+  successTitle: "LiveContainer+SideStore Installed!",
+  successMessage:
+    'To complete the installation, open LiveContainer, choose settings, and click "Import Certificate From SideStore." Then, choose apps, click the sidestore icon, and refresh LiveContainer.',
+  steps: [
+    {
+      id: "download",
+      title: "Download SideStore+LiveContainer",
+    },
+    {
+      id: "install",
+      title: "Sign & Install SideStore+LiveContainer",
+    },
+    {
+      id: "pairing",
+      title: "Place Pairing File",
+    },
+  ],
+};
+
 export const sideloadOperation = {
   id: "sideload",
   title: "Installing App",
