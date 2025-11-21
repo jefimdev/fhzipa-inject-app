@@ -38,8 +38,7 @@ export const installSideStoreOperation: Operation = {
   id: "install_sidestore",
   title: "Installing SideStore",
   successTitle: "SideStore Installed!",
-  successMessage:
-    "Open SideStore and refresh it to complete the installation! SideStore will expire early if you skip this step.",
+  successMessage: "Open SideStore and refresh it to complete the installation!",
   steps: [
     {
       id: "download",

@@ -13,7 +13,7 @@ pub async fn sideload(
     handle: AppHandle,
     device_state: State<'_, DeviceInfoMutex>,
     app_path: String,
-    revoke_cert: bool,
+    is_livecontainer: bool,
 ) -> Result<(), String> {
     let device = {
         let device_lock = device_state.lock().unwrap();
@@ -33,7 +33,7 @@ pub async fn sideload(
                 .app_data_dir()
                 .map_err(|e| format!("Failed to get app data dir: {:?}", e))?,
         )
-        .set_revoke_cert(revoke_cert);
+        .set_force_sidestore_app_group(is_livecontainer);
 
     let dev_session = get_developer_session().await.map_err(|e| e.to_string())?;
 
@@ -82,7 +82,6 @@ pub async fn install_sidestore_operation(
     device_state: State<'_, DeviceInfoMutex>,
     nightly: bool,
     live_container: bool,
-    revoke_cert: bool,
 ) -> Result<(), String> {
     let op = Operation::new("install_sidestore".to_string(), &window);
     op.start("download")?;
@@ -125,7 +124,7 @@ pub async fn install_sidestore_operation(
             handle,
             device_state,
             dest.to_string_lossy().to_string(),
-            revoke_cert,
+            live_container,
         )
         .await,
     )?;

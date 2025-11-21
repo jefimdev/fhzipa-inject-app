@@ -20,7 +20,6 @@ import { Certificates } from "./pages/Certificates";
 import { AppIds } from "./pages/AppIds";
 import { Settings } from "./pages/Settings";
 import { Pairing } from "./pages/Pairing";
-import { useStore } from "./StoreContext";
 import { getVersion } from "@tauri-apps/api/app";
 import { checkForUpdates } from "./update";
 import logo from "./iloader.svg";
@@ -36,7 +35,6 @@ function App() {
     null | "certificates" | "appids" | "pairing"
   >(null);
   const [version, setVersion] = useState<string>("");
-  const [revokeCert] = useStore<boolean>("revokeCert", true);
   const [platform, setPlatform] = useState<"mac" | "windows" | "linux">(
     "windows"
   );
@@ -295,7 +293,6 @@ function App() {
                     startOperation(installSideStoreOperation, {
                       nightly: false,
                       liveContainer: false,
-                      revokeCert,
                     });
                   }}
                 >
@@ -306,7 +303,6 @@ function App() {
                     if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
                     startOperation(installSideStoreOperation, {
                       nightly: true,
-                      revokeCert,
                       liveContainer: false,
                     });
                   }}
@@ -319,7 +315,6 @@ function App() {
                     startOperation(installSideStoreOperation, {
                       nightly: false,
                       liveContainer: true,
-                      revokeCert,
                     });
                   }}
                 >
@@ -331,7 +326,6 @@ function App() {
                     startOperation(installSideStoreOperation, {
                       nightly: true,
                       liveContainer: true,
-                      revokeCert,
                     });
                   }}
                 >

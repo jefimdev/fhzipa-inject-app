@@ -97,8 +97,6 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
     false
   );
 
-  const [revokeCert, setRevokeCert] = useStore<boolean>("revokeCert", false);
-
   return (
     <>
       {showHeading && <h2>Settings</h2>}
@@ -200,23 +198,6 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
               ref={customInputRef}
             />
           )}
-        </div>
-        <div>
-          <label className="settings-label">
-            Revoke Certificate after installing SideStore:
-            <input
-              type="checkbox"
-              checked={revokeCert}
-              onChange={(e) => {
-                setRevokeCert(e.target.checked);
-              }}
-            />
-          </label>
-          <span className="settings-hint">
-            You must refresh SideStore after installation if you enable this.
-            This avoids the "You already have a current iOS Development
-            certificate" error.
-          </span>
         </div>
         <div>
           <label className="settings-label">

@@ -34,7 +34,7 @@ Install SideStore (or other apps) and import your pairing file with ease
 
 ## Features
 
-- Install SideStore (or LiveContainer + SideStore) and place pairing file automatically
+- Install SideStore (or LiveContainer + SideStore), import certificate and place pairing file automatically
 - Install other IPAs
 - Manage pairing files in common apps like StikDebug, SideStore, Protokolle, etc
 - See and revoke development certificates
@@ -53,5 +53,5 @@ Install SideStore (or other apps) and import your pairing file with ease
 ## Future Plans
 
 - Set a "default" account to automatically log into
-- Import SideStore certificates/account info automatically
+- Import SideStore account info automatically
 - Mount DDI and open sidestore after installation
