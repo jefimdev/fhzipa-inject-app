@@ -28,7 +28,6 @@ Currently, due to a bug, iloader can't correctly allocate keychain access entitl
   - macOS: Included
   - Linux: Potentially included, if not, install via your package manager
 - Install the latest version for your platform from the [releases](https://github.com/nab138/iloader/releases)
-  - macOS: This app is unsigned and macOS may say it is "broken", you need to run `sudo xattr -c /Applications/iloader.app` to use it
 - Plug in your iDevice to your computer
 - Open the app
 - Sign into your Apple ID
