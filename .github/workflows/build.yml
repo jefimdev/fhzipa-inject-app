@@ -87,8 +87,8 @@ jobs:
           bunx rimraf src-tauri/target/x86_64-apple-darwin/release/bundle
           bunx rimraf src-tauri/target/universal-apple-darwin/release/bundle
 
-      - name: Export Apple signing secrets
-        if: matrix.platform == 'macos-latest' && env.HAVE_SIGNING_SECRETS == 'true'
+      - name: Export Apple signing secrets (release only)
+        if: matrix.platform == 'macos-latest' && env.HAVE_SIGNING_SECRETS == 'true' && github.event_name == 'release'
         run: |
           echo "APPLE_CERTIFICATE=${{ secrets.DEV_ID_P12_BASE64 }}" >> $GITHUB_ENV
           echo "APPLE_CERTIFICATE_PASSWORD=${{ secrets.DEV_ID_P12_PASSWORD }}" >> $GITHUB_ENV
@@ -107,8 +107,8 @@ jobs:
           releaseId: ${{ github.event_name == 'release' && github.event.release.id || '' }}
           assetNamePattern: "[name]-[platform]-[arch][ext]"
 
-      - name: Notarize & Staple DMG
-        if: matrix.platform == 'macos-latest' && env.HAVE_NOTARIZE_SECRETS == 'true'
+      - name: Notarize & Staple DMG (release only)
+        if: matrix.platform == 'macos-latest' && env.HAVE_NOTARIZE_SECRETS == 'true' && github.event_name == 'release'
         run: |
           DMG_PATH=$(find src-tauri/target -name "*.dmg" -print -quit)
           if [ -z "$DMG_PATH" ]; then
