@@ -87,24 +87,28 @@ jobs:
           bunx rimraf src-tauri/target/x86_64-apple-darwin/release/bundle
           bunx rimraf src-tauri/target/universal-apple-darwin/release/bundle
 
+      - name: Export Apple signing secrets (release only)
+        if: matrix.platform == 'macos-latest' && env.HAVE_SIGNING_SECRETS == 'true' && github.event_name == 'release'
+        run: |
+          echo "APPLE_CERTIFICATE=${{ secrets.DEV_ID_P12_BASE64 }}" >> $GITHUB_ENV
+          echo "APPLE_CERTIFICATE_PASSWORD=${{ secrets.DEV_ID_P12_PASSWORD }}" >> $GITHUB_ENV
+          echo "APPLE_SIGNING_IDENTITY=${{ secrets.DEV_IDENTITY_NAME }}" >> $GITHUB_ENV
+          echo "APPLE_TEAM_ID=${{ secrets.NOTARIZE_TEAM_ID }}" >> $GITHUB_ENV
+
       - name: Build
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          APPLE_CERTIFICATE: ${{ matrix.platform == 'macos-latest' && env.HAVE_SIGNING_SECRETS == 'true' && secrets.DEV_ID_P12_BASE64 || '' }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ matrix.platform == 'macos-latest' && env.HAVE_SIGNING_SECRETS == 'true' && secrets.DEV_ID_P12_PASSWORD || '' }}
-          APPLE_SIGNING_IDENTITY: ${{ matrix.platform == 'macos-latest' && env.HAVE_SIGNING_SECRETS == 'true' && secrets.DEV_IDENTITY_NAME || '' }}
-          APPLE_TEAM_ID: ${{ matrix.platform == 'macos-latest' && env.HAVE_SIGNING_SECRETS == 'true' && secrets.NOTARIZE_TEAM_ID || '' }}
         with:
           args: ${{ matrix.args }} ${{ github.event_name != 'release' && ' --config src-tauri/ci.conf.json' || '' }}
           includeUpdaterJson: ${{ github.event_name == 'release' }}
           releaseId: ${{ github.event_name == 'release' && github.event.release.id || '' }}
           assetNamePattern: "[name]-[platform]-[arch][ext]"
 
-      - name: Notarize & Staple DMG
-        if: matrix.platform == 'macos-latest' && env.HAVE_NOTARIZE_SECRETS == 'true'
+      - name: Notarize & Staple DMG (release only)
+        if: matrix.platform == 'macos-latest' && env.HAVE_NOTARIZE_SECRETS == 'true' && github.event_name == 'release'
         run: |
           DMG_PATH=$(find src-tauri/target -name "*.dmg" -print -quit)
           if [ -z "$DMG_PATH" ]; then
