@@ -35,13 +35,6 @@ pub async fn sideload(
 
     let dev_session = get_developer_session().await.map_err(|e| e.to_string())?;
 
-    // If the cache stays it causes apps to crash if an expired cert was ever used even if current certs are valid
-    let zsign_cache = PathBuf::from("./.zsign_cache");
-    if zsign_cache.exists() {
-        fs::remove_dir_all(&zsign_cache)
-            .map_err(|e| format!("Failed to remove zsign cache: {}", e))?;
-    }
-
     sideload_app(&provider, &dev_session, app_path.into(), config)
         .await
         .map_err(|e| {
