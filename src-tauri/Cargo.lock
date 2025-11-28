@@ -2140,9 +2140,9 @@ checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "idevice"
-version = "0.1.47"
+version = "0.1.50"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "893625fcbcb100760f15691e634a845e5ec7f5e6eb75acbc3d5d1c5678bd1738"
+checksum = "effc7c8fe1bfa5051717c4dc20c3bcc4828b13009a6c95ff6fc8c3f8ccdf4d43"
 dependencies = [
  "async_zip",
  "base64 0.22.1",
@@ -2180,7 +2180,7 @@ dependencies = [
 
 [[package]]
 name = "iloader"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "futures",
  "idevice",
@@ -2279,9 +2279,9 @@ dependencies = [
 
 [[package]]
 name = "isideload"
-version = "0.1.21"
+version = "0.1.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9032792ef3b2c104ad371fffdb71f445762ca28de77cf20159dcd4b97a4e0770"
+checksum = "75c2cedccf984dab94d668b1822edeff4c97bf36f99cf4d0045a750943b5dbe2"
 dependencies = [
  "hex",
  "idevice",
@@ -2669,9 +2669,9 @@ dependencies = [
 
 [[package]]
 name = "nab138_icloud_auth"
-version = "0.1.5"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2707d665f2ceb5dfc1baf632fd708c6ffba2596f9e63fea054367d1b0e3b7317"
+checksum = "9974d0c323b02010a93eba36368153b8ca3003ac3f7fdd810b025d5ade24edca"
 dependencies = [
  "aes",
  "aes-gcm",
@@ -2697,9 +2697,9 @@ dependencies = [
 
 [[package]]
 name = "nab138_omnisette"
-version = "0.1.3"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "322cfbcadd65524423b56558259aa093287f1d91bba3515a39de0a38b75d3d36"
+checksum = "2be32155e6400d1b8dbec36f197fc71790770b991beee2f81d2f78afc526a861"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5449,18 +5449,17 @@ dependencies = [
 
 [[package]]
 name = "tokio-tungstenite"
-version = "0.27.0"
+version = "0.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "489a59b6730eda1b0171fcfda8b121f4bee2b35cba8645ca35c5f7ba3eb736c1"
+checksum = "212d5dcb2a1ce06d81107c3d0ffa3121fe974b73f068c8282cb1c32328113b6c"
 dependencies = [
  "futures-util",
  "log",
- "rustls 0.23.35",
- "rustls-pki-types",
+ "rustls 0.21.12",
  "tokio",
- "tokio-rustls 0.26.4",
+ "tokio-rustls 0.24.1",
  "tungstenite",
- "webpki-roots 0.26.11",
+ "webpki-roots 0.25.4",
 ]
 
 [[package]]
@@ -5679,20 +5678,21 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "tungstenite"
-version = "0.27.0"
+version = "0.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eadc29d668c91fcc564941132e17b28a7ceb2f3ebf0b9dae3e03fd7a6748eb0d"
+checksum = "9e3dac10fd62eaf6617d3a904ae222845979aec67c615d1c842b4002c7666fb9"
 dependencies = [
+ "byteorder",
  "bytes",
  "data-encoding",
- "http 1.3.1",
+ "http 0.2.12",
  "httparse",
  "log",
- "rand 0.9.2",
- "rustls 0.23.35",
- "rustls-pki-types",
+ "rand 0.8.5",
+ "rustls 0.21.12",
  "sha1",
- "thiserror 2.0.17",
+ "thiserror 1.0.69",
+ "url",
  "utf-8",
 ]
 
@@ -6127,15 +6127,6 @@ name = "webpki-roots"
 version = "0.25.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f20c57d8d7db6d3b86154206ae5d8fba62dd39573114de97c2cb0578251f8e1"
-
-[[package]]
-name = "webpki-roots"
-version = "0.26.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "521bc38abb08001b01866da9f51eb7c5d647a19260e00054a8c7fd5f9e57f7a9"
-dependencies = [
- "webpki-roots 1.0.4",
-]
 
 [[package]]
 name = "webpki-roots"
@@ -7029,9 +7020,9 @@ dependencies = [
 
 [[package]]
 name = "zsign-rust"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4e6f7303e79779f24807ebb43de1816334c6bbbfb1982785d21189bc1cb47f79"
+checksum = "f246eecd6b89f0ba582563ec68049f1b6f3498c455d78940355d0cfb09b38379"
 dependencies = [
  "bindgen",
  "cc",

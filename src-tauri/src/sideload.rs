@@ -12,8 +12,7 @@ use tauri::{AppHandle, Manager, State, Window};
 pub async fn sideload(
     handle: AppHandle,
     device_state: State<'_, DeviceInfoMutex>,
-    app_path: String,
-    is_livecontainer: bool,
+    app_path: String
 ) -> Result<(), String> {
     let device = {
         let device_lock = device_state.lock().unwrap();
@@ -32,8 +31,7 @@ pub async fn sideload(
                 .path()
                 .app_data_dir()
                 .map_err(|e| format!("Failed to get app data dir: {:?}", e))?,
-        )
-        .set_force_sidestore_app_group(is_livecontainer);
+        );
 
     let dev_session = get_developer_session().await.map_err(|e| e.to_string())?;
 
@@ -69,7 +67,7 @@ pub async fn sideload_operation(
     op.start("install")?;
     op.fail_if_err(
         "install",
-        sideload(handle, device_state, app_path, false).await,
+        sideload(handle, device_state, app_path).await,
     )?;
     op.complete("install")?;
     Ok(())
@@ -124,7 +122,6 @@ pub async fn install_sidestore_operation(
             handle,
             device_state,
             dest.to_string_lossy().to_string(),
-            live_container,
         )
         .await,
     )?;
