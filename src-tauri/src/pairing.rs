@@ -37,6 +37,8 @@ async fn pairing_file(
         )
     })?;
 
+    pairing_file.udid = Some(provider.udid.clone());
+
     let mut lc = LockdownClient::connect(&provider)
         .await
         .map_err(|e| format!("Failed to connect to lockdown: {}", e))?;
@@ -52,8 +54,6 @@ async fn pairing_file(
     )
     .await
     .map_err(|e| format!("Failed to enable wifi debugging: {}", e))?;
-
-    pairing_file.udid = Some(provider.udid.clone());
 
     Ok(pairing_file)
 }
