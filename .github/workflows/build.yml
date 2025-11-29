@@ -22,11 +22,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: "ubuntu-24.04"
+          - platform: "ubuntu-22.04"
             args: "--bundles deb"
-          - platform: "ubuntu-24.04"
+          - platform: "ubuntu-22.04"
             args: "--bundles rpm"
-          - platform: "ubuntu-24.04"
+          - platform: "ubuntu-22.04"
             args: "--bundles appimage"
           - platform: "windows-latest"
             args: ""
