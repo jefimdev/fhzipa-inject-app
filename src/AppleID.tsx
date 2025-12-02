@@ -63,7 +63,7 @@ export const AppleID = ({
 
   return (
     <>
-      <h2>Apple ID</h2>
+      <h2 style={{ marginTop: 0 }}>Apple ID</h2>
       <div className="credentials-container">
         {loggedInAs && (
           <div className="logged-in-as card green">
@@ -94,7 +94,7 @@ export const AppleID = ({
         )}
         {storedIds.length > 0 && (
           <div className="stored-ids">
-            <h3>Saved Logins</h3>
+            <h3 style={{ margin: 0 }}>Saved Logins</h3>
             <div className="stored-container card">
               {storedIds.map((id) => (
                 <div key={id} className="stored">

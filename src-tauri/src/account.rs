@@ -191,7 +191,7 @@ async fn login(
     let config = config.set_anisette_url_v3(format!("https://{}", anisette_server));
 
     let account = AppleAccount::login(
-        || Ok((email.clone(), password.clone())),
+        || Ok((email.clone().to_lowercase(), password.clone())),
         tfa_closure,
         config,
     )

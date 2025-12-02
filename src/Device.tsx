@@ -73,7 +73,7 @@ export const Device = ({
 
   return (
     <>
-      <h2>iDevice</h2>
+      <h2 style={{ marginTop: 0 }}>iDevice</h2>
       <div className="credentials-container">
         {devices.length === 0 && <div>No devices found.</div>}
         {devices.map((device) => {
