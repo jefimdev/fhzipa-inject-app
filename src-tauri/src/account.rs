@@ -188,7 +188,12 @@ async fn login(
     let config = AnisetteConfiguration::default();
     let config =
         config.set_configuration_path(handle.path().app_config_dir().map_err(|e| e.to_string())?);
-    let config = config.set_anisette_url_v3(format!("https://{}", anisette_server));
+    let anisette_url = if !anisette_server.starts_with("http") {
+        format!("https://{}", anisette_server)
+    } else {
+        anisette_server
+    };
+    let config = config.set_anisette_url_v3(anisette_url);
 
     let account = AppleAccount::login(
         || Ok((email.clone().to_lowercase(), password.clone())),

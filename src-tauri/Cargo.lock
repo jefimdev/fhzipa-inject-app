@@ -2140,9 +2140,9 @@ checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "idevice"
-version = "0.1.50"
+version = "0.1.51"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "effc7c8fe1bfa5051717c4dc20c3bcc4828b13009a6c95ff6fc8c3f8ccdf4d43"
+checksum = "d99be8d1969168237987908274fe41bcb2c8a1f9a37aa12fd15d5713acb9dd2b"
 dependencies = [
  "async_zip",
  "base64 0.22.1",
@@ -2180,7 +2180,7 @@ dependencies = [
 
 [[package]]
 name = "iloader"
-version = "1.1.5"
+version = "1.1.6"
 dependencies = [
  "futures",
  "idevice",
@@ -2279,9 +2279,9 @@ dependencies = [
 
 [[package]]
 name = "isideload"
-version = "0.1.22"
+version = "0.1.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75c2cedccf984dab94d668b1822edeff4c97bf36f99cf4d0045a750943b5dbe2"
+checksum = "645c12ba79f3a7cb55a3ee9f46563554585f45a885993d6ac024c857a4cadf0a"
 dependencies = [
  "hex",
  "idevice",
