@@ -11,8 +11,9 @@ let anisetteServers = [
   ["ani.sidestore.app", "SideStore (.app)"],
   ["ani.sidestore.zip", "SideStore (.zip)"],
   ["ani.846969.xyz", "SideStore (.xyz)"],
-  ["anisette.seasi.dev", "SeasiDev"],
+  ["ani.neoarz.xyz", "neoarz"],
   ["ani.xu30.top", "SteX"],
+  ["anisette.wedotstud.io", "WE. Studio"],
 ];
 export const Settings = ({ showHeading = true }: SettingsProps) => {
   const [anisetteServer, setAnisetteServer] = useStore<string>(
