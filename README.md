@@ -1,15 +1,17 @@
-<picture align="left" >
-  <source media="(prefers-color-scheme: dark)" srcset="/iloader.svg">
-  <img align="left" width="90" height="90" src="/iloader-dark.svg">
-</picture>
-
-<div id="user-content-toc">
-  <ul style="list-style: none;">
-    <summary>
-      <h1>iloader</h1>
-    </summary>
-  </ul>
-</div>
+<a href="https://iloader.app">
+  <picture align="left" >
+    <source media="(prefers-color-scheme: dark)" srcset="/iloader.svg">
+    <img align="left" width="90" height="90" src="/iloader-dark.svg">
+  </picture>
+  
+  <div id="user-content-toc">
+    <ul style="list-style: none;">
+      <summary>
+        <h1>iloader</h1>
+      </summary>
+    </ul>
+  </div>
+</a>
 
 ---
 
@@ -17,7 +19,7 @@
 
 Install SideStore (or other apps) and import your pairing file with ease
 
-**WARNING: This is the only official place iloader is distributed. Official documentation can be found at [docs.sidestore.io](https://docs.sidestore.io/docs/installation/prerequisites). iloader does not have any official websites or redistributions. Do not download iloader anywhere other than the [releases page](https://github.com/nab138/iloader).**
+**This repository and [iloader.app](https://iloader.app) are the only official ways to download iloader. Do not download from any other sources or websites.**
 
 Notice: I am currently rewriting [isideload](https://github.com/nab138/isideload), the library powering iloader. This will resolve many open issues and greatly improve the app. iloader is still being maintained, but much of my time has gone into the rewrite meaning I have not been able to give other issues the attention they deserve. The rewrite will be finished in the coming weeks, and other issues will be fixed after.
 
