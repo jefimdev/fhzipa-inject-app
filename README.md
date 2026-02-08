@@ -53,6 +53,8 @@ Notice: I am currently rewriting [isideload](https://github.com/nab138/isideload
 - [idevice_pair](https://github.com/jkcoxson/idevice_pair) was used as a reference for pairing file management
 - App made with [tauri](https://tauri.app)
 
+## Future Plans
+
 - Set a "default" account to automatically log into
 - Import SideStore account info automatically
 - Mount DDI and open sidestore after installation
