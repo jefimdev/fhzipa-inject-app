@@ -62,3 +62,13 @@ Notice: I am currently rewriting [isideload](https://github.com/nab138/isideload
 - Mount DDI and open sidestore after installation
 - Check for developer mode and warn about it if not enabled
 - Improved error messages
+
+## License
+
+Copyright (C) 2026 nab138
+
+The source code of this repository is licensed under the MIT License. See the [LICENSE](/LICENSE) file for the full text.
+
+Branding, logos, media assets, and the name “iloader” are not licensed under the MIT License and are subject to separate restrictions.
+
+You may retain or use branding materials in forks, tutorials, or documentation if you include a clear link to either the official site (https://iloader.app) or the iloader source code repository (https://github.com/nab138/iloader) and do not imply official endorsement. See [LICENSE-BRANDING](/LICENSE-BRANDING) for full details.
