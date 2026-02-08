@@ -17,7 +17,9 @@
 
 Install SideStore (or other apps) and import your pairing file with ease
 
-Currently, due to a bug, iloader can't correctly allocate keychain access entitlements for LiveContainer. The Multiple LiveContainers feature will not work and apps will all share keychain data (for example, Google account credentials). To avoid this, install SideStore first, then install LiveContainer through SideStore. This will be fixed in a future update.
+**WARNING: This is the only official place iloader is distributed. Official documentation can be found at [docs.sidestore.io](https://docs.sidestore.io/docs/installation/prerequisites). iloader does not have any official websites or redistributions. Do not download iloader anywhere other than the [releases page](https://github.com/nab138/iloader).**
+
+Notice: I am currently rewriting [isideload](https://github.com/nab138/isideload), the library powering iloader. This will resolve many open issues and greatly improve the app. iloader is still being maintained, but much of my time has gone into the rewrite meaning I have not been able to give other issues the attention they deserve. The rewrite will be finished in the coming weeks, and other issues will be fixed after.
 
 <img width="1918" height="998" alt="iloader0" src="https://github.com/user-attachments/assets/93cd135d-6d89-46ee-9b9f-12c596806911" />
 
@@ -50,7 +52,6 @@ Currently, due to a bug, iloader can't correctly allocate keychain access entitl
 - [isideload](https://github.com/nab138/isideload) for installing apps
 - [idevice_pair](https://github.com/jkcoxson/idevice_pair) was used as a reference for pairing file management
 - App made with [tauri](https://tauri.app)
-## Future Plans
 
 - Set a "default" account to automatically log into
 - Import SideStore account info automatically
