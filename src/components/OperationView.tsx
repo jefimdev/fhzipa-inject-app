@@ -19,7 +19,7 @@ export default ({
   const done =
     (opFailed &&
       operationState.started.length ==
-        operationState.completed.length + operationState.failed.length) ||
+      operationState.completed.length + operationState.failed.length) ||
     operationState.completed.length == operation.steps.length;
 
   return (
@@ -74,7 +74,6 @@ export default ({
                   <p>{step.title}</p>
                   {failed && (
                     <pre className="operation-extra-details">
-                      {/* trim newlines BUT NOT SPACES before */}
                       {failed.extraDetails.replace(/^\n+/, "")}
                     </pre>
                   )}

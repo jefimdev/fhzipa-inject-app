@@ -131,3 +131,24 @@
   font-weight: 700;
   font-size: 0.95rem;
 }
+
+.log-inner {
+  background-color: rgba(0, 0, 0, 0.4);
+  overflow-x: auto;
+  padding: 0.65em;
+  border-radius: 12px;
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 0.85rem;
+  user-select: text;
+}
+
+.log-outer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow: auto;
+}
+
+.log-outer h2 {
+  margin: 0;
+}

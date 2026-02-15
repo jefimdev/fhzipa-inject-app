@@ -18,6 +18,7 @@ use crate::{
     sideload::{install_sidestore_operation, sideload_operation, SideloaderMutex},
 };
 use tauri::Manager;
+use tauri_plugin_tracing::LevelFilter;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -27,6 +28,12 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(
+            tauri_plugin_tracing::Builder::new()
+                .with_max_level(LevelFilter::INFO)
+                .with_default_subscriber()
+                .build(),
+        )
         .setup(|app| {
             app.manage(DeviceInfoMutex::new(None));
             app.manage(SideloaderMutex::new(None));

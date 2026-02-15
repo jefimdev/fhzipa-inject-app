@@ -1,6 +1,9 @@
 import "./Settings.css";
 import { useStore } from "../StoreContext";
 import { useEffect, useRef, useState } from "react";
+import { useLogs } from "../LogContext";
+import { LogLevel } from "@fltsci/tauri-plugin-tracing";
+import { Modal } from "../components/Modal";
 
 type SettingsProps = {
   showHeading?: boolean;
@@ -33,6 +36,9 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
       : "ani.yourserver.com"
   );
   const anisetteLabelId = "anisette-label";
+
+  const [logsOpen, setLogsOpen] = useState(false);
+  const logs = useLogs();
 
   useEffect(() => {
     if (!dropdownOpen) return;
@@ -93,11 +99,6 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
   const selectedLabel = isCustom
     ? lastCustomValueRef.current || "Custom Anisette Server"
     : presetLabel;
-
-  const [appIdDeletion, setAppIdDeletion] = useStore<boolean>(
-    "allowAppIdDeletion",
-    false
-  );
 
   return (
     <>
@@ -200,7 +201,28 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
             />
           )}
         </div>
-        <div>
+        <button onClick={() => setLogsOpen(true)}>
+          View Logs
+        </button>
+        <Modal isOpen={logsOpen} close={() => setLogsOpen(false)}>
+          <div className="log-outer">
+            <div>
+              <h2>Logs</h2>
+              <pre className="log-inner">
+                {logs.length > 0 ? logs.map((log, index) => (
+                  <div key={`${index}`}>
+                    {getHtmlForLevel(log.level)} {log.message}
+                  </div>
+                )) : "No logs yet."}
+              </pre>
+            </div>
+            <button onClick={() => {
+              const logText = logs.map(log => `[${LogLevel[log.level]}] ${log.message}`).join("\n");
+              navigator.clipboard.writeText(logText);
+            }}>Copy to clipboard</button>
+          </div>
+        </Modal>
+        {/* <div>
           <label className="settings-label">
             Allow App ID deletion:
             <input
@@ -215,8 +237,26 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
             Not recommended for free dev accounts, this just hides them from the
             list. You still need to wait for them to expire to free up space.
           </span>
-        </div>
+        </div> */}
       </div>
     </>
   );
 };
+
+// convert level to a properly colored html string
+function getHtmlForLevel(level: LogLevel) {
+  switch (level) {
+    case LogLevel.Trace:
+      return <span style={{ color: "gray" }}>[TRACE]</span>;
+    case LogLevel.Debug:
+      return <span style={{ color: "blue" }}>[DEBUG]</span>;
+    case LogLevel.Info:
+      return <span style={{ color: "green" }}>[INFO]</span>;
+    case LogLevel.Warn:
+      return <span style={{ color: "orange" }}>[WARN]</span>;
+    case LogLevel.Error:
+      return <span style={{ color: "red" }}>[ERROR]</span>;
+    default:
+      return <span>[UNKNOWN]</span>;
+  }
+}

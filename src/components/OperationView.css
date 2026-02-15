@@ -45,6 +45,7 @@
   margin: 0.5rem 0 0;
   font-family: "SF Mono", "Menlo", monospace;
   font-size: 0.85rem;
+  user-select: text;
 }
 
 .operation-step-internal {
@@ -84,6 +85,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
