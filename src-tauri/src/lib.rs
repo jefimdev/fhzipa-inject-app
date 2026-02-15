@@ -30,7 +30,7 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(
             tauri_plugin_tracing::Builder::new()
-                .with_max_level(LevelFilter::INFO)
+                .with_max_level(LevelFilter::DEBUG)
                 .with_default_subscriber()
                 .build(),
         )
