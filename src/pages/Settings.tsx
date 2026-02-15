@@ -1,8 +1,7 @@
 import "./Settings.css";
 import { useStore } from "../StoreContext";
 import { useState } from "react";
-import { useLogs } from "../LogContext";
-import { LogLevel } from "@fltsci/tauri-plugin-tracing";
+import { LogLevel, useLogs } from "../LogContext";
 import { Modal } from "../components/Modal";
 import { Dropdown } from "../components/Dropdown";
 import { toast } from "sonner";

@@ -15,6 +15,14 @@ export interface ExtendedLogRecord {
   timestamp: string;
 }
 
+export enum LogLevel {
+  Trace = 1,
+  Debug = 2,
+  Info = 3,
+  Warn = 4,
+  Error = 5
+}
+
 export const LogContext = createContext<ExtendedLogRecord[]>([]);
 
 export const LogProvider: React.FC<{ children: React.ReactNode }> = ({
