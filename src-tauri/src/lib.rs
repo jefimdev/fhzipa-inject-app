@@ -11,11 +11,11 @@ mod operation;
 use crate::{
     account::{
         delete_account, delete_app_id, get_certificates, invalidate_account, list_app_ids,
-        logged_in_as, login_email_pass, login_stored_pass, revoke_certificate, SideloaderMutex,
+        logged_in_as, login_email_pass, login_stored_pass, revoke_certificate,
     },
     device::{list_devices, set_selected_device, DeviceInfoMutex},
     pairing::{installed_pairing_apps, place_pairing_cmd},
-    sideload::{install_sidestore_operation, sideload_operation},
+    sideload::{install_sidestore_operation, sideload_operation, SideloaderMutex},
 };
 use tauri::Manager;
 

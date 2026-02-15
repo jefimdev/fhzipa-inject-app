@@ -8,6 +8,7 @@ type SettingsProps = {
 
 let anisetteServers = [
   ["ani.sidestore.io", "SideStore (.io)"],
+  ["ani.stikstore.app", "StikStore"],
   ["ani.sidestore.app", "SideStore (.app)"],
   ["ani.sidestore.zip", "SideStore (.zip)"],
   ["ani.846969.xyz", "SideStore (.xyz)"],
@@ -139,9 +140,8 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
                         key={value}
                         type="button"
                         role="option"
-                        className={`dropdown-option${
-                          isSelected ? " selected" : ""
-                        }`}
+                        className={`dropdown-option${isSelected ? " selected" : ""
+                          }`}
                         aria-selected={isSelected}
                         onClick={() => {
                           if (value === "custom") {

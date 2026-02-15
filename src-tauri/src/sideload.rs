@@ -1,13 +1,43 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::Mutex};
 
 use crate::{
-    account::SideloaderMutex,
     device::{get_provider, DeviceInfoMutex},
     operation::Operation,
     pairing::{get_sidestore_info, place_pairing},
 };
-use isideload::sideload::application::SpecialApp;
+use isideload::sideload::{application::SpecialApp, sideloader::Sideloader};
 use tauri::{AppHandle, Manager, State, Window};
+
+pub type SideloaderMutex = Mutex<Option<Sideloader>>;
+
+pub struct SideloaderGuard<'a> {
+    state: &'a SideloaderMutex,
+    sideloader: Option<Sideloader>,
+}
+
+impl<'a> SideloaderGuard<'a> {
+    pub fn take(state: &'a SideloaderMutex) -> Result<Self, String> {
+        let mut guard = state.lock().unwrap();
+        let sideloader = guard.take().ok_or_else(|| "Not logged in".to_string())?;
+        Ok(Self {
+            state,
+            sideloader: Some(sideloader),
+        })
+    }
+
+    pub fn get_mut(&mut self) -> &mut Sideloader {
+        self.sideloader
+            .as_mut()
+            .expect("Sideloader should be present")
+    }
+}
+
+impl Drop for SideloaderGuard<'_> {
+    fn drop(&mut self) {
+        let mut guard = self.state.lock().unwrap();
+        *guard = self.sideloader.take();
+    }
+}
 
 pub async fn sideload(
     device_state: State<'_, DeviceInfoMutex>,
@@ -24,28 +54,13 @@ pub async fn sideload(
 
     let provider = get_provider(&device).await?;
 
-    let mut sideloader = {
-        let mut sideloader_guard = sideloader_state.lock().unwrap();
-        match sideloader_guard.take() {
-            Some(s) => s,
-            None => return Err("Not logged in".to_string()),
-        }
-    };
+    let mut sideloader = SideloaderGuard::take(&sideloader_state)?;
 
-    let result = async {
-        sideloader
-            .install_app(&provider, app_path.into(), false)
-            .await
-            .map_err(|e| e.to_string())
-    }
-    .await;
-
-    {
-        let mut sideloader_guard = sideloader_state.lock().unwrap();
-        *sideloader_guard = Some(sideloader);
-    }
-
-    result
+    sideloader
+        .get_mut()
+        .install_app(&provider, app_path.into(), false)
+        .await
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]

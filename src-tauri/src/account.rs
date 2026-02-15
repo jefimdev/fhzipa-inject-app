@@ -12,11 +12,11 @@ use isideload::{
 use keyring::Entry;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{sync::Mutex, time::Duration};
+use std::time::Duration;
 use tauri::{AppHandle, Emitter, Listener, State, Window};
 use tauri_plugin_store::StoreExt;
 
-pub type SideloaderMutex = Mutex<Option<Sideloader>>;
+use crate::sideload::{SideloaderGuard, SideloaderMutex};
 
 #[tauri::command]
 pub async fn login_email_pass(
@@ -184,42 +184,30 @@ pub struct CertificateInfo {
 pub async fn get_certificates(
     sideloader_state: State<'_, SideloaderMutex>,
 ) -> Result<Vec<CertificateInfo>, String> {
-    let mut sideloader = {
-        let mut sideloader_guard = sideloader_state.lock().unwrap();
-        match sideloader_guard.take() {
-            Some(s) => s,
-            None => return Err("Not logged in".to_string()),
-        }
-    };
+    let mut sideloader = SideloaderGuard::take(&sideloader_state)?;
 
-    let result = async {
-        let team = sideloader.get_team().await.map_err(|e| e.to_string())?;
-        let dev_session = sideloader.get_dev_session();
+    let team = sideloader
+        .get_mut()
+        .get_team()
+        .await
+        .map_err(|e| e.to_string())?;
+    let dev_session = sideloader.get_mut().get_dev_session();
 
-        let certificates = dev_session
-            .list_all_development_certs(&team, None)
-            .await
-            .map_err(|e| format!("Failed to get development certificates: {:?}", e))?;
+    let certificates = dev_session
+        .list_all_development_certs(&team, None)
+        .await
+        .map_err(|e| format!("Failed to get development certificates: {:?}.", e))?;
 
-        Ok(certificates
-            .into_iter()
-            .map(|cert| CertificateInfo {
-                name: cert.name,
-                certificate_id: cert.certificate_id,
-                serial_number: cert.serial_number,
-                machine_name: cert.machine_name,
-                machine_id: cert.machine_id,
-            })
-            .collect())
-    }
-    .await;
-
-    {
-        let mut sideloader_guard = sideloader_state.lock().unwrap();
-        *sideloader_guard = Some(sideloader);
-    }
-
-    result
+    Ok(certificates
+        .into_iter()
+        .map(|cert| CertificateInfo {
+            name: cert.name,
+            certificate_id: cert.certificate_id,
+            serial_number: cert.serial_number,
+            machine_name: cert.machine_name,
+            machine_id: cert.machine_id,
+        })
+        .collect())
 }
 
 #[tauri::command]
@@ -227,66 +215,42 @@ pub async fn revoke_certificate(
     serial_number: String,
     sideloader_state: State<'_, SideloaderMutex>,
 ) -> Result<(), String> {
-    let mut sideloader = {
-        let mut sideloader_guard = sideloader_state.lock().unwrap();
-        match sideloader_guard.take() {
-            Some(s) => s,
-            None => return Err("Not logged in".to_string()),
-        }
-    };
+    let mut sideloader = SideloaderGuard::take(&sideloader_state)?;
 
-    let result = async {
-        let team = sideloader.get_team().await.map_err(|e| e.to_string())?;
-        let dev_session = sideloader.get_dev_session();
+    let team = sideloader
+        .get_mut()
+        .get_team()
+        .await
+        .map_err(|e| e.to_string())?;
+    let dev_session = sideloader.get_mut().get_dev_session();
 
-        dev_session
-            .revoke_development_cert(&team, &serial_number, None)
-            .await
-            .map_err(|e| format!("Failed to revoke development certificates: {:?}", e))?;
+    dev_session
+        .revoke_development_cert(&team, &serial_number, None)
+        .await
+        .map_err(|e| format!("Failed to revoke development certificates: {:?}.", e))?;
 
-        Ok(())
-    }
-    .await;
-
-    {
-        let mut sideloader_guard = sideloader_state.lock().unwrap();
-        *sideloader_guard = Some(sideloader);
-    }
-
-    result
+    Ok(())
 }
 
 #[tauri::command]
 pub async fn list_app_ids(
     sideloader_state: State<'_, SideloaderMutex>,
 ) -> Result<ListAppIdsResponse, String> {
-    let mut sideloader = {
-        let mut sideloader_guard = sideloader_state.lock().unwrap();
-        match sideloader_guard.take() {
-            Some(s) => s,
-            None => return Err("Not logged in".to_string()),
-        }
-    };
+    let mut sideloader = SideloaderGuard::take(&sideloader_state)?;
 
-    let result = async {
-        let team = sideloader.get_team().await.map_err(|e| e.to_string())?;
-        let dev_session = sideloader.get_dev_session();
+    let team = sideloader
+        .get_mut()
+        .get_team()
+        .await
+        .map_err(|e| e.to_string())?;
+    let dev_session = sideloader.get_mut().get_dev_session();
 
-        let response = dev_session
-            .list_app_ids(&team, None)
-            .await
-            .map_err(|e| e.to_string())?;
+    let response = dev_session
+        .list_app_ids(&team, None)
+        .await
+        .map_err(|e| e.to_string())?;
 
-        Ok(response.clone())
-    }
-    .await;
-
-    {
-        let mut sideloader_guard = sideloader_state.lock().unwrap();
-        *sideloader_guard = Some(sideloader);
-    }
-
-    result
+    Ok(response.clone())
 }
 
 #[tauri::command]
@@ -294,31 +258,19 @@ pub async fn delete_app_id(
     app_id_id: String,
     sideloader_state: State<'_, SideloaderMutex>,
 ) -> Result<(), String> {
-    let mut sideloader = {
-        let mut sideloader_guard = sideloader_state.lock().unwrap();
-        match sideloader_guard.take() {
-            Some(s) => s,
-            None => return Err("Not logged in".to_string()),
-        }
-    };
+    let mut sideloader = SideloaderGuard::take(&sideloader_state)?;
 
-    let result = async {
-        let team = sideloader.get_team().await.map_err(|e| e.to_string())?;
-        let dev_session = sideloader.get_dev_session();
+    let team = sideloader
+        .get_mut()
+        .get_team()
+        .await
+        .map_err(|e| e.to_string())?;
+    let dev_session = sideloader.get_mut().get_dev_session();
 
-        dev_session
-            .delete_app_id(&team, &app_id_id, None)
-            .await
-            .map_err(|e| format!("Failed to delete App ID: {:?}", e))?;
+    dev_session
+        .delete_app_id(&team, &app_id_id, None)
+        .await
+        .map_err(|e| format!("Failed to delete App ID: {:?}.", e))?;
 
-        Ok(())
-    }
-    .await;
-
-    {
-        let mut sideloader_guard = sideloader_state.lock().unwrap();
-        *sideloader_guard = Some(sideloader);
-    }
-
-    result
+    Ok(())
 }
