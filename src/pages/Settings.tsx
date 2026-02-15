@@ -27,7 +27,7 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
   );
 
   const [logsOpen, setLogsOpen] = useState(false);
-  const [logLevelFilter, setLogLevelFilter] = useState("info");
+  const [logLevelFilter, setLogLevelFilter] = useState("3");
   const logs = useLogs();
 
   const anisetteOptions = anisetteServers.map(([value, label]) => ({
