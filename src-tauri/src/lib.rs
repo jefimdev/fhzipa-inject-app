@@ -12,7 +12,8 @@ mod operation;
 use crate::{
     account::{
         delete_account, delete_app_id, get_certificates, invalidate_account, list_app_ids,
-        logged_in_as, login_email_pass, login_stored_pass, revoke_certificate,
+        logged_in_as, login_email_pass, login_stored_pass, reset_anisette_state,
+        revoke_certificate,
     },
     device::{list_devices, set_selected_device, DeviceInfoMutex},
     pairing::{installed_pairing_apps, place_pairing_cmd},
@@ -56,6 +57,7 @@ pub fn run() {
             delete_app_id,
             installed_pairing_apps,
             place_pairing_cmd,
+            reset_anisette_state,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

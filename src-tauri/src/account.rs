@@ -111,6 +111,17 @@ pub fn invalidate_account(sideloader_state: State<'_, SideloaderMutex>) {
     *sideloader_guard = None;
 }
 
+#[tauri::command]
+pub fn reset_anisette_state() -> Result<(), String> {
+    let state_entry = Entry::new("iloader", "anisette_state")
+        .map_err(|e| format!("Failed to create keyring entry for anisette: {:?}.", e))?;
+    state_entry
+        .delete_credential()
+        .map_err(|e| format!("Failed to delete anisette state: {:?}", e))?;
+
+    Ok(())
+}
+
 async fn login(
     window: &Window,
     email: &str,
@@ -150,7 +161,8 @@ async fn login(
     let mut account = AppleAccount::builder(email)
         .anisette_provider(
             RemoteV3AnisetteProvider::default()
-                .set_serial_number("iloader".to_string())
+                .set_serial_number("0".to_string())
+                .set_storage(Box::new(KeyringStorage::new("iloader".to_string())))
                 .set_url(&anisette_url),
         )
         .login(password, tfa_closure)
