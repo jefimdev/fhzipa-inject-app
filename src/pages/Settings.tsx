@@ -36,6 +36,7 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
     label,
   }));
   const logLevelOptions = [
+    { value: String(LogLevel.Trace), label: "Trace" },
     { value: String(LogLevel.Debug), label: "Debug" },
     { value: String(LogLevel.Info), label: "Info" },
     { value: String(LogLevel.Warn), label: "Warn" },
@@ -125,7 +126,7 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
 function getHtmlForLevel(level: LogLevel) {
   switch (level) {
     case LogLevel.Trace:
-      return <span style={{ color: "gray" }}>[TRACE]</span>;
+      return <span style={{ color: "purple" }}>[TRACE]</span>;
     case LogLevel.Debug:
       return <span style={{ color: "blue" }}>[DEBUG]</span>;
     case LogLevel.Info:

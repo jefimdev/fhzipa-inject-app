@@ -35,7 +35,7 @@ pub fn run() {
             Registry::default()
                 .with(fmt::layer().with_target(true))
                 .with(logging_layer)
-                .with(tracing_subscriber::filter::LevelFilter::DEBUG)
+                .with(tracing_subscriber::filter::LevelFilter::TRACE)
                 .init();
             app.manage(DeviceInfoMutex::new(None));
             app.manage(SideloaderMutex::new(None));
