@@ -6,14 +6,21 @@ import React, {
   useRef,
 } from "react";
 
-import { attachLogger, RecordPayload } from '@fltsci/tauri-plugin-tracing';
+import { listen } from "@tauri-apps/api/event";
 
-export const LogContext = createContext<RecordPayload[]>([]);
+export interface ExtendedLogRecord {
+  level: number;
+  message: string;
+  target?: string;
+  timestamp: string;
+}
+
+export const LogContext = createContext<ExtendedLogRecord[]>([]);
 
 export const LogProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [logs, setLogs] = useState<RecordPayload[]>([]);
+  const [logs, setLogs] = useState<ExtendedLogRecord[]>([]);
   const listenerAdded = useRef<boolean>(false);
   let unlistenRef = useRef<(() => void) | null>(null);
 
@@ -21,8 +28,9 @@ export const LogProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!listenerAdded.current) {
       const setupLogger = async () => {
         listenerAdded.current = true;
-        unlistenRef.current = await attachLogger((record) => {
-          setLogs((prevLogs) => [...prevLogs, record]);
+        unlistenRef.current = await listen<ExtendedLogRecord>("log-record", (event) => {
+          console.log(event.payload);
+          setLogs((prevLogs) => [...prevLogs, event.payload]);
         });
       };
 

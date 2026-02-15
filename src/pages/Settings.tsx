@@ -5,6 +5,7 @@ import { useLogs } from "../LogContext";
 import { LogLevel } from "@fltsci/tauri-plugin-tracing";
 import { Modal } from "../components/Modal";
 import { Dropdown } from "../components/Dropdown";
+import { toast } from "sonner";
 
 type SettingsProps = {
   showHeading?: boolean;
@@ -69,8 +70,9 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
             <div className="log-header">
               <h2>Logs</h2>
               <button onClick={() => {
-                const logText = filteredLogs.map(log => `[${LogLevel[log.level]}] ${log.message}`).join("\n");
+                const logText = filteredLogs.map(log => `[${log.timestamp}] [${LogLevel[log.level]}] ${log.target ? `<${log.target}>` : ""} ${log.message}`).join("\n");
                 navigator.clipboard.writeText(logText);
+                toast.success("Logs copied to clipboard");
               }}>Copy to clipboard</button>
             </div>
             <Dropdown
@@ -83,7 +85,7 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
             <pre className="log-inner">
               {filteredLogs.length > 0 ? filteredLogs.map((log, index) => (
                 <div key={`${index}`}>
-                  {getHtmlForLevel(log.level)} {log.message}
+                  <span style={{ color: "gray" }}>[{log.timestamp}]</span> {getHtmlForLevel(log.level)} {log.target ? <span style={{ color: "#aaa" }}>{log.target}</span> : ""} {log.message}
                 </div>
               )) : "No logs yet."}
             </pre>

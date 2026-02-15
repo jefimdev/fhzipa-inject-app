@@ -6,6 +6,7 @@ mod device;
 mod sideload;
 #[macro_use]
 mod pairing;
+mod logging;
 mod operation;
 
 use crate::{
@@ -18,7 +19,7 @@ use crate::{
     sideload::{install_sidestore_operation, sideload_operation, SideloaderMutex},
 };
 use tauri::Manager;
-use tauri_plugin_tracing::LevelFilter;
+use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, Registry};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -28,13 +29,13 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::new().build())
-        .plugin(
-            tauri_plugin_tracing::Builder::new()
-                .with_max_level(LevelFilter::DEBUG)
-                .with_default_subscriber()
-                .build(),
-        )
         .setup(|app| {
+            let logging_layer = logging::FrontendLoggingLayer::new(app.handle().clone());
+            Registry::default()
+                .with(fmt::layer().with_target(true))
+                .with(logging_layer)
+                .with(tracing_subscriber::filter::LevelFilter::DEBUG)
+                .init();
             app.manage(DeviceInfoMutex::new(None));
             app.manage(SideloaderMutex::new(None));
             Ok(())
