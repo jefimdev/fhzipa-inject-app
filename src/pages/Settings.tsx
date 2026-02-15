@@ -6,6 +6,7 @@ import { Modal } from "../components/Modal";
 import { Dropdown } from "../components/Dropdown";
 import { toast } from "sonner";
 import { invoke } from "@tauri-apps/api/core";
+import { useError } from "../ErrorContext";
 
 type SettingsProps = {
   showHeading?: boolean;
@@ -30,6 +31,7 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
   const [logsOpen, setLogsOpen] = useState(false);
   const [logLevelFilter, setLogLevelFilter] = useState("3");
   const logs = useLogs();
+  const { err } = useError();
 
   const anisetteOptions = anisetteServers.map(([value, label]) => ({
     value,
@@ -67,7 +69,7 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
           <button className="action-button danger" onClick={() => toast.promise(invoke("reset_anisette_state"), {
             loading: "Resetting anisette state...",
             success: "Anisette state reset successfully",
-            error: (e) => "Failed to reset anisette state: " + e,
+            error: (e) => err("Failed to reset anisette state", e),
           })}>
             Reset anisette state
           </button>

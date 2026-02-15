@@ -2,6 +2,7 @@ import "./Certificates.css";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useError } from "../ErrorContext";
 
 type PairingAppInfo = {
   name: string;
@@ -14,6 +15,7 @@ export const Pairing = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const loadingRef = useRef<boolean>(false);
+  const { err } = useError();
 
   const loadApps = useCallback(async () => {
     if (loadingRef.current) return;
@@ -28,7 +30,7 @@ export const Pairing = () => {
     toast.promise(promise, {
       loading: "Loading Apps...",
       success: "Apps loaded successfully!",
-      error: (e) => "Failed to load Apps: " + e,
+      error: (e) => err("Failed to load Apps", e),
     });
   }, [setApps]);
 
@@ -41,7 +43,7 @@ export const Pairing = () => {
       toast.promise(promise, {
         loading: "Placing pairing file...",
         success: "Pairing file placed successfully!",
-        error: (e) => "Failed to place pairing: " + e,
+        error: (e) => err("Failed to place pairing", e),
       });
     },
     [setApps, loadApps]

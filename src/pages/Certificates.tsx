@@ -2,6 +2,7 @@ import "./Certificates.css";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useError } from "../ErrorContext";
 
 type Certificate = {
   name: string;
@@ -15,6 +16,7 @@ export const Certificates = () => {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const loadingRef = useRef<boolean>(false);
+  const { err } = useError();
 
   const loadCertificates = useCallback(async () => {
     if (loadingRef.current) return;
@@ -29,7 +31,7 @@ export const Certificates = () => {
     toast.promise(promise, {
       loading: "Loading certificates...",
       success: "Certificates loaded successfully!",
-      error: (e) => "Failed to load certificates: " + e,
+      error: (e) => err("Failed to load certificates", e),
     });
   }, [setCertificates]);
 
@@ -42,7 +44,7 @@ export const Certificates = () => {
       toast.promise(promise, {
         loading: "Revoking certificate...",
         success: "Certificate revoked successfully!",
-        error: (e) => "Failed to revoke certificate: " + e,
+        error: (e) => err("Failed to revoke certificate: ", e),
       });
     },
     [setCertificates, loadCertificates]

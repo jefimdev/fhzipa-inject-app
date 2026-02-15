@@ -1,0 +1,20 @@
+.error-inner {
+    background-color: rgba(0, 0, 0, 0.4);
+    overflow: auto;
+    padding: 0.65em;
+    border-radius: 12px;
+    font-family: "SF Mono", "Menlo", monospace;
+    font-size: 0.85rem;
+    user-select: text;
+}
+
+.error-outer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.error-outer h2 {
+    margin: 0;
+}

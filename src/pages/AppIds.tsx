@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useStore } from "../StoreContext";
+import { useError } from "../ErrorContext";
 
 type AppId = {
   appIdId: string;
@@ -28,6 +29,8 @@ export const AppIds = () => {
   const loadingRef = useRef<boolean>(false);
   const [appIdDeletion] = useStore<boolean>("allowAppIdDeletion", false);
 
+  const { err } = useError();
+
   const loadAppIds = useCallback(async () => {
     if (loadingRef.current) return;
     const promise = async () => {
@@ -43,7 +46,7 @@ export const AppIds = () => {
     toast.promise(promise, {
       loading: "Loading App IDs...",
       success: "App IDs loaded successfully!",
-      error: (e) => "Failed to load App IDs: " + e,
+      error: (e) => err("Failed to load App IDs", e),
     });
   }, [setAppIds]);
 
@@ -56,7 +59,7 @@ export const AppIds = () => {
       toast.promise(promise, {
         loading: "Deleting...",
         success: "App ID deleted successfully!",
-        error: (e) => "Failed to delete App ID: " + e,
+        error: (e) => err("Failed to delete App ID", e),
       });
     },
     [setAppIds, loadAppIds],

@@ -6,6 +6,7 @@ import { load } from "@tauri-apps/plugin-store";
 import { Modal } from "./components/Modal";
 import { toast } from "sonner";
 import { useStore } from "./StoreContext";
+import { useError } from "./ErrorContext";
 
 const store = await load("data.json");
 
@@ -28,6 +29,7 @@ export const AppleID = ({
     "anisetteServer",
     "ani.sidestore.io"
   );
+  const { err } = useError();
 
   useEffect(() => {
     let getLoggedInAs = async () => {
@@ -44,7 +46,7 @@ export const AppleID = ({
   }, [forceUpdateIds]);
 
   const listenerAdded = useRef<boolean>(false);
-  const unlisten = useRef<() => void>(() => {});
+  const unlisten = useRef<() => void>(() => { });
 
   useEffect(() => {
     if (!listenerAdded.current) {
@@ -82,7 +84,7 @@ export const AppleID = ({
                   };
                   toast.promise(promise, {
                     loading: "Signing Out...",
-                    error: (e) => `Sign out failed: ${e}`,
+                    error: (e) => err(`Sign out failed`, e),
                     success: "Signed out successfully!",
                   });
                 }}
@@ -115,7 +117,7 @@ export const AppleID = ({
                           toast.promise(promise, {
                             loading: "Logging in...",
                             success: "Logged in successfully!",
-                            error: (e) => `Login failed: ${e}`,
+                            error: (e) => err(`Login failed`, e),
                           });
                         }}
                       >
@@ -132,7 +134,7 @@ export const AppleID = ({
                         };
                         toast.promise(promise, {
                           loading: "Deleting...",
-                          error: (e) => `Deletion failed: ${e}`,
+                          error: (e) => err(`Deletion failed`, e),
                           success: "Deleted successfully!",
                         });
                       }}
@@ -194,7 +196,7 @@ export const AppleID = ({
                   toast.promise(promise, {
                     loading: "Logging in...",
                     success: "Logged in successfully!",
-                    error: (e) => `Login failed: ${e}`,
+                    error: (e) => err(`Login failed`, e),
                   });
                 }}
               >

@@ -6,17 +6,21 @@ export const Modal = ({
   sizeFit,
   children,
   hideClose,
+  forceTop,
 }: {
   children: React.ReactNode;
   isOpen: boolean;
   close?: () => void;
   sizeFit?: boolean;
   hideClose?: boolean;
+  forceTop?: boolean;
 }) => {
   return (
     <>
       {isOpen && (
-        <div className={`modal-container`}>
+        <div className={`modal-container`} style={forceTop ? {
+          zIndex: "10000"
+        } : {}}>
           <div className={`modal${sizeFit ? " size-fit" : ""}`}>
             {!hideClose && close && (
               <button
