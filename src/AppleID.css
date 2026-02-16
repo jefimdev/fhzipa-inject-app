@@ -141,3 +141,15 @@
 .add-account:hover {
   color: #fff;
 }
+
+.certs-see {
+  color: var(--accent-primary);
+  cursor: pointer;
+  padding-bottom: 0.75rem;
+  padding-top: 0.25rem;
+}
+
+.certs-buttons {
+  display: flex;
+  gap: 0.75rem;
+}

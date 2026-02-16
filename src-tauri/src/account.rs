@@ -3,10 +3,10 @@ use isideload::{
     auth::apple_account::AppleAccount,
     dev::{
         app_ids::{AppIdsApi, ListAppIdsResponse},
-        certificates::CertificatesApi,
+        certificates::{CertificatesApi, DevelopmentCertificate},
         developer_session::DeveloperSession,
     },
-    sideload::{sideloader::Sideloader, SideloaderBuilder},
+    sideload::{builder::MaxCertsBehavior, sideloader::Sideloader, SideloaderBuilder},
     util::keyring_storage::KeyringStorage,
 };
 use keyring::Entry;
@@ -173,11 +173,42 @@ async fn login(
         .await
         .map_err(|e| e.to_string())?;
 
+    let max_certs_callback = {
+        let window_clone = window.clone();
+        move |certs: &Vec<DevelopmentCertificate>| -> Option<Vec<String>> {
+            let cert_infos: Vec<CertificateInfo> = certs
+                .iter()
+                .map(|cert| CertificateInfo {
+                    name: cert.name.clone(),
+                    certificate_id: cert.certificate_id.clone(),
+                    serial_number: cert.serial_number.clone(),
+                    machine_name: cert.machine_name.clone(),
+                    machine_id: cert.machine_id.clone(),
+                })
+                .collect();
+            window_clone
+                .emit("max-certs-reached", cert_infos)
+                .expect("Failed to emit max-certs-reached event");
+
+            let (tx, rx) = std::sync::mpsc::channel::<Option<Vec<String>>>();
+            let handler_id = window_clone.listen("max-certs-response", move |event| {
+                let certs = event.payload();
+                let certs = serde_json::from_str::<Option<Vec<String>>>(certs).unwrap_or(None);
+                let _ = tx.send(certs);
+            });
+
+            let result = rx.recv_timeout(Duration::from_secs(300));
+            window_clone.unlisten(handler_id);
+            result.unwrap_or(None)
+        }
+    };
+
     Ok(
         // TODO: Team Selection
         SideloaderBuilder::new(dev_session, account.email)
             .machine_name("iloader".to_string())
             .storage(Box::new(KeyringStorage::new("iloader".to_string())))
+            .max_certs_behavior(MaxCertsBehavior::Prompt(Box::new(max_certs_callback)))
             .build(),
     )
 }

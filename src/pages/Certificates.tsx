@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useError } from "../ErrorContext";
 
-type Certificate = {
+export type Certificate = {
   name: string;
   certificateId: string;
   serialNumber: string;
@@ -47,7 +47,7 @@ export const Certificates = () => {
         error: (e) => err("Failed to revoke certificate: ", e),
       });
     },
-    [setCertificates, loadCertificates]
+    [setCertificates, loadCertificates],
   );
 
   useEffect(() => {

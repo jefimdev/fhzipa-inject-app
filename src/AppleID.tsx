@@ -7,6 +7,7 @@ import { Modal } from "./components/Modal";
 import { toast } from "sonner";
 import { useStore } from "./StoreContext";
 import { useError } from "./ErrorContext";
+import { Certificate } from "./pages/Certificates";
 
 const store = await load("data.json");
 
@@ -27,8 +28,9 @@ export const AppleID = ({
   const [addAccountOpen, setAddAccountOpen] = useState<boolean>(false);
   const [anisetteServer] = useStore<string>(
     "anisetteServer",
-    "ani.sidestore.io"
+    "ani.sidestore.io",
   );
+  const [certs, setCerts] = useState<Certificate[] | null>(null);
   const { err } = useError();
 
   useEffect(() => {
@@ -46,7 +48,7 @@ export const AppleID = ({
   }, [forceUpdateIds]);
 
   const listenerAdded = useRef<boolean>(false);
-  const unlisten = useRef<() => void>(() => { });
+  const unlisten = useRef<() => void>(() => {});
 
   useEffect(() => {
     if (!listenerAdded.current) {
@@ -60,6 +62,27 @@ export const AppleID = ({
     }
     return () => {
       unlisten.current();
+    };
+  }, []);
+
+  const certListenerAdded = useRef<boolean>(false);
+  const certUnlisten = useRef<() => void>(() => {});
+
+  useEffect(() => {
+    if (!certListenerAdded.current) {
+      (async () => {
+        const unlistenFn = await listen<Certificate[]>(
+          "max-certs-reached",
+          (certs) => {
+            setCerts(certs.payload);
+          },
+        );
+        certUnlisten.current = unlistenFn;
+      })();
+      certListenerAdded.current = true;
+    }
+    return () => {
+      certUnlisten.current();
     };
   }, []);
 
@@ -246,6 +269,38 @@ export const AppleID = ({
         >
           Submit
         </button>
+      </Modal>
+      <Modal sizeFit isOpen={certs !== null} zIndex={2000}>
+        <h2>Maximum certificates reached</h2>
+        <p>
+          iloader will revoke your existing certificates and generate a new one.
+        </p>
+        <p className="certs-see" role="button" tabIndex={0}>
+          Let me choose
+        </p>
+        <div className="certs-buttons">
+          <button
+            className="action-button primary"
+            onClick={async () => {
+              await emit(
+                "max-certs-response",
+                certs?.map((cert) => cert.serialNumber) ?? null,
+              );
+              setCerts(null);
+            }}
+          >
+            Continue
+          </button>
+          <button
+            className="action-button danger"
+            onClick={async () => {
+              await emit("max-certs-response", null);
+              setCerts(null);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </Modal>
     </>
   );

@@ -41,7 +41,7 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
       }}
     >
       <Modal
-        forceTop
+        zIndex={999999999}
         isOpen={error !== null || msg !== null}
         close={() => {
           setError(null);
