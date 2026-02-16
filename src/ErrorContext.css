@@ -1,57 +1,58 @@
 .error-inner {
-    background-color: rgba(0, 0, 0, 0.4);
-    overflow: auto;
-    padding: 0.65em;
-    border-radius: 12px;
-    font-family: "SF Mono", "Menlo", monospace;
-    font-size: 0.85rem;
-    user-select: text;
+  background-color: rgba(0, 0, 0, 0.4);
+  overflow: auto;
+  padding: 0.65em;
+  border-radius: 12px;
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 0.85rem;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .error-outer {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .error-outer h2 {
-    margin: 0;
+  margin: 0;
 }
 
 .error-outer p {
-    margin: 0;
+  margin: 0;
 }
 
 .error-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 .error-more-details {
-    color: var(--accent-primary);
-    cursor: pointer;
-    padding-bottom: 0.75rem;
-    padding-top: 0.25rem;
+  color: var(--accent-primary);
+  cursor: pointer;
+  padding-bottom: 0.75rem;
+  padding-top: 0.25rem;
 }
 
 .error-details-measure {
-    visibility: hidden;
-    max-height: 0;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    overflow: hidden;
-    line-height: 0;
+  visibility: hidden;
+  max-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  overflow: hidden;
+  line-height: 0;
 }
 
 .error-details {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .error-link {
-    color: var(--accent-primary);
-    cursor: pointer;
-    text-decoration: underline;
+  color: var(--accent-primary);
+  cursor: pointer;
+  text-decoration: underline;
 }

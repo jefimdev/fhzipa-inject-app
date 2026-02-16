@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import "./Device.css";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
-import { useError } from "./ErrorContext";
 
 export type DeviceInfo = {
   name: string;
@@ -21,7 +20,6 @@ export const Device = ({
   registerRefresh?: (fn?: () => void) => void;
 }) => {
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
-  const { err } = useError();
 
   const listingDevices = useRef<boolean>(false);
 
@@ -29,10 +27,10 @@ export const Device = ({
     (device: DeviceInfo | null) => {
       setSelectedDevice(device);
       invoke("set_selected_device", { device }).catch((err) => {
-        toast.error("Failed to select device" + err);
+        toast.error("Failed to select device: " + err);
       });
     },
-    [setSelectedDevice]
+    [setSelectedDevice],
   );
 
   const loadDevices = useCallback(async () => {
@@ -61,7 +59,7 @@ export const Device = ({
         }
         return `Found device${count > 1 ? "s" : ""}`;
       },
-      error: (e) => err("Failed to load devices", e),
+      error: (e) => "Unable to load devices: " + e,
     });
   }, [setDevices, selectDevice]);
   useEffect(() => {
