@@ -184,6 +184,14 @@ export const AppleID = ({
               </div>
               <button
                 onClick={async () => {
+                  if (!emailInput || !passwordInput) {
+                    toast.warning("Please enter both email and password.");
+                    return;
+                  }
+                  if (!emailInput.includes("@")) {
+                    toast.warning("Please enter a valid email address.");
+                    return;
+                  }
                   let promise = async () => {
                     await invoke("login_new", {
                       email: emailInput,
