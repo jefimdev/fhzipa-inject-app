@@ -19,7 +19,7 @@ use crate::{
     sideload::{install_sidestore_operation, sideload_operation, SideloaderMutex},
 };
 use tauri::Manager;
-use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, Registry};
+use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, Layer, Registry};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -30,12 +30,34 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {
-            let logging_layer = logging::FrontendLoggingLayer::new(app.handle().clone());
+            let log_dir = app
+                .path()
+                .app_data_dir()
+                .expect("failed to get app data dir");
+            std::fs::create_dir_all(&log_dir).ok();
+
+            let file_appender = tracing_appender::rolling::RollingFileAppender::builder()
+                .rotation(tracing_appender::rolling::Rotation::DAILY)
+                .filename_prefix("iloader")
+                .filename_suffix("log")
+                .max_log_files(3)
+                .build(&log_dir)
+                .expect("failed to create log file appender");
+
+            let file_layer = fmt::layer()
+                .with_writer(file_appender)
+                .with_target(true)
+                .with_ansi(false)
+                .with_filter(tracing_subscriber::filter::LevelFilter::TRACE);
+
+            let frontend_layer = logging::FrontendLoggingLayer::new(app.handle().clone())
+                .with_filter(tracing_subscriber::filter::LevelFilter::DEBUG);
+
             Registry::default()
-                .with(fmt::layer().with_target(true))
-                .with(logging_layer)
-                .with(tracing_subscriber::filter::LevelFilter::TRACE)
+                .with(file_layer)
+                .with(frontend_layer)
                 .init();
+
             app.manage(DeviceInfoMutex::new(None));
             app.manage(SideloaderMutex::new(None));
             Ok(())

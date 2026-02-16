@@ -7,6 +7,7 @@ import { Dropdown } from "../components/Dropdown";
 import { toast } from "sonner";
 import { invoke } from "@tauri-apps/api/core";
 import { useError } from "../ErrorContext";
+import { Virtuoso } from "react-virtuoso";
 
 type SettingsProps = {
   showHeading?: boolean;
@@ -25,7 +26,7 @@ let anisetteServers = [
 export const Settings = ({ showHeading = true }: SettingsProps) => {
   const [anisetteServer, setAnisetteServer] = useStore<string>(
     "anisetteServer",
-    "ani.sidestore.io"
+    "ani.sidestore.io",
   );
 
   const [logsOpen, setLogsOpen] = useState(false);
@@ -38,7 +39,7 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
     label,
   }));
   const logLevelOptions = [
-    { value: String(LogLevel.Trace), label: "Trace" },
+    // { value: String(LogLevel.Trace), label: "Trace" },
     { value: String(LogLevel.Debug), label: "Debug" },
     { value: String(LogLevel.Info), label: "Info" },
     { value: String(LogLevel.Warn), label: "Warn" },
@@ -66,26 +67,38 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
           presetToggleLabel="Back to preset servers"
         />
         <div className="settings-buttons">
-          <button className="action-button danger" onClick={() => toast.promise(invoke("reset_anisette_state"), {
-            loading: "Resetting anisette state...",
-            success: "Anisette state reset successfully",
-            error: (e) => err("Failed to reset anisette state", e),
-          })}>
+          <button
+            className="action-button danger"
+            onClick={() =>
+              toast.promise(invoke("reset_anisette_state"), {
+                loading: "Resetting anisette state...",
+                success: "Anisette state reset successfully",
+                error: (e) => err("Failed to reset anisette state", e),
+              })
+            }
+          >
             Reset anisette state
           </button>
-          <button onClick={() => setLogsOpen(true)}>
-            View Logs
-          </button>
+          <button onClick={() => setLogsOpen(true)}>View Logs</button>
         </div>
         <Modal isOpen={logsOpen} close={() => setLogsOpen(false)}>
           <div className="log-outer">
             <div className="log-header">
               <h2>Logs</h2>
-              <button onClick={() => {
-                const logText = filteredLogs.map(log => `[${log.timestamp}] [${LogLevel[log.level]}] ${log.target ? `<${log.target}>` : ""} ${log.message}`).join("\n");
-                navigator.clipboard.writeText(logText);
-                toast.success("Logs copied to clipboard");
-              }}>Copy to clipboard</button>
+              <button
+                onClick={() => {
+                  const logText = filteredLogs
+                    .map(
+                      (log) =>
+                        `[${log.timestamp}] [${LogLevel[log.level]}] ${log.target ? `<${log.target}>` : ""} ${log.message}`,
+                    )
+                    .join("\n");
+                  navigator.clipboard.writeText(logText);
+                  toast.success("Logs copied to clipboard");
+                }}
+              >
+                Copy to clipboard
+              </button>
             </div>
             <Dropdown
               label="Log Level:"
@@ -94,13 +107,28 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
               value={logLevelFilter}
               onChange={setLogLevelFilter}
             />
-            <pre className="log-inner">
-              {filteredLogs.length > 0 ? filteredLogs.map((log, index) => (
-                <div key={`${index}`}>
-                  <span style={{ color: "gray" }}>[{log.timestamp}]</span> {getHtmlForLevel(log.level)} {log.target ? <span style={{ color: "#aaa" }}>{log.target}</span> : ""} {log.message}
-                </div>
-              )) : "No logs yet."}
-            </pre>
+            {filteredLogs.length > 0 ? (
+              <Virtuoso
+                className="log-inner"
+                data={filteredLogs}
+                followOutput="smooth"
+                initialTopMostItemIndex={filteredLogs.length - 1}
+                itemContent={(_index, log) => (
+                  <div>
+                    <span style={{ color: "gray" }}>[{log.timestamp}]</span>{" "}
+                    {getHtmlForLevel(log.level)}{" "}
+                    {log.target ? (
+                      <span style={{ color: "#aaa" }}>{log.target}</span>
+                    ) : (
+                      ""
+                    )}{" "}
+                    {log.message}
+                  </div>
+                )}
+              />
+            ) : (
+              <pre className="log-inner">No logs yet.</pre>
+            )}
           </div>
         </Modal>
         {/* <div>
