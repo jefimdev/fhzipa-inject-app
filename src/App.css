@@ -1,6 +1,11 @@
 :root {
-  font-family: "SF Pro Display", "Inter", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  font-family:
+    "SF Pro Display",
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
@@ -191,7 +196,9 @@ select {
   color: inherit;
   background: #2c2c2e;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: border-color 0.15s ease, background 0.15s ease,
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
     transform 0.15s ease;
 }
 
@@ -345,4 +352,11 @@ button:active {
   .action-grid {
     grid-template-columns: 1fr;
   }
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0.5rem 0;
 }

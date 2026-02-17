@@ -53,24 +53,34 @@
 .log-inner {
   background-color: rgba(0, 0, 0, 0.4);
   overflow: auto;
-  padding: 0.65em;
   border-radius: 12px;
   font-family: "SF Mono", "Menlo", monospace;
   font-size: 0.85rem;
-  user-select: text;
   flex: 1 1 6rem;
   min-height: 0;
+  white-space: nowrap;
   -webkit-user-select: text;
-  white-space: pre-wrap;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .log-outer {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  min-width: 50vw;
+  min-width: 80vw;
   min-height: calc(85vh - 6rem);
   flex: 1;
+}
+
+/* I absolutely hate webkitgtk, why do I need this???? Why is the above not sufficient??? */
+.log-outer div,
+.log-outer span {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .log-outer h2 {
@@ -91,4 +101,8 @@
 
 .settings-buttons button {
   flex: 1;
+}
+
+.log-entry {
+  padding: 0 0.65em;
 }

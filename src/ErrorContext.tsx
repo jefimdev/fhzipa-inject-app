@@ -25,7 +25,7 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
     let lines = error?.split("\n").filter((line) => line.includes("●")) ?? [];
     console.log(lines);
     if (lines.length > 0) {
-      setSimpleError(lines[lines.length - 1].replace(/●\s*/, ""));
+      setSimpleError(lines[lines.length - 1].replace(/●\s*/, "").trim());
     }
   }, [error]);
 

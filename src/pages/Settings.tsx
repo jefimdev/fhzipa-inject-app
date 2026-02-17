@@ -114,7 +114,7 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
                 followOutput="smooth"
                 initialTopMostItemIndex={filteredLogs.length - 1}
                 itemContent={(_index, log) => (
-                  <div>
+                  <div className="log-entry">
                     <span style={{ color: "gray" }}>[{log.timestamp}]</span>{" "}
                     {getHtmlForLevel(log.level)}{" "}
                     {log.target ? (
@@ -127,7 +127,9 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
                 )}
               />
             ) : (
-              <pre className="log-inner">No logs yet.</pre>
+              <pre className="log-inner">
+                <div className="log-entry">No logs yet.</div>
+              </pre>
             )}
           </div>
         </Modal>

@@ -31,10 +31,10 @@
 }
 
 .error-more-details {
-  color: var(--accent-primary);
   cursor: pointer;
   padding-bottom: 0.75rem;
   padding-top: 0.25rem;
+  text-decoration: underline;
 }
 
 .error-details-measure {
@@ -52,7 +52,7 @@
 }
 
 .error-link {
-  color: var(--accent-primary);
+  /* color: var(--accent-primary); */
   cursor: pointer;
   text-decoration: underline;
 }

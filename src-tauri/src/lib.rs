@@ -33,14 +33,16 @@ pub fn run() {
             let log_dir = app
                 .path()
                 .app_data_dir()
-                .expect("failed to get app data dir");
+                .expect("failed to get app data dir")
+                .join("logs");
+
             std::fs::create_dir_all(&log_dir).ok();
 
             let file_appender = tracing_appender::rolling::RollingFileAppender::builder()
                 .rotation(tracing_appender::rolling::Rotation::DAILY)
                 .filename_prefix("iloader")
                 .filename_suffix("log")
-                .max_log_files(3)
+                .max_log_files(2)
                 .build(&log_dir)
                 .expect("failed to create log file appender");
 

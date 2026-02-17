@@ -31,6 +31,8 @@ export const AppleID = ({
     "ani.sidestore.io",
   );
   const [certs, setCerts] = useState<Certificate[] | null>(null);
+  const [selectedSerials, setSelectedSerials] = useState<string[]>([]);
+  const [chooseCertsOpen, setChooseCertsOpen] = useState<boolean>(false);
   const { err } = useError();
 
   useEffect(() => {
@@ -46,6 +48,10 @@ export const AppleID = ({
     getLoggedInAs();
     getStoredIds();
   }, [forceUpdateIds]);
+
+  useEffect(() => {
+    setSelectedSerials(certs?.map((c) => c.serialNumber) ?? []);
+  }, [certs]);
 
   const listenerAdded = useRef<boolean>(false);
   const unlisten = useRef<() => void>(() => {});
@@ -180,7 +186,8 @@ export const AppleID = ({
             </div>
           </div>
         )}
-        {loggedInAs === null && (storedIds.length === 0 || addAccountOpen) && (
+        {((loggedInAs === null && storedIds.length === 0) ||
+          addAccountOpen) && (
           <div className="new-login">
             {storedIds.length > 0 && <h3>New Login</h3>}
             <div className="credentials">
@@ -246,7 +253,7 @@ export const AppleID = ({
           </div>
         )}
       </div>
-      <Modal sizeFit isOpen={tfaOpen}>
+      <Modal sizeFit isOpen={tfaOpen} zIndex={2000}>
         <h2>Two-Factor Authentication</h2>
         <p>Please enter the verification code sent to your device.</p>
         <input
@@ -271,22 +278,58 @@ export const AppleID = ({
         </button>
       </Modal>
       <Modal sizeFit isOpen={certs !== null} zIndex={2000}>
-        <h2>Maximum certificates reached</h2>
-        <p>
+        <h2 className="cert-header">Maximum certificates reached</h2>
+        <p className="certs-desc">
           iloader will revoke your existing certificates and generate a new one.
         </p>
-        <p className="certs-see" role="button" tabIndex={0}>
-          Let me choose
+        <p
+          className="certs-see"
+          role="button"
+          tabIndex={0}
+          onClick={() => setChooseCertsOpen((v) => !v)}
+        >
+          {chooseCertsOpen ? "Hide certificate list" : "Choose what to revoke"}
         </p>
+        {chooseCertsOpen && certs && (
+          <div className="certs-list">
+            {certs.map((cert) => (
+              <div
+                key={cert.serialNumber}
+                className="cert-item"
+                onClick={() => {
+                  setSelectedSerials((prev) => {
+                    if (prev.includes(cert.serialNumber)) {
+                      return prev.filter((s) => s !== cert.serialNumber);
+                    } else {
+                      return [...prev, cert.serialNumber];
+                    }
+                  });
+                }}
+              >
+                <input
+                  type="checkbox"
+                  id={cert.serialNumber}
+                  name={cert.serialNumber}
+                  value={cert.serialNumber}
+                  checked={selectedSerials.includes(cert.serialNumber)}
+                />
+                <label htmlFor={cert.serialNumber}>
+                  {cert.name} - {cert.machineName}
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="certs-buttons">
           <button
             className="action-button primary"
             onClick={async () => {
               await emit(
                 "max-certs-response",
-                certs?.map((cert) => cert.serialNumber) ?? null,
+                selectedSerials.length > 0 ? selectedSerials : null,
               );
               setCerts(null);
+              setChooseCertsOpen(false);
             }}
           >
             Continue
@@ -296,6 +339,7 @@ export const AppleID = ({
             onClick={async () => {
               await emit("max-certs-response", null);
               setCerts(null);
+              setChooseCertsOpen(false);
             }}
           >
             Cancel

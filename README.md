@@ -46,12 +46,24 @@ Notice: I am currently rewriting [isideload](https://github.com/nab138/isideload
 - See App IDs
 - Save multiple apple ID credentials
 
+## Troubleshooting
+
+- If you are unable to solve an issue on your own, copy the full error message and ask on the [idevice Discord server](https://discord.gg/gjH8RaqhMr) or [open an issue](https://github.com/nab138/iloader/issues).
+- You can view app logs with the "View Logs." If nothing is showing up, change the log level to "Debug."
+- If those logs aren't helpful, logs with additional are stored in the following locations:
+  - Windows: `%APPDATA%\me.nabdev.iloader\logs`
+  - macOS: `~/Library/Application Support/me.nabdev.iloader/logs`
+  - Linux: `~/.local/share/me.nabdev.iloader/logs/`
+
 ## Credits
 
 - Icon made by [Transistor](https://github.com/transistor-exe)
 - UI improved by [StephenDev0](https://github.com/StephenDev0)
 - [idevice](https://github.com/jkcoxson/idevice) by [jkcoxson](https://github.com/jkcoxson) for communicating with iOS devices
 - [isideload](https://github.com/nab138/isideload) for installing apps
+  - A [modified version of apple-platform-rs](https://github.com/nab138/isideload-apple-platform-rs) was used for codesigning, based off [plume-apple-platform-rs](https://github.com/plumeimpactor/plume-apple-platform-rs)
+  - [Impactor](https://github.com/khcrysalis/Impactor) was used as a reference for cryptography, codesigning, and provision file parsing.
+  - [Sideloader](https://github.com/Dadoum/Sideloader) was used as a reference for how apple private developer endpoints work
 - [idevice_pair](https://github.com/jkcoxson/idevice_pair) was used as a reference for pairing file management
 - App made with [tauri](https://tauri.app)
 
@@ -61,7 +73,6 @@ Notice: I am currently rewriting [isideload](https://github.com/nab138/isideload
 - Import SideStore account info automatically
 - Mount DDI and open sidestore after installation
 - Check for developer mode and warn about it if not enabled
-- Improved error messages
 
 ## License
 

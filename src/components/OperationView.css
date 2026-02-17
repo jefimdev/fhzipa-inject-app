@@ -7,6 +7,10 @@
   width: 100%;
 }
 
+.operation-header h2 {
+  margin-top: 0;
+}
+
 .operation-content-container {
   display: flex;
   flex-direction: column;
@@ -52,6 +56,8 @@
 .operation-step-internal {
   flex-shrink: 1;
   text-align: left;
+  overflow-x: auto;
+  flex-grow: 1;
 }
 
 .operation-step-internal p {
@@ -105,7 +111,7 @@
 }
 
 .operation-header {
-  margin-bottom: 2em;
+  margin-bottom: 1em;
 }
 
 .operation-header p {
@@ -116,4 +122,10 @@
 .operation-success-message {
   font-weight: 600;
   color: rgb(241, 212, 115);
+}
+
+.operation-more-details {
+  cursor: pointer;
+  padding-top: 0.25rem;
+  text-decoration: underline;
 }

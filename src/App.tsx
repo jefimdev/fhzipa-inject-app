@@ -28,7 +28,7 @@ import { GlassCard } from "./components/GlassCard";
 
 function App() {
   const [operationState, setOperationState] = useState<OperationState | null>(
-    null
+    null,
   );
   const [loggedInAs, setLoggedInAs] = useState<string | null>(null);
   const [selectedDevice, setSelectedDevice] = useState<DeviceInfo | null>(null);
@@ -37,7 +37,7 @@ function App() {
   >(null);
   const [version, setVersion] = useState<string>("");
   const [platform, setPlatform] = useState<"mac" | "windows" | "linux">(
-    "windows"
+    "windows",
   );
   const refreshDevicesRef = useRef<(() => void) | null>(null);
 
@@ -71,13 +71,13 @@ function App() {
       if (platform === "linux") return linux ?? windows;
       return windows;
     },
-    [platform]
+    [platform],
   );
 
   const startOperation = useCallback(
     async (
       operation: Operation,
-      params: { [key: string]: any }
+      params: { [key: string]: any },
     ): Promise<void> => {
       setOperationState({
         current: operation,
@@ -115,7 +115,7 @@ function App() {
               }
               return old;
             });
-          }
+          },
         );
         try {
           await invoke(operation.id + "_operation", params);
@@ -127,7 +127,7 @@ function App() {
         }
       });
     },
-    [setOperationState]
+    [setOperationState],
   );
 
   const ensuredLoggedIn = useCallback((): boolean => {
@@ -357,15 +357,10 @@ function App() {
             </GlassCard>
           </section>
           {operationState && (
-            <section className="workspace-section">
-              <p className="section-label">Activity</p>
-              <GlassCard className="panel">
-                <OperationView
-                  operationState={operationState}
-                  closeMenu={() => setOperationState(null)}
-                />
-              </GlassCard>
-            </section>
+            <OperationView
+              operationState={operationState}
+              closeMenu={() => setOperationState(null)}
+            />
           )}
         </section>
       </div>
