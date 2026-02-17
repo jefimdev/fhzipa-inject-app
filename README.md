@@ -64,7 +64,7 @@ To add a new language, add your language to `src/i18next.ts`, and in `src/locale
 **i18next.ts:**
 
 ```ts
-export const languages = [
+const languages = [
   ["en", "English"],
   ["es", "Español"],
   // Your language here...

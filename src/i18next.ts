@@ -2,15 +2,18 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-export const languages = [
+const languages = [
   ["en", "English"],
   ["es", "Español"],
-  ["ar", "العربية"],
   ["it", "Italiano"],
   ["de", "Deutsch"],
   ["fr", "Français"],
-  ["vi", "Tiếng Việt"]
+  ["vi", "Tiếng Việt"],
 ] as const;
+
+export const sortedLanguages = [...languages].sort((a, b) =>
+  a[0].localeCompare(b[0]),
+);
 
 type TranslationResource = Record<string, unknown>;
 
@@ -34,7 +37,6 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    debug: true,
     fallbackLng: "en",
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default

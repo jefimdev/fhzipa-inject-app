@@ -10,7 +10,7 @@ import { useError } from "../ErrorContext";
 import { Virtuoso } from "react-virtuoso";
 import { useDialog } from "../DialogContext";
 import { Trans, useTranslation } from "react-i18next";
-import i18n, { languages } from "../i18next";
+import i18n, { sortedLanguages } from "../i18next";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
 type SettingsProps = {
@@ -82,7 +82,10 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
           <Dropdown
             label={t("app.language")}
             labelId="language"
-            options={languages.map(([value, label]) => ({ value, label }))}
+            options={sortedLanguages.map(([value, label]) => ({
+              value,
+              label,
+            }))}
             value={lang}
             onChange={setLang}
           />

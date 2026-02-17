@@ -185,7 +185,9 @@ function App() {
               <p className="subtitle">{t("subtitle")}</p>
             </div>
           </div>
-          <span className="version-pill">{t("version")} {version}</span>
+          <span className="version-pill">
+            {t("version")} {version}
+          </span>
         </div>
         <div className="header-actions">
           <button
@@ -208,8 +210,9 @@ function App() {
           <section className="workspace-section">
             <div className="section-header">
               <p className="section-label">{t("app.section_account")}</p>
+              {/* here to ensure spacing and stuff is correct */}
               <span className="section-hint placeholder" aria-hidden="true">
-                {t("app.section_placeholder")}
+                Placeholder
               </span>
             </div>
             <GlassCard className="panel">
@@ -341,7 +344,9 @@ function App() {
                     if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
                     let path = await openFileDialog({
                       multiple: false,
-                      filters: [{ name: t("app.ipa_files"), extensions: ["ipa"] }],
+                      filters: [
+                        { name: t("app.ipa_files"), extensions: ["ipa"] },
+                      ],
                     });
                     if (!path) return;
                     startOperation(sideloadOperation, {
