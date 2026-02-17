@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useError } from "../ErrorContext";
+import { useTranslation } from "react-i18next";
 
 export type Certificate = {
   name: string;
@@ -13,6 +14,7 @@ export type Certificate = {
 };
 
 export const Certificates = () => {
+  const { t } = useTranslation();
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const loadingRef = useRef<boolean>(false);
@@ -29,11 +31,11 @@ export const Certificates = () => {
       loadingRef.current = false;
     };
     toast.promise(promise, {
-      loading: "Loading certificates...",
-      success: "Certificates loaded successfully!",
-      error: (e) => err("Failed to load certificates", e),
+      loading: t("certificates.loading"),
+      success: t("certificates.loaded_success"),
+      error: (e) => err(t("certificates.failed_load"), e),
     });
-  }, [setCertificates]);
+  }, [setCertificates, t]);
 
   const revokeCertificate = useCallback(
     async (serialNumber: string) => {
@@ -42,12 +44,12 @@ export const Certificates = () => {
       });
       promise.then(loadCertificates);
       toast.promise(promise, {
-        loading: "Revoking certificate...",
-        success: "Certificate revoked successfully!",
-        error: (e) => err("Failed to revoke certificate: ", e),
+        loading: t("certificates.revoking"),
+        success: t("certificates.revoked_success"),
+        error: (e) => err(t("certificates.failed_revoke"), e),
       });
     },
-    [setCertificates, loadCertificates],
+    [setCertificates, loadCertificates, t],
   );
 
   useEffect(() => {
@@ -56,22 +58,20 @@ export const Certificates = () => {
 
   return (
     <>
-      <h2>Manage Certificates</h2>
+      <h2>{t("certificates.manage")}</h2>
       {certificates.length === 0 ? (
-        <div>
-          {loading ? "Loading certificates..." : "No certificates found."}
-        </div>
+        <div>{loading ? t("certificates.loading") : t("certificates.none_found")}</div>
       ) : (
         <div className="card">
           <div className="certificate-table-container">
             <table className="certificate-table">
               <thead>
                 <tr className="certificate-item">
-                  <th className="cert-item-part">Name</th>
-                  <th className="cert-item-part">Serial Number</th>
-                  <th className="cert-item-part">Machine Name</th>
-                  <th className="cert-item-part">Machine ID</th>
-                  <th>Revoke</th>
+                  <th className="cert-item-part">{t("certificates.name")}</th>
+                  <th className="cert-item-part">{t("certificates.serial_number")}</th>
+                  <th className="cert-item-part">{t("certificates.machine_name")}</th>
+                  <th className="cert-item-part">{t("certificates.machine_id")}</th>
+                  <th>{t("certificates.revoke")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -93,7 +93,7 @@ export const Certificates = () => {
                       tabIndex={0}
                       onClick={() => revokeCertificate(cert.serialNumber)}
                     >
-                      Revoke
+                      {t("certificates.revoke")}
                     </td>
                   </tr>
                 ))}
@@ -107,7 +107,7 @@ export const Certificates = () => {
         onClick={loadCertificates}
         disabled={loading}
       >
-        Refresh
+        {t("common.refresh")}
       </button>
     </>
   );

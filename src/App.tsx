@@ -26,9 +26,6 @@ import { checkForUpdates } from "./update";
 import logo from "./iloader.svg";
 import { GlassCard } from "./components/GlassCard";
 import { useTranslation } from "react-i18next";
-import { Dropdown } from "./components/Dropdown";
-import { useStore } from "./StoreContext";
-import i18n, { languages } from "./i18next";
 
 function App() {
   const { t } = useTranslation();
@@ -46,7 +43,6 @@ function App() {
     "windows",
   );
   const refreshDevicesRef = useRef<(() => void) | null>(null);
-  const [lang, setLang] = useStore<string>("lang", "en");
 
   useEffect(() => {
     const fetchVersion = async () => {
@@ -59,10 +55,6 @@ function App() {
   useEffect(() => {
     checkForUpdates();
   }, []);
-
-  useEffect(() => {
-    i18n.changeLanguage(lang);
-  }, [lang])
 
   useEffect(() => {
     if (typeof navigator === "undefined") return;
@@ -143,15 +135,15 @@ function App() {
 
   const ensuredLoggedIn = useCallback((): boolean => {
     if (loggedInAs) return true;
-    toast.error("You must be logged in!");
+    toast.error(t("app.must_be_logged_in"));
     return false;
-  }, [loggedInAs]);
+  }, [loggedInAs, t]);
 
   const ensureSelectedDevice = useCallback((): boolean => {
     if (selectedDevice) return true;
-    toast.error("You must select a device!");
+    toast.error(t("app.must_select_device"));
     return false;
-  }, [selectedDevice]);
+  }, [selectedDevice, t]);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
@@ -187,7 +179,7 @@ function App() {
       <header className="workspace-header">
         <div className="header-left">
           <div className="title-block">
-            <img src={logo} alt="iloader logo" className="logo" />
+            <img src={logo} alt={t("app.logo_alt")} className="logo" />
             <div>
               <h1 className="title">iloader</h1>
               <p className="subtitle">{t("subtitle")}</p>
@@ -196,13 +188,6 @@ function App() {
           <span className="version-pill">{t("version")} {version}</span>
         </div>
         <div className="header-actions">
-          <Dropdown
-            label="Language"
-            labelId="language"
-            options={languages.map(([value, label]) => ({ value, label }))}
-            value={lang}
-            onChange={setLang}
-          />
           <button
             className="toolbar-button"
             onClick={async () => {
@@ -210,11 +195,11 @@ function App() {
                 await openUrl("https://github.com/nab138/iloader");
               } catch (error) {
                 console.error("Failed to open GitHub link", error);
-                toast.error("Unable to open GitHub link");
+                toast.error(t("app.open_github_failed"));
               }
             }}
           >
-            GitHub
+            {t("app.github")}
           </button>
         </div>
       </header>
@@ -222,9 +207,9 @@ function App() {
         <aside className="workspace-sidebar">
           <section className="workspace-section">
             <div className="section-header">
-              <p className="section-label">Account</p>
+              <p className="section-label">{t("app.section_account")}</p>
               <span className="section-hint placeholder" aria-hidden="true">
-                Placeholder
+                {t("app.section_placeholder")}
               </span>
             </div>
             <GlassCard className="panel">
@@ -232,7 +217,7 @@ function App() {
             </GlassCard>
           </section>
           <section className="workspace-section">
-            <p className="section-label">Management</p>
+            <p className="section-label">{t("app.section_management")}</p>
             <div className="workspace-list">
               <button
                 className="workspace-list-item"
@@ -241,7 +226,7 @@ function App() {
                   setOpenModal("pairing");
                 }}
               >
-                Manage Pairing File{" "}
+                {t("app.manage_pairing_file")}{" "}
                 <span aria-hidden="true">{shortcutLabel("⌘P", "Ctrl+P")}</span>
               </button>
               <button
@@ -250,7 +235,7 @@ function App() {
                   refreshDevicesRef.current?.();
                 }}
               >
-                Refresh Devices{" "}
+                {t("app.refresh_devices")}{" "}
                 <span aria-hidden="true">{shortcutLabel("⌘R", "Ctrl+R")}</span>
               </button>
               <button
@@ -260,7 +245,7 @@ function App() {
                   setOpenModal("certificates");
                 }}
               >
-                Certificates{" "}
+                {t("app.certificates")}{" "}
                 <span aria-hidden="true">
                   {shortcutLabel("⌘⇧C", "Ctrl+Shift+C")}
                 </span>
@@ -272,7 +257,7 @@ function App() {
                   setOpenModal("appids");
                 }}
               >
-                App IDs{" "}
+                {t("app.app_ids")}{" "}
                 <span aria-hidden="true">
                   {shortcutLabel("⌘⇧A", "Ctrl+Shift+A")}
                 </span>
@@ -283,11 +268,11 @@ function App() {
         <section className="workspace-content">
           <section className="workspace-section">
             <div className="section-header">
-              <p className="section-label">Devices</p>
+              <p className="section-label">{t("app.devices")}</p>
               <span className="section-hint">
                 {selectedDevice
-                  ? `Active: ${selectedDevice.name}`
-                  : "Select a device"}
+                  ? t("app.active_device", { name: selectedDevice.name })
+                  : t("app.select_device")}
               </span>
             </div>
             <GlassCard className="panel">
@@ -302,8 +287,8 @@ function App() {
           </section>
           <section className="workspace-section">
             <div className="section-header">
-              <p className="section-label">Installers</p>
-              <span className="section-hint">Choose a build</span>
+              <p className="section-label">{t("app.installers")}</p>
+              <span className="section-hint">{t("app.choose_build")}</span>
             </div>
             <GlassCard className="panel">
               <div className="action-row single-row">
@@ -316,7 +301,7 @@ function App() {
                     });
                   }}
                 >
-                  SideStore (Stable)
+                  {t("app.sidestore_stable")}
                 </button>
                 <button
                   onClick={() => {
@@ -327,7 +312,7 @@ function App() {
                     });
                   }}
                 >
-                  SideStore (Nightly)
+                  {t("app.sidestore_nightly")}
                 </button>
                 <button
                   onClick={() => {
@@ -338,7 +323,7 @@ function App() {
                     });
                   }}
                 >
-                  LiveContainer + SideStore (Stable)
+                  {t("app.livecontainer_sidestore_stable")}
                 </button>
                 <button
                   onClick={() => {
@@ -349,14 +334,14 @@ function App() {
                     });
                   }}
                 >
-                  LiveContainer + SideStore (Nightly)
+                  {t("app.livecontainer_sidestore_nightly")}
                 </button>
                 <button
                   onClick={async () => {
                     if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
                     let path = await openFileDialog({
                       multiple: false,
-                      filters: [{ name: "IPA Files", extensions: ["ipa"] }],
+                      filters: [{ name: t("app.ipa_files"), extensions: ["ipa"] }],
                     });
                     if (!path) return;
                     startOperation(sideloadOperation, {
@@ -364,13 +349,13 @@ function App() {
                     });
                   }}
                 >
-                  Import IPA
+                  {t("app.import_ipa")}
                 </button>
               </div>
             </GlassCard>
           </section>
           <section className="workspace-section">
-            <p className="section-label">Settings</p>
+            <p className="section-label">{t("app.settings")}</p>
             <GlassCard className="panel settings-panel">
               <Settings showHeading={false} />
             </GlassCard>

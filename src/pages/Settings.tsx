@@ -1,6 +1,6 @@
 import "./Settings.css";
 import { useStore } from "../StoreContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LogLevel, useLogs } from "../LogContext";
 import { Modal } from "../components/Modal";
 import { Dropdown } from "../components/Dropdown";
@@ -9,6 +9,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { useError } from "../ErrorContext";
 import { Virtuoso } from "react-virtuoso";
 import { useDialog } from "../DialogContext";
+import { useTranslation } from "react-i18next";
+import i18n, { languages } from "../i18next";
 
 type SettingsProps = {
   showHeading?: boolean;
@@ -25,6 +27,7 @@ let anisetteServers = [
   ["anisette.wedotstud.io", "WE. Studio"],
 ];
 export const Settings = ({ showHeading = true }: SettingsProps) => {
+  const { t } = useTranslation();
   const [anisetteServer, setAnisetteServer] = useStore<string>(
     "anisetteServer",
     "ani.sidestore.io",
@@ -42,56 +45,70 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
   }));
   const logLevelOptions = [
     // { value: String(LogLevel.Trace), label: "Trace" },
-    { value: String(LogLevel.Debug), label: "Debug" },
-    { value: String(LogLevel.Info), label: "Info" },
-    { value: String(LogLevel.Warn), label: "Warn" },
-    { value: String(LogLevel.Error), label: "Error" },
+    { value: String(LogLevel.Debug), label: t("settings.debug") },
+    { value: String(LogLevel.Info), label: t("settings.info") },
+    { value: String(LogLevel.Warn), label: t("settings.warn") },
+    { value: String(LogLevel.Error), label: t("settings.error") },
   ];
   const filteredLogs = logs.filter((log) => {
     return log.level >= Number(logLevelFilter);
   });
 
+  const [lang, setLang] = useStore<string>("lang", "en");
+
+
+  useEffect(() => {
+    i18n.changeLanguage(lang);
+  }, [lang])
+
   return (
     <>
-      {showHeading && <h2>Settings</h2>}
+      {showHeading && <h2>{t("settings.title")}</h2>}
       <div className="settings-container">
         <Dropdown
-          label="Anisette Server:"
+          label={t("settings.anisette_server")}
           labelId="anisette-label"
           options={anisetteOptions}
           value={anisetteServer}
           onChange={setAnisetteServer}
           allowCustom
           defaultCustomValue="ani.yourserver.com"
-          customPlaceholder="Custom Anisette Server"
-          customLabel="Custom"
-          customToggleLabel="Use custom Anisette server"
-          presetToggleLabel="Back to preset servers"
+          customPlaceholder={t("settings.custom_anisette_placeholder")}
+          customLabel={t("settings.custom_anisette")}
+          customToggleLabel={t("settings.use_custom_anisette")}
+          presetToggleLabel={t("settings.back_preset_servers")}
+        />
+        <Dropdown
+          label={t("app.language")}
+          labelId="language"
+          options={languages.map(([value, label]) => ({ value, label }))}
+          value={lang}
+          onChange={setLang}
         />
         <div className="settings-buttons">
           <button
             className="action-button danger"
             onClick={() =>
               confirm(
-                "Reset Anisette State",
-                "Are you sure you want to reset the anisette state? You will be required to enter your 2FA code again.",
+                t("settings.reset_anisette_title"),
+                t("settings.reset_anisette_message"),
                 () =>
                   toast.promise(invoke("reset_anisette_state"), {
-                    loading: "Resetting anisette state...",
-                    success: "Anisette state reset successfully",
-                    error: (e) => err("Failed to reset anisette state", e),
+                    loading: t("settings.resetting_anisette_state"),
+                    success: t("settings.anisette_state_reset_success"),
+                    error: (e) => err(t("settings.failed_reset_anisette_state"), e),
                   }),
               )
             }
           >
-            Reset anisette state
+            {t("settings.reset_anisette_state")}
           </button>
-          <button onClick={() => setLogsOpen(true)}>View Logs</button>
+          <button onClick={() => setLogsOpen(true)}>{t("settings.view_logs")}</button>
         </div>
         <Modal isOpen={logsOpen} close={() => setLogsOpen(false)}>
           <div className="log-outer">
             <div className="log-header">
-              <h2>Logs</h2>
+              <h2>{t("settings.logs")}</h2>
               <button
                 onClick={() => {
                   const logText = filteredLogs
@@ -101,14 +118,14 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
                     )
                     .join("\n");
                   navigator.clipboard.writeText(logText);
-                  toast.success("Logs copied to clipboard");
+                  toast.success(t("common.copied_sucess"));
                 }}
               >
-                Copy to clipboard
+                {t("common.copy_to_clipboard")}
               </button>
             </div>
             <Dropdown
-              label="Log Level:"
+              label={t("settings.log_level")}
               labelId="log-level-label"
               options={logLevelOptions}
               value={logLevelFilter}
@@ -135,7 +152,7 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
               />
             ) : (
               <pre className="log-inner">
-                <div className="log-entry">No logs yet.</div>
+                <div className="log-entry">{t("settings.no_logs_yet")}</div>
               </pre>
             )}
           </div>

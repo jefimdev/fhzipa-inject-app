@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import "./Device.css";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export type DeviceInfo = {
   name: string;
@@ -19,6 +20,7 @@ export const Device = ({
   setSelectedDevice: (device: DeviceInfo | null) => void;
   registerRefresh?: (fn?: () => void) => void;
 }) => {
+  const { t } = useTranslation();
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
 
   const listingDevices = useRef<boolean>(false);
@@ -27,10 +29,10 @@ export const Device = ({
     (device: DeviceInfo | null) => {
       setSelectedDevice(device);
       invoke("set_selected_device", { device }).catch((err) => {
-        toast.error("Failed to select device: " + err);
+        toast.error(t("device.failed_select_prefix") + err);
       });
     },
-    [setSelectedDevice],
+    [setSelectedDevice, t],
   );
 
   const loadDevices = useCallback(async () => {
@@ -52,16 +54,16 @@ export const Device = ({
     });
 
     toast.promise(promise, {
-      loading: "Loading devices...",
+      loading: t("device.loading_devices"),
       success: (count) => {
         if (count === 0) {
-          return "No devices found";
+          return t("device.no_devices_found");
         }
-        return `Found device${count > 1 ? "s" : ""}`;
+        return count > 1 ? t("device.found_devices") : t("device.found_device");
       },
-      error: (e) => "Unable to load devices: " + e,
+      error: (e) => t("device.unable_load_devices_prefix") + e,
     });
-  }, [setDevices, selectDevice]);
+  }, [setDevices, selectDevice, t]);
   useEffect(() => {
     loadDevices();
   }, [loadDevices]);
@@ -73,9 +75,9 @@ export const Device = ({
 
   return (
     <>
-      <h2 style={{ marginTop: 0 }}>iDevice</h2>
+      <h2 style={{ marginTop: 0 }}>{t("device.title")}</h2>
       <div className="credentials-container">
-        {devices.length === 0 && <div>No devices found.</div>}
+        {devices.length === 0 && <div>{t("device.no_devices_found_period")}</div>}
         {devices.map((device) => {
           const isActive = selectedDevice?.id === device.id;
           return (
@@ -91,12 +93,12 @@ export const Device = ({
                 </span>
               </div>
               {isActive && (
-                <span className="device-selected-pill">Selected</span>
+                <span className="device-selected-pill">{t("device.selected")}</span>
               )}
             </button>
           );
         })}
-        <button onClick={loadDevices}>Refresh</button>
+        <button onClick={loadDevices}>{t("common.refresh")}</button>
       </div>
     </>
   );
