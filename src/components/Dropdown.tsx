@@ -1,5 +1,6 @@
 import "./Dropdown.css";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export type DropdownOption = {
     value: string;
@@ -30,11 +31,12 @@ export const Dropdown = ({
     onChange,
     allowCustom = false,
     defaultCustomValue = "",
-    customPlaceholder = "Custom value",
-    customLabel = "Custom",
-    customToggleLabel = "Use custom value",
-    presetToggleLabel = "Back to preset options",
+    customPlaceholder,
+    customLabel,
+    customToggleLabel,
+    presetToggleLabel,
 }: DropdownProps) => {
+    const { t } = useTranslation();
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const customInputRef = useRef<HTMLInputElement | null>(null);
@@ -98,18 +100,23 @@ export const Dropdown = ({
         }
     };
 
+    const resolvedCustomPlaceholder = customPlaceholder || t("dropdown.custom_value");
+    const resolvedCustomLabel = customLabel || t("dropdown.custom");
+    const resolvedCustomToggleLabel = customToggleLabel || t("dropdown.use_custom_value");
+    const resolvedPresetToggleLabel = presetToggleLabel || t("dropdown.back_preset_options");
+
     const menuLabel =
         lastCustomValueRef.current && lastCustomValueRef.current.length > 0
-            ? `${customLabel} (${lastCustomValueRef.current})`
-            : customLabel;
+            ? `${resolvedCustomLabel} (${lastCustomValueRef.current})`
+            : resolvedCustomLabel;
     const dropdownOptions = allowCustom
         ? [...options, { value: customValueKey, label: menuLabel }]
         : options;
     const selectedValue = isCustom ? customValueKey : value;
     const presetLabel =
-        options.find((option) => option.value === value)?.label ?? "Select";
+        options.find((option) => option.value === value)?.label ?? t("dropdown.select");
     const selectedLabel = isCustom
-        ? lastCustomValueRef.current || customLabel
+        ? lastCustomValueRef.current || resolvedCustomLabel
         : presetLabel;
 
     return (
@@ -164,7 +171,7 @@ export const Dropdown = ({
                                         <span>{option.label}</span>
                                         {isSelected && (
                                             <span className="checkmark" aria-hidden="true">
-                                                v
+                                                ✓
                                             </span>
                                         )}
                                     </button>
@@ -177,14 +184,14 @@ export const Dropdown = ({
             {allowCustom && !isCustom ? (
                 <div className="custom-toggle">
                     <button type="button" className="link-button" onClick={activateCustom}>
-                        {customToggleLabel}
+                        {resolvedCustomToggleLabel}
                     </button>
                 </div>
             ) : null}
             {allowCustom && isCustom ? (
                 <div className="custom-toggle">
                     <button type="button" className="link-button muted" onClick={deactivateCustom}>
-                        {presetToggleLabel}
+                        {resolvedPresetToggleLabel}
                     </button>
                 </div>
             ) : null}
@@ -192,7 +199,7 @@ export const Dropdown = ({
                 <input
                     className="settings-label custom-anisette"
                     type="text"
-                    placeholder={customPlaceholder}
+                    placeholder={resolvedCustomPlaceholder}
                     value={value}
                     onChange={(event) => {
                         onChange(event.target.value);

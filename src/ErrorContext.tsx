@@ -3,6 +3,7 @@ import { Modal } from "./components/Modal";
 import "./ErrorContext.css";
 import { toast } from "sonner";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { Trans, useTranslation } from "react-i18next";
 
 export const ErrorContext = createContext<{
   err: (msg: string, err: string | null) => string;
@@ -11,6 +12,7 @@ export const ErrorContext = createContext<{
 export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { t } = useTranslation();
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [simpleError, setSimpleError] = useState<string | null>(null);
@@ -51,40 +53,41 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
       >
         <div className="error-outer">
           <div className="error-header">
-            <h2>An Error Occured: {msg ?? "Unknown"}</h2>
+            <h2>{t("error.title", { msg: msg ?? t("error.unknown") })}</h2>
             <button
               onClick={() => {
                 navigator.clipboard.writeText(
-                  error?.replace(/^\n+/, "") ?? "No error",
+                  error?.replace(/^\n+/, "") ?? t("common.no_error"),
                 );
-                toast.success("Logs copied to clipboard");
+                toast.success(t("common.copied_sucess"));
               }}
             >
-              Copy to clipboard
+              {t("common.copy_to_clipboard")}
             </button>
           </div>
           {simpleError && <pre className="error-inner">{simpleError}</pre>}
           <p style={simpleError ? {} : { marginTop: "0.5rem" }}>
-            If the issue persists, press "Copy to clipboard" and send the copied
-            error to the{" "}
-            <span
-              onClick={() => openUrl("https://discord.gg/gjH8RaqhMr")}
-              role="link"
-              className="error-link"
-            >
-              Discord
-            </span>{" "}
-            or a{" "}
-            <span
-              onClick={() =>
-                openUrl("https://github.com/nab138/iloader/issues")
-              }
-              role="link"
-              className="error-link"
-            >
-              GitHub issue
-            </span>{" "}
-            for support.
+            <Trans
+              i18nKey="error.support_message"
+              components={{
+                discord: (
+                  <span
+                    onClick={() => openUrl("https://discord.gg/gjH8RaqhMr")}
+                    role="link"
+                    className="error-link"
+                  />
+                ),
+                github: (
+                  <span
+                    onClick={() =>
+                      openUrl("https://github.com/nab138/iloader/issues")
+                    }
+                    role="link"
+                    className="error-link"
+                  />
+                ),
+              }}
+            />
           </p>
           {simpleError && (
             <p
@@ -93,7 +96,7 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
               tabIndex={0}
               onClick={() => setMoreDetailsOpen(!moreDetailsOpen)}
             >
-              More Details {moreDetailsOpen ? "▲" : "▼"}
+              {t("common.more_details")} {moreDetailsOpen ? "▲" : "▼"}
             </p>
           )}
           {simpleError && !moreDetailsOpen && (
@@ -114,7 +117,7 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
               setMsg(null);
             }}
           >
-            Dismiss
+            {t("common.dismiss")}
           </button>
         </div>
       </Modal>

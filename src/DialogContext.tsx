@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { Modal } from "./components/Modal";
 import "./DialogContext.css";
+import { useTranslation } from "react-i18next";
 
 export const DialogContext = createContext<{
   confirm: (
@@ -14,6 +15,7 @@ export const DialogContext = createContext<{
 export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { t } = useTranslation();
   const [title, setTitle] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [onConfirm, setOnConfirm] = useState<(() => void) | null>(null);
@@ -56,7 +58,7 @@ export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({
                 setOnCancel(null);
               }}
             >
-              Confirm
+              {t("dialog.confirm")}
             </button>
             <button
               onClick={() => {
@@ -67,7 +69,7 @@ export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({
                 setOnCancel(null);
               }}
             >
-              Cancel
+              {t("dialog.cancel")}
             </button>
           </div>
         </div>

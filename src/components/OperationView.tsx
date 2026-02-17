@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { Trans, useTranslation } from "react-i18next";
 
 export default ({
   operationState,
@@ -17,12 +18,13 @@ export default ({
   operationState: OperationState;
   closeMenu: () => void;
 }) => {
+  const { t } = useTranslation();
   const operation = operationState.current;
   const opFailed = operationState.failed.length > 0;
   const done =
     (opFailed &&
       operationState.started.length ==
-        operationState.completed.length + operationState.failed.length) ||
+      operationState.completed.length + operationState.failed.length) ||
     operationState.completed.length == operation.steps.length;
 
   const [moreDetailsOpen, setMoreDetailsOpen] = useState(false);
@@ -38,16 +40,16 @@ export default ({
     >
       <div className="operation-header">
         <h2>
-          {done && !opFailed && operation.successTitle
-            ? operation?.successTitle
-            : operation?.title}
+          {done && !opFailed && operation.successTitleKey
+            ? t(operation.successTitleKey)
+            : t(operation.titleKey)}
         </h2>
         <p>
           {done
             ? opFailed
-              ? "Operation failed."
-              : "Operation completed"
-            : "Please wait..."}
+              ? t("operation.failed")
+              : t("operation.completed")
+            : t("operation.please_wait")}
         </p>
       </div>
       <div className="operation-content-container">
@@ -85,7 +87,7 @@ export default ({
                 </div>
 
                 <div className="operation-step-internal">
-                  <p>{step.title}</p>
+                  <p>{t(step.titleKey)}</p>
                   {failed && (
                     <>
                       <pre className="operation-extra-details">
@@ -97,7 +99,7 @@ export default ({
                         tabIndex={0}
                         onClick={() => setMoreDetailsOpen(!moreDetailsOpen)}
                       >
-                        More Details {moreDetailsOpen ? "▲" : "▼"}
+                        {t("common.more_details")} {moreDetailsOpen ? "▲" : "▼"}
                       </p>
                       {moreDetailsOpen && (
                         <pre className="operation-extra-details">
@@ -112,32 +114,34 @@ export default ({
           })}
         </div>
       </div>
-      {done && !opFailed && operation.successMessage && (
-        <p className="operation-success-message">{operation.successMessage}</p>
+      {done && !opFailed && operation.successMessageKey && (
+        <p className="operation-success-message">{t(operation.successMessageKey!)}</p>
       )}
-      {done && !(!opFailed && operation.successMessage) && <p></p>}
+      {done && !(!opFailed && operation.successMessageKey) && <p></p>}
       {opFailed && done && (
         <>
           <p style={{ margin: "1.25rem 0 0.5rem 0" }}>
-            If the issue persists, copy and send the error to{" "}
-            <span
-              onClick={() => openUrl("https://discord.gg/gjH8RaqhMr")}
-              role="link"
-              className="error-link"
-            >
-              Discord
-            </span>{" "}
-            or a{" "}
-            <span
-              onClick={() =>
-                openUrl("https://github.com/nab138/iloader/issues")
-              }
-              role="link"
-              className="error-link"
-            >
-              GitHub issue
-            </span>{" "}
-            for support.
+            <Trans
+              i18nKey="error.support_message"
+              components={{
+                discord: (
+                  <span
+                    onClick={() => openUrl("https://discord.gg/gjH8RaqhMr")}
+                    role="link"
+                    className="error-link"
+                  />
+                ),
+                github: (
+                  <span
+                    onClick={() =>
+                      openUrl("https://github.com/nab138/iloader/issues")
+                    }
+                    role="link"
+                    className="error-link"
+                  />
+                ),
+              }}
+            />
           </p>
           <button
             style={{ marginBottom: "1.25rem", width: "100%" }}
@@ -145,18 +149,18 @@ export default ({
             onClick={() => {
               navigator.clipboard.writeText(
                 operationState.failed[0]?.extraDetails?.replace(/^\n+/, "") ??
-                  "No error",
+                t("common.no_error"),
               );
-              toast.success("Logs copied to clipboard");
+              toast.success(t("common.copied_sucess"));
             }}
           >
-            Copy error to clipboard
+            {t("operation.copy_error_clipboard")}
           </button>
         </>
       )}
       {done && (
         <button style={{ width: "100%" }} onClick={closeMenu}>
-          Dismiss
+          {t("common.dismiss")}
         </button>
       )}
     </Modal>

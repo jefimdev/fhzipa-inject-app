@@ -53,6 +53,24 @@ Install SideStore (or other apps) and import your pairing file with ease
   - macOS: `~/Library/Application Support/me.nabdev.iloader/logs`
   - Linux: `~/.local/share/me.nabdev.iloader/logs/`
 
+## Translating
+
+iloader needs localization! If you speak another language and notice iloader does not support it or has mistakes, please consider contributing.
+
+To update/edit an existing language, make a PR modifying `src/locales/<lang>.json`.
+
+To add a new language, add a new file in `src/locales` titled `<langcode>.json` and add your language to `src/i18next.ts`:
+
+```ts
+export const languages = [
+    ['en', 'English'],
+    ['es', 'Español'],
+    // Your language here...
+] as const;
+```
+
+Thank you for translating!
+
 ## Credits
 
 - Icon made by [Transistor](https://github.com/transistor-exe)
@@ -64,6 +82,7 @@ Install SideStore (or other apps) and import your pairing file with ease
   - [Sideloader](https://github.com/Dadoum/Sideloader) was used as a reference for how apple private developer endpoints work
 - [idevice_pair](https://github.com/jkcoxson/idevice_pair) was used as a reference for pairing file management
 - App made with [tauri](https://tauri.app)
+
 
 ## Future Plans
 

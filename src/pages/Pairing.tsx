@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useError } from "../ErrorContext";
 import { useDialog } from "../DialogContext";
+import { useTranslation } from "react-i18next";
 
 type PairingAppInfo = {
   name: string;
@@ -12,6 +13,7 @@ type PairingAppInfo = {
 };
 
 export const Pairing = () => {
+  const { t } = useTranslation();
   const [apps, setApps] = useState<PairingAppInfo[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -31,11 +33,11 @@ export const Pairing = () => {
       loadingRef.current = false;
     };
     toast.promise(promise, {
-      loading: "Loading Apps...",
-      success: "Apps loaded successfully!",
-      error: (e) => err("Failed to load Apps", e),
+      loading: t("pairing.loading_apps"),
+      success: t("pairing.apps_loaded_success"),
+      error: (e) => err(t("pairing.failed_load_apps"), e),
     });
-  }, [setApps]);
+  }, [setApps, t]);
 
   const pair = useCallback(
     async (app: PairingAppInfo) => {
@@ -44,12 +46,12 @@ export const Pairing = () => {
         path: app.path,
       });
       toast.promise(promise, {
-        loading: "Placing pairing file...",
-        success: "Pairing file placed successfully!",
-        error: (e) => err("Failed to place pairing", e),
+        loading: t("pairing.placing_pairing_file"),
+        success: t("pairing.pairing_file_placed_success"),
+        error: (e) => err(t("pairing.failed_place_pairing"), e),
       });
     },
-    [setApps, loadApps],
+    [setApps, loadApps, t],
   );
 
   useEffect(() => {
@@ -58,18 +60,18 @@ export const Pairing = () => {
 
   return (
     <>
-      <h2>Manage Pairing File</h2>
+      <h2>{t("pairing.manage")}</h2>
       {apps.length === 0 ? (
-        <div>{loading ? "Loading App..." : "No Supported Apps found."}</div>
+        <div>{loading ? t("pairing.loading_app") : t("pairing.no_supported_apps_found")}</div>
       ) : (
         <div className="card">
           <div className="certificate-table-container">
             <table className="certificate-table">
               <thead>
                 <tr className="certificate-item">
-                  <th className="cert-item-part">Name</th>
-                  <th className="cert-item-part">Bundle ID</th>
-                  <th>Place Pairing File</th>
+                  <th className="cert-item-part">{t("pairing.name")}</th>
+                  <th className="cert-item-part">{t("pairing.bundle_id")}</th>
+                  <th>{t("pairing.place_pairing_file")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -89,7 +91,7 @@ export const Pairing = () => {
                       role="button"
                       tabIndex={0}
                     >
-                      Place
+                      {t("pairing.place")}
                     </td>
                   </tr>
                 ))}
@@ -102,27 +104,27 @@ export const Pairing = () => {
         style={{ marginTop: "1em", width: "100%" }}
         onClick={() => {
           confirm(
-            "Advanced: Export Pairing File",
-            `This is not recommended unless you know what you're doing. Press "Place" next to an app to transfer it automatically instead. Are you sure you still want to export your pairing file?`,
+            t("pairing.advanced_export_title"),
+            t("pairing.advanced_export_message"),
             () => {
               const promise = invoke<void>("export_pairing_cmd");
               toast.promise(promise, {
-                loading: "Exporting pairing file...",
-                success: "Pairing file exported successfully!",
-                error: (e) => err("Failed to export pairing file", e),
+                loading: t("pairing.exporting_pairing_file"),
+                success: t("pairing.pairing_file_exported_success"),
+                error: (e) => err(t("pairing.failed_export_pairing_file"), e),
               });
             },
           );
         }}
       >
-        Export (Not Recommended)
+        {t("pairing.export_not_recommended")}
       </button>
       <button
         style={{ marginTop: "1em", width: "100%" }}
         onClick={loadApps}
         disabled={loading}
       >
-        Refresh Installed Apps
+        {t("pairing.refresh_installed_apps")}
       </button>
     </>
   );

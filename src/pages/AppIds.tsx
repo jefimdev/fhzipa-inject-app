@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useStore } from "../StoreContext";
 import { useError } from "../ErrorContext";
+import { useTranslation } from "react-i18next";
 
 type AppId = {
   appIdId: string;
@@ -20,6 +21,7 @@ type AppIdsResponse = {
 };
 
 export const AppIds = () => {
+  const { t } = useTranslation();
   const [appIds, setAppIds] = useState<AppId[]>([]);
   const [maxQuantity, setMaxQuantity] = useState<number | null>(null);
   const [availableQuantity, setAvailableQuantity] = useState<number | null>(
@@ -44,11 +46,11 @@ export const AppIds = () => {
       loadingRef.current = false;
     };
     toast.promise(promise, {
-      loading: "Loading App IDs...",
-      success: "App IDs loaded successfully!",
-      error: (e) => err("Failed to load App IDs", e),
+      loading: t("app_ids.loading"),
+      success: t("app_ids.loaded_success"),
+      error: (e) => err(t("app_ids.failed_load"), e),
     });
-  }, [setAppIds]);
+  }, [setAppIds, t]);
 
   const deleteId = useCallback(
     async (id: string) => {
@@ -57,12 +59,12 @@ export const AppIds = () => {
       });
       promise.then(loadAppIds);
       toast.promise(promise, {
-        loading: "Deleting...",
-        success: "App ID deleted successfully!",
-        error: (e) => err("Failed to delete App ID", e),
+        loading: t("apple_id.deleting"),
+        success: t("app_ids.deleted_success"),
+        error: (e) => err(t("app_ids.failed_delete"), e),
       });
     },
-    [setAppIds, loadAppIds],
+    [setAppIds, loadAppIds, t],
   );
 
   useEffect(() => {
@@ -71,32 +73,35 @@ export const AppIds = () => {
 
   return (
     <>
-      <h2>Manage App IDs</h2>
+      <h2>{t("app_ids.manage")}</h2>
       {maxQuantity !== null && (
         <div style={{ marginBottom: "0.5em" }}>
-          {availableQuantity}/{maxQuantity} IDs Available
+          {t("app_ids.available", {
+            available: availableQuantity,
+            max: maxQuantity,
+          })}
         </div>
       )}
       {appIds.length === 0 ? (
-        <div>{loading ? "Loading App IDs..." : "No App IDs found."}</div>
+        <div>{loading ? t("app_ids.loading") : t("app_ids.none_found")}</div>
       ) : (
         <div className="card">
           <div className="certificate-table-container">
             <table className="certificate-table">
               <thead>
                 <tr className="certificate-item">
-                  <th className="cert-item-part">Name</th>
-                  <th className="cert-item-part">Expiration</th>
-                  <th className="cert-item-part">ID</th>
+                  <th className="cert-item-part">{t("app_ids.name")}</th>
+                  <th className="cert-item-part">{t("app_ids.expiration")}</th>
+                  <th className="cert-item-part">{t("app_ids.id")}</th>
                   <th
                     className="cert-item-part"
                     style={{
                       borderRight: appIdDeletion ? undefined : "none",
                     }}
                   >
-                    Identifier
+                    {t("app_ids.identifier")}
                   </th>
-                  {appIdDeletion && <th>Delete</th>}
+                  {appIdDeletion && <th>{t("common.delete")}</th>}
                 </tr>
               </thead>
               <tbody>
@@ -112,7 +117,7 @@ export const AppIds = () => {
                     <td className="cert-item-part">
                       {appId.expirationDate
                         ? new Date(appId.expirationDate).toLocaleDateString()
-                        : "Never"}
+                        : t("app_ids.never")}
                     </td>
                     <td className="cert-item-part">{appId.appIdId}</td>
                     <td
@@ -128,7 +133,7 @@ export const AppIds = () => {
                         className="cert-item-revoke"
                         onClick={() => deleteId(appId.appIdId)}
                       >
-                        Delete
+                        {t("common.delete")}
                       </td>
                     )}
                   </tr>
@@ -143,7 +148,7 @@ export const AppIds = () => {
         onClick={loadAppIds}
         disabled={loading}
       >
-        Refresh
+        {t("common.refresh")}
       </button>
     </>
   );

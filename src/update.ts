@@ -2,13 +2,14 @@ import { check } from "@tauri-apps/plugin-updater";
 import { ask } from "@tauri-apps/plugin-dialog";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { toast } from "sonner";
+import i18n from "./i18next";
 
 export async function checkForUpdates() {
   const update = await check();
   if (update) {
     if (
       !(await ask(
-        `A new version is available: ${update.version}. Do you want to update?`
+        i18n.t("update.new_version_available", { version: update.version })
       ))
     )
       return;
@@ -31,9 +32,9 @@ export async function checkForUpdates() {
     });
 
     toast.promise(promise, {
-      loading: "Updating...",
-      success: "Update downloaded! Restarting app...",
-      error: (e) => `Failed to download update: ${e}`,
+      loading: i18n.t("update.updating"),
+      success: i18n.t("update.downloaded_restarting"),
+      error: (e) => i18n.t("update.failed_download", { error: String(e) }),
     });
   }
 }
