@@ -21,8 +21,6 @@ Install SideStore (or other apps) and import your pairing file with ease
 
 **This repository and [iloader.app](https://iloader.app) are the only official ways to download iloader. Do not download from any other sources or websites.**
 
-Notice: I am currently rewriting [isideload](https://github.com/nab138/isideload), the library powering iloader. This will resolve many open issues and greatly improve the app. iloader is still being maintained, but much of my time has gone into the rewrite meaning I have not been able to give other issues the attention they deserve. The rewrite will be finished in the coming weeks, and other issues will be fixed after.
-
 <img width="1918" height="998" alt="iloader0" src="https://github.com/user-attachments/assets/93cd135d-6d89-46ee-9b9f-12c596806911" />
 
 ## How to use
@@ -69,6 +67,7 @@ Notice: I am currently rewriting [isideload](https://github.com/nab138/isideload
 
 ## Future Plans
 
+- Team selection when an account has multiple teams
 - Set a "default" account to automatically log into
 - Import SideStore account info automatically
 - Mount DDI and open sidestore after installation
