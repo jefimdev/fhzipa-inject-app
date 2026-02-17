@@ -9,8 +9,9 @@ import { invoke } from "@tauri-apps/api/core";
 import { useError } from "../ErrorContext";
 import { Virtuoso } from "react-virtuoso";
 import { useDialog } from "../DialogContext";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import i18n, { languages } from "../i18next";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 type SettingsProps = {
   showHeading?: boolean;
@@ -56,10 +57,9 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
 
   const [lang, setLang] = useStore<string>("lang", "en");
 
-
   useEffect(() => {
     i18n.changeLanguage(lang);
-  }, [lang])
+  }, [lang]);
 
   return (
     <>
@@ -78,13 +78,33 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
           customToggleLabel={t("settings.use_custom_anisette")}
           presetToggleLabel={t("settings.back_preset_servers")}
         />
-        <Dropdown
-          label={t("app.language")}
-          labelId="language"
-          options={languages.map(([value, label]) => ({ value, label }))}
-          value={lang}
-          onChange={setLang}
-        />
+        <div>
+          <Dropdown
+            label={t("app.language")}
+            labelId="language"
+            options={languages.map(([value, label]) => ({ value, label }))}
+            value={lang}
+            onChange={setLang}
+          />
+          <p className="settings-hint" style={{ margin: 0 }}>
+            <Trans
+              i18nKey="settings.language_hint"
+              components={{
+                translation: (
+                  <span
+                    onClick={() =>
+                      openUrl(
+                        "https://github.com/nab138/iloader?tab=readme-ov-file#translating",
+                      )
+                    }
+                    role="link"
+                    className="error-link"
+                  />
+                ),
+              }}
+            />
+          </p>
+        </div>
         <div className="settings-buttons">
           <button
             className="action-button danger"
@@ -96,14 +116,17 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
                   toast.promise(invoke("reset_anisette_state"), {
                     loading: t("settings.resetting_anisette_state"),
                     success: t("settings.anisette_state_reset_success"),
-                    error: (e) => err(t("settings.failed_reset_anisette_state"), e),
+                    error: (e) =>
+                      err(t("settings.failed_reset_anisette_state"), e),
                   }),
               )
             }
           >
             {t("settings.reset_anisette_state")}
           </button>
-          <button onClick={() => setLogsOpen(true)}>{t("settings.view_logs")}</button>
+          <button onClick={() => setLogsOpen(true)}>
+            {t("settings.view_logs")}
+          </button>
         </div>
         <Modal isOpen={logsOpen} close={() => setLogsOpen(false)}>
           <div className="log-outer">
