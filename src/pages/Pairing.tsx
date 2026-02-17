@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useError } from "../ErrorContext";
+import { useDialog } from "../DialogContext";
 
 type PairingAppInfo = {
   name: string;
@@ -16,6 +17,7 @@ export const Pairing = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const loadingRef = useRef<boolean>(false);
   const { err } = useError();
+  const { confirm } = useDialog();
 
   const loadApps = useCallback(async () => {
     if (loadingRef.current) return;
@@ -46,7 +48,7 @@ export const Pairing = () => {
         error: (e) => err("Failed to place pairing", e),
       });
     },
-    [setApps, loadApps]
+    [setApps, loadApps],
   );
 
   useEffect(() => {
@@ -80,7 +82,12 @@ export const Pairing = () => {
                   >
                     <td className="cert-item-part">{app.name}</td>
                     <td className="cert-item-part">{app.bundleId}</td>
-                    <td className="cert-item-revoke" onClick={() => pair(app)}>
+                    <td
+                      className="pairing-place"
+                      onClick={() => pair(app)}
+                      role="button"
+                      tabIndex={0}
+                    >
                       Place
                     </td>
                   </tr>
@@ -91,11 +98,30 @@ export const Pairing = () => {
         </div>
       )}
       <button
-        style={{ marginTop: "1em" }}
+        style={{ marginTop: "1em", width: "100%" }}
+        onClick={() => {
+          confirm(
+            "Advanced: Export Pairing File",
+            `This is not reccomended unless you know what you're doing. Press "Place" next to an app to transfer it automatically instead. Are you sure you still want to export your pairing file?`,
+            () => {
+              const promise = invoke<void>("export_pairing_cmd");
+              toast.promise(promise, {
+                loading: "Exporting pairing file...",
+                success: "Pairing file exported successfully!",
+                error: (e) => err("Failed to export pairing file", e),
+              });
+            },
+          );
+        }}
+      >
+        Export (Not Reccomended)
+      </button>
+      <button
+        style={{ marginTop: "1em", width: "100%" }}
         onClick={loadApps}
         disabled={loading}
       >
-        Refresh
+        Refresh Installed Apps
       </button>
     </>
   );

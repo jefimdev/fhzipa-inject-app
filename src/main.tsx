@@ -5,16 +5,19 @@ import { Toaster } from "sonner";
 import { StoreProvider } from "./StoreContext";
 import { LogProvider } from "./LogContext";
 import { ErrorProvider } from "./ErrorContext";
+import { DialogProvider } from "./DialogContext";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ErrorProvider>
-      <LogProvider>
-        <StoreProvider>
-          <App />
-        </StoreProvider>
-      </LogProvider>
+      <DialogProvider>
+        <LogProvider>
+          <StoreProvider>
+            <App />
+          </StoreProvider>
+        </LogProvider>
+      </DialogProvider>
     </ErrorProvider>
     <Toaster richColors expand />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

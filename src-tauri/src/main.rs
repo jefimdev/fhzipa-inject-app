@@ -6,7 +6,9 @@ fn main() {
     {
         use std::env;
         if env::var_os("__NV_DISABLE_EXPLICIT_SYNC").is_none() {
-            env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
+            unsafe {
+                env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
+            }
         }
     }
 

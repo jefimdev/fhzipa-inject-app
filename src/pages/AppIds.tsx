@@ -139,7 +139,7 @@ export const AppIds = () => {
         </div>
       )}
       <button
-        style={{ marginTop: "1em" }}
+        style={{ marginTop: "1em", width: "100%" }}
         onClick={loadAppIds}
         disabled={loading}
       >

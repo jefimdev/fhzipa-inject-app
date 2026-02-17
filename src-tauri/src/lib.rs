@@ -14,12 +14,12 @@ use crate::{
         delete_account, delete_app_id, get_certificates, invalidate_account, list_app_ids,
         logged_in_as, login_new, login_stored, reset_anisette_state, revoke_certificate,
     },
-    device::{list_devices, set_selected_device, DeviceInfoMutex},
-    pairing::{installed_pairing_apps, place_pairing_cmd},
-    sideload::{install_sidestore_operation, sideload_operation, SideloaderMutex},
+    device::{DeviceInfoMutex, list_devices, set_selected_device},
+    pairing::{export_pairing_cmd, installed_pairing_apps, place_pairing_cmd},
+    sideload::{SideloaderMutex, install_sidestore_operation, sideload_operation},
 };
 use tauri::Manager;
-use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, Layer, Registry};
+use tracing_subscriber::{Layer, Registry, fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -81,6 +81,7 @@ pub fn run() {
             installed_pairing_apps,
             place_pairing_cmd,
             reset_anisette_state,
+            export_pairing_cmd,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

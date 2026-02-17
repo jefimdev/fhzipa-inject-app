@@ -7,7 +7,8 @@ use idevice::{
     IdeviceService,
 };
 use serde::Serialize;
-use tauri::State;
+use tauri::{AppHandle, State};
+use tauri_plugin_dialog::DialogExt;
 
 use crate::device::{get_provider, get_provider_from_connection, DeviceInfo, DeviceInfoMutex};
 
@@ -128,6 +129,52 @@ pub async fn place_pairing_cmd(
     };
 
     place_pairing(device, bundle_id, path).await
+}
+
+// prompt for a location to save the pairing file, then export it there. This is for advanced users who want to use the pairing file with other tools, or just want a backup of it. Normal users should use the "Place" button next to the app they want to pair with instead, which will transfer the pairing file automatically.
+#[tauri::command]
+pub async fn export_pairing_cmd(
+    device_state: State<'_, DeviceInfoMutex>,
+    app: AppHandle,
+) -> Result<(), String> {
+    let device = {
+        let device_guard = device_state.lock().unwrap();
+        match &*device_guard {
+            Some(d) => d.clone(),
+            None => return Err("No device selected".to_string()),
+        }
+    };
+
+    let pairing_file = {
+        let mut usbmuxd = UsbmuxdConnection::default()
+            .await
+            .map_err(|e| format!("Failed to connect to usbmuxd: {}", e))?;
+
+        pairing_file(device, &mut usbmuxd).await?
+    };
+
+    let save_path = app
+        .dialog()
+        .file()
+        .add_filter("Pairing File", &["plist", "mobiledevicepairing"])
+        .set_file_name("pairingFile.plist")
+        .set_title("Export Pairing File")
+        .blocking_save_file();
+
+    if let Some(save_path) = save_path && let Some(save_path) = save_path.as_path() {
+        tokio::fs::write(
+            save_path,
+            &pairing_file
+                .serialize()
+                .map_err(|e| format!("Failed to serialize pairing file: {}", e))?,
+        )
+        .await
+        .map_err(|e| format!("Failed to write pairing file: {}", e))?;
+
+        Ok(())
+    } else {
+        Err("Save cancelled".to_string())
+    }
 }
 
 #[derive(Serialize)]

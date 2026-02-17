@@ -89,6 +89,8 @@ export const Certificates = () => {
                     <td className="cert-item-part">{cert.machineId}</td>
                     <td
                       className="cert-item-revoke"
+                      role="button"
+                      tabIndex={0}
                       onClick={() => revokeCertificate(cert.serialNumber)}
                     >
                       Revoke
@@ -101,7 +103,7 @@ export const Certificates = () => {
         </div>
       )}
       <button
-        style={{ marginTop: "1em" }}
+        style={{ marginTop: "1em", width: "100%" }}
         onClick={loadCertificates}
         disabled={loading}
       >

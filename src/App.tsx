@@ -289,6 +289,7 @@ function App() {
             <GlassCard className="panel">
               <div className="action-row single-row">
                 <button
+                  className="action-button primary"
                   onClick={() => {
                     if (!ensuredLoggedIn() || !ensureSelectedDevice()) return;
                     startOperation(installSideStoreOperation, {
