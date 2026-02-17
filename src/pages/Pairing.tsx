@@ -25,6 +25,7 @@ export const Pairing = () => {
       loadingRef.current = true;
       setLoading(true);
       let list = await invoke<PairingAppInfo[]>("installed_pairing_apps");
+      console.log(list);
       setApps(list);
       setLoading(false);
       loadingRef.current = false;

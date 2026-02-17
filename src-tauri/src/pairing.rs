@@ -2,15 +2,14 @@ use std::collections::HashMap;
 
 // used https://github.com/jkcoxson/idevice_pair/ as a guide
 use idevice::{
-    house_arrest::HouseArrestClient, installation_proxy::InstallationProxyClient,
+    IdeviceService, house_arrest::HouseArrestClient, installation_proxy::InstallationProxyClient,
     lockdown::LockdownClient, pairing_file::PairingFile, usbmuxd::UsbmuxdConnection,
-    IdeviceService,
 };
 use serde::Serialize;
 use tauri::{AppHandle, State};
 use tauri_plugin_dialog::DialogExt;
 
-use crate::device::{get_provider, get_provider_from_connection, DeviceInfo, DeviceInfoMutex};
+use crate::device::{DeviceInfo, DeviceInfoMutex, get_provider, get_provider_from_connection};
 
 const PAIRING_APPS: &[(&str, &str)] = &[
     ("SideStore", "ALTPairingFile.mobiledevicepairing"),
@@ -20,6 +19,7 @@ const PAIRING_APPS: &[(&str, &str)] = &[
     ),
     ("Feather", "pairingFile.plist"),
     ("StikDebug", "pairingFile.plist"),
+    ("StikDebug (Sideloaded)", "pairingFile.plist"),
     ("StikTest", "stiktest_pairing.plist"),
     ("Protokolle", "pairingFile.plist"),
     ("Antrag", "pairingFile.plist"),
@@ -161,7 +161,9 @@ pub async fn export_pairing_cmd(
         .set_title("Export Pairing File")
         .blocking_save_file();
 
-    if let Some(save_path) = save_path && let Some(save_path) = save_path.as_path() {
+    if let Some(save_path) = save_path
+        && let Some(save_path) = save_path.as_path()
+    {
         tokio::fs::write(
             save_path,
             &pairing_file
@@ -214,7 +216,13 @@ pub async fn installed_pairing_apps(
             .ok_or("Failed to parse installed apps".to_string())?;
 
         if PAIRING_APPS.iter().any(|(name, _)| name == &n) {
-            installed.insert(n.to_string(), bundle_id);
+            println!("Found pairing app: {} with bundle id {}", n, bundle_id);
+            if bundle_id.contains("com.stik.stikdebug") {
+                println!("This is the sideloaded version of stikdebug, marking as such");
+                installed.insert(format!("{} (Sideloaded)", n), bundle_id);
+            } else {
+                installed.insert(n.to_string(), bundle_id);
+            }
         }
     }
 
