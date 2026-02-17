@@ -62,11 +62,12 @@ To update/edit an existing language, make a PR modifying `src/locales/<lang>.jso
 To add a new language, add your language to `src/i18next.ts`, and in `src/locales` copy `en.json` to a new file titled `<langcode>.json` and update the strings.
 
 **i18next.ts:**
+
 ```ts
 export const languages = [
-    ['en', 'English'],
-    ['es', 'Español'],
-    // Your language here...
+  ["en", "English"],
+  ["es", "Español"],
+  // Your language here...
 ] as const;
 ```
 
@@ -84,6 +85,12 @@ Thank you for translating!
 - [idevice_pair](https://github.com/jkcoxson/idevice_pair) was used as a reference for pairing file management
 - App made with [tauri](https://tauri.app)
 
+### Translators
+
+Thank you to everyone who has contributed translations! See the [Translating](#translating) section if you would like to contribute as well.
+
+- [TNT-333](https://github.com/TNT-333): German (de)
+- [basketshoe](https://github.com/basketshoe): Italian (it)
 
 ## Future Plans
 
