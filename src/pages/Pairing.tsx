@@ -102,7 +102,7 @@ export const Pairing = () => {
         onClick={() => {
           confirm(
             "Advanced: Export Pairing File",
-            `This is not reccomended unless you know what you're doing. Press "Place" next to an app to transfer it automatically instead. Are you sure you still want to export your pairing file?`,
+            `This is not recommended unless you know what you're doing. Press "Place" next to an app to transfer it automatically instead. Are you sure you still want to export your pairing file?`,
             () => {
               const promise = invoke<void>("export_pairing_cmd");
               toast.promise(promise, {
@@ -114,7 +114,7 @@ export const Pairing = () => {
           );
         }}
       >
-        Export (Not Reccomended)
+        Export (Not Recommended)
       </button>
       <button
         style={{ marginTop: "1em", width: "100%" }}
