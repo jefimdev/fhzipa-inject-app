@@ -144,6 +144,7 @@ function App() {
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
+      if (event.key === undefined) return;
       const key = event.key.toLowerCase();
       const primaryPressed = platform === "mac" ? event.metaKey : event.ctrlKey;
       if (!primaryPressed) return;
