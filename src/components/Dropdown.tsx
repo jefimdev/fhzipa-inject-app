@@ -164,7 +164,7 @@ export const Dropdown = ({
                                         <span>{option.label}</span>
                                         {isSelected && (
                                             <span className="checkmark" aria-hidden="true">
-                                                v
+                                                ✓
                                             </span>
                                         )}
                                     </button>

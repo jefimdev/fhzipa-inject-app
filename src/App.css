@@ -117,11 +117,20 @@ body {
   align-items: center;
   justify-content: center;
   min-width: 130px;
+  white-space: nowrap;
 }
 
 .header-actions {
   display: flex;
   gap: 0.5rem;
+
+}
+
+.header-actions>div>label {
+  display: flex;
+  flex-direction: row !important;
+  gap: 0.5rem;
+  align-items: center !important;
 }
 
 .toolbar-button {
@@ -323,8 +332,8 @@ button:active {
   background: rgba(255, 255, 255, 0.02);
 }
 
-.section-label + .panel,
-.section-header + .panel {
+.section-label+.panel,
+.section-header+.panel {
   margin-top: 0.25rem;
 }
 

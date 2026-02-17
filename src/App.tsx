@@ -25,8 +25,14 @@ import { getVersion } from "@tauri-apps/api/app";
 import { checkForUpdates } from "./update";
 import logo from "./iloader.svg";
 import { GlassCard } from "./components/GlassCard";
+import { useTranslation } from "react-i18next";
+import { Dropdown } from "./components/Dropdown";
+import { useStore } from "./StoreContext";
+import i18n, { languages } from "./i18next";
 
 function App() {
+  const { t } = useTranslation();
+
   const [operationState, setOperationState] = useState<OperationState | null>(
     null,
   );
@@ -40,6 +46,7 @@ function App() {
     "windows",
   );
   const refreshDevicesRef = useRef<(() => void) | null>(null);
+  const [lang, setLang] = useStore<string>("lang", "en");
 
   useEffect(() => {
     const fetchVersion = async () => {
@@ -52,6 +59,10 @@ function App() {
   useEffect(() => {
     checkForUpdates();
   }, []);
+
+  useEffect(() => {
+    i18n.changeLanguage(lang);
+  }, [lang])
 
   useEffect(() => {
     if (typeof navigator === "undefined") return;
@@ -179,12 +190,19 @@ function App() {
             <img src={logo} alt="iloader logo" className="logo" />
             <div>
               <h1 className="title">iloader</h1>
-              <p className="subtitle">Sideloading Companion</p>
+              <p className="subtitle">{t("subtitle")}</p>
             </div>
           </div>
-          <span className="version-pill">Version {version}</span>
+          <span className="version-pill">{t("version")} {version}</span>
         </div>
         <div className="header-actions">
+          <Dropdown
+            label="Language"
+            labelId="language"
+            options={languages.map(([value, label]) => ({ value, label }))}
+            value={lang}
+            onChange={setLang}
+          />
           <button
             className="toolbar-button"
             onClick={async () => {
