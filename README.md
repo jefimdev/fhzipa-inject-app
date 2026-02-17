@@ -59,8 +59,9 @@ iloader needs localization! If you speak another language and notice iloader doe
 
 To update/edit an existing language, make a PR modifying `src/locales/<lang>.json`.
 
-To add a new language, add a new file in `src/locales` titled `<langcode>.json` and add your language to `src/i18next.ts`:
+To add a new language, add your language to `src/i18next.ts`, and in `src/locales` copy `en.json` to a new file titled `<langcode>.json` and update the strings.
 
+**i18next.ts:**
 ```ts
 export const languages = [
     ['en', 'English'],
