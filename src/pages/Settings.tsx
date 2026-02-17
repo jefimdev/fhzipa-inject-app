@@ -143,7 +143,7 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
                         `[${log.timestamp}] [${LogLevel[log.level]}] ${log.target ? `<${log.target}>` : ""} ${log.message}`,
                     )
                     .join("\n");
-                  navigator.clipboard.writeText(logText);
+                  navigator.clipboard.writeText("```\n" + logText + "\n```");
                   toast.success(t("common.copied_success"));
                 }}
               >

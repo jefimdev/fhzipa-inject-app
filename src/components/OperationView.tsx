@@ -24,7 +24,7 @@ export default ({
   const done =
     (opFailed &&
       operationState.started.length ==
-      operationState.completed.length + operationState.failed.length) ||
+        operationState.completed.length + operationState.failed.length) ||
     operationState.completed.length == operation.steps.length;
 
   const [moreDetailsOpen, setMoreDetailsOpen] = useState(false);
@@ -115,7 +115,9 @@ export default ({
         </div>
       </div>
       {done && !opFailed && operation.successMessageKey && (
-        <p className="operation-success-message">{t(operation.successMessageKey!)}</p>
+        <p className="operation-success-message">
+          {t(operation.successMessageKey!)}
+        </p>
       )}
       {done && !(!opFailed && operation.successMessageKey) && <p></p>}
       {opFailed && done && (
@@ -148,8 +150,12 @@ export default ({
             className="action-button primary"
             onClick={() => {
               navigator.clipboard.writeText(
-                operationState.failed[0]?.extraDetails?.replace(/^\n+/, "") ??
-                t("common.no_error"),
+                "```\n" +
+                  (operationState.failed[0]?.extraDetails?.replace(
+                    /^\n+/,
+                    "",
+                  ) ?? t("common.no_error")) +
+                  "\n```",
               );
               toast.success(t("common.copied_success"));
             }}

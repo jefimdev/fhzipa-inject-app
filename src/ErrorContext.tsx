@@ -57,7 +57,9 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
             <button
               onClick={() => {
                 navigator.clipboard.writeText(
-                  error?.replace(/^\n+/, "") ?? t("common.no_error"),
+                  "```\n" +
+                    (error?.replace(/^\n+/, "") ?? t("common.no_error")) +
+                    "\n```",
                 );
                 toast.success(t("common.copied_success"));
               }}
