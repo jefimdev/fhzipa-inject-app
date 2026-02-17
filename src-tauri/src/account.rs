@@ -6,15 +6,16 @@ use isideload::{
         certificates::{CertificatesApi, DevelopmentCertificate},
         developer_session::DeveloperSession,
     },
-    sideload::{builder::MaxCertsBehavior, sideloader::Sideloader, SideloaderBuilder},
-    util::keyring_storage::KeyringStorage,
+    sideload::{SideloaderBuilder, builder::MaxCertsBehavior, sideloader::Sideloader},
+    util::{fs_storage::FsStorage, keyring_storage::KeyringStorage, storage::SideloadingStorage},
 };
 use keyring::Entry;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::time::Duration;
-use tauri::{AppHandle, Emitter, Listener, State, Window};
+use std::{path::PathBuf, time::Duration};
+use tauri::{AppHandle, Emitter, Listener, Manager, State, Window};
 use tauri_plugin_store::StoreExt;
+use tracing::warn;
 
 use crate::sideload::{SideloaderGuard, SideloaderMutex};
 
@@ -28,7 +29,7 @@ pub async fn login_new(
     anisette_server: String,
     save_credentials: bool,
 ) -> Result<(), String> {
-    let account = login(&window, &email, &password, anisette_server).await?;
+    let account = login(&handle, &window, &email, &password, anisette_server).await?;
     let mut sideloader_guard = sideloader_state.lock().unwrap();
     *sideloader_guard = Some(account);
 
@@ -58,6 +59,7 @@ pub async fn login_new(
 
 #[tauri::command]
 pub async fn login_stored(
+    handle: AppHandle,
     window: Window,
     email: String,
     anisette_server: String,
@@ -68,7 +70,7 @@ pub async fn login_stored(
     let password = pass_entry
         .get_password()
         .map_err(|e| format!("Failed to get credentials: {:?}", e))?;
-    let account = login(&window, &email, &password, anisette_server).await?;
+    let account = login(&handle, &window, &email, &password, anisette_server).await?;
     let mut sideloader_guard = sideloader_state.lock().unwrap();
     *sideloader_guard = Some(account);
 
@@ -123,6 +125,7 @@ pub fn reset_anisette_state() -> Result<(), String> {
 }
 
 async fn login(
+    app: &AppHandle,
     window: &Window,
     email: &str,
     password: &str,
@@ -158,11 +161,31 @@ async fn login(
         anisette_server
     };
 
+    let (anisette_storage, sideloader_storage): (
+        Box<dyn SideloadingStorage>,
+        Box<dyn SideloadingStorage>,
+    ) = if keyring_available() {
+        (
+            Box::new(KeyringStorage::new("iloader".to_string())),
+            Box::new(KeyringStorage::new("iloader".to_string())),
+        )
+    } else {
+        warn!("Keyring storage is not available, falling back to file storage (less secure)");
+        let data_dir = app
+            .path()
+            .app_data_dir()
+            .unwrap_or_else(|_| PathBuf::from("Failed to get app data directory"));
+        (
+            Box::new(FsStorage::new(data_dir.clone())),
+            Box::new(FsStorage::new(data_dir)),
+        )
+    };
+
     let mut account = AppleAccount::builder(email)
         .anisette_provider(
             RemoteV3AnisetteProvider::default()
                 .set_serial_number("0".to_string())
-                .set_storage(Box::new(KeyringStorage::new("iloader".to_string())))
+                .set_storage(anisette_storage)
                 .set_url(&anisette_url),
         )
         .login(password, tfa_closure)
@@ -207,7 +230,7 @@ async fn login(
         // TODO: Team Selection
         SideloaderBuilder::new(dev_session, account.email)
             .machine_name("iloader".to_string())
-            .storage(Box::new(KeyringStorage::new("iloader".to_string())))
+            .storage(sideloader_storage)
             .max_certs_behavior(MaxCertsBehavior::Prompt(Box::new(max_certs_callback)))
             .build(),
     )
@@ -316,4 +339,8 @@ pub async fn delete_app_id(
         .map_err(|e| format!("Failed to delete App ID: {:?}.", e))?;
 
     Ok(())
+}
+
+fn keyring_available() -> bool {
+    keyring::Entry::new("iloader", "test").is_ok()
 }
