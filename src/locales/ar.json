@@ -158,49 +158,49 @@
     "place_pairing_file": "ضع ملف الإقتران",
     "place": "ضع",
     "advanced_export_title": "متقدم: قم باستخراج ملف الإقتران",
-    "advanced_export_message": "لا ينصح باتباع هذه الطريقة إلا إن كنت على علم بما تقوم به. اضغاط على "ضع" بجانب التطبيق الذي تريد",
-    "exporting_pairing_file": "Exporting pairing file...",
-    "pairing_file_exported_success": "Pairing file exported successfully!",
-    "failed_export_pairing_file": "Failed to export pairing file",
-    "export_not_recommended": "Export (Not Recommended)",
-    "refresh_installed_apps": "Refresh Installed Apps"
+    "advanced_export_message": "لا ينصح باتباع هذه الطريقة إلا إن كنت على علم بما تقوم به. يفضل أن تضغط على \"ضع\" بجانب التطبيق الذي تريد لوضع ملف الإقتران تلقائياً. هلم مازلت تريد استخراج ملف الإقتران؟",
+    "exporting_pairing_file": "يتم استخراج ملف الإقتران...",
+    "pairing_file_exported_success": "تم استخراج ملف الإقتران!",
+    "failed_export_pairing_file": "فشل استخراج ملف الإقتران.",
+    "export_not_recommended": "استخراجه (لا ينصح بهذه الطريقة(",
+    "refresh_installed_apps": "تحديث التطبيقات المثبتة"
   },
   "settings": {
-    "title": "Settings",
-    "anisette_server": "Anisette Server:",
-    "custom_anisette_placeholder": "Custom Anisette Server",
-    "custom_anisette": "Custom",
-    "use_custom_anisette": "Use custom Anisette server",
-    "back_preset_servers": "Back to preset servers",
-    "reset_anisette_title": "Reset Anisette State",
-    "reset_anisette_message": "Are you sure you want to reset the anisette state? You will be required to enter your 2FA code again.",
-    "resetting_anisette_state": "Resetting anisette state...",
-    "anisette_state_reset_success": "Anisette state reset successfully",
-    "failed_reset_anisette_state": "Failed to reset anisette state",
-    "reset_anisette_state": "Reset anisette state",
-    "view_logs": "View Logs",
-    "logs": "Logs",
-    "log_level": "Log Level:",
-    "no_logs_yet": "No logs yet.",
-    "debug": "Debug",
-    "info": "Info",
-    "warn": "Warn",
-    "error": "Error",
-    "language_hint": "You can help with translations <translation>here</translation>."
+    "title": "الإعدادات",
+    "anisette_server": "سيرفيرات أنيسيت:",
+    "custom_anisette_placeholder": "سيرفير أنيسيت مخصص",
+    "custom_anisette": "مخصص",
+    "use_custom_anisette": "استعمل سيرفر أنيسيت مخصص",
+    "back_preset_servers": "العودة إلى قائمة السيرفيرات التقائية",
+    "reset_anisette_title": "إعادة تعيين سيرفيرات الأنيسيت",
+    "reset_anisette_message": "هل أنت متأكد من رغبتك بإعادة تعيين سيرفيرات أنيسيت؟ سيتحتم عليك إعادة إدخال رمز التحقق بخطوتين.",
+    "resetting_anisette_state": "يتم إعادة تعيين سيرفيرات أنيسيت",
+    "anisette_state_reset_success": "تم إعادة تعيين سيرفيرات أنيسيت!",
+    "failed_reset_anisette_state": "فشل إعادة تعيين سيرفيرات أنيسيت.",
+    "reset_anisette_state": "إعادة تعيين سيرفيرات أنيسيت.",
+    "view_logs": "عرض السجلات",
+    "logs": "السجلات",
+    "log_level": "مستوى السجل:",
+    "no_logs_yet": "لا يوجد سجلات بعد.",
+    "debug": "الإطلاع على الأخطاء",
+    "info": "معلومات",
+    "warn": "تحذير",
+    "error": "خطأ",
+    "language_hint": "بإمكانك المساعدة في الترجمة من <translation>هنا</translation>."
   },
   "dialog": {
-    "confirm": "Confirm",
-    "cancel": "Cancel"
+    "confirm": "تأكيد",
+    "cancel": "إلغاء"
   },
   "error": {
-    "title": "An Error Occured: {{msg}}",
-    "unknown": "Unknown",
-    "support_message": "If the issue persists, press \"Copy to clipboard\" and send the copied error to the <discord>Discord</discord> or a <github>GitHub issue</github> for support."
+    "title": "حدث خطأ: {{msg}}",
+    "unknown": "غير معروف",
+    "support_message": "اذا استمر هذا الخطأ اضغط على \"نسخ إلى الحافظة\" وأرسله إلى سيرفير <discord>Discord</discord> أو <github>GitHub issue</github> للحصول على المساعدة."
   },
   "update": {
-    "new_version_available": "A new version is available: {{version}}. Do you want to update?",
-    "updating": "Updating...",
-    "downloaded_restarting": "Update downloaded! Restarting app...",
-    "failed_download": "Failed to download update: {{error}}"
+    "new_version_available": "هناك إصدار أحدث من التطبيق متوفر للتحميل: {{version}}. Do you want to update?",
+    "updating": "يتم التحميل...",
+    "downloaded_restarting": "تم التحميل, يجرى إعادة التشغيل لتطبيقه...",
+    "failed_download": "فشل تحميل الإصدار الجديد: {{error}}"
   }
 }
