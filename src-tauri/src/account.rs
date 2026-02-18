@@ -12,7 +12,7 @@ use isideload::{
 use keyring::Entry;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{path::PathBuf, time::Duration};
+use std::{path::PathBuf, sync::OnceLock, time::Duration};
 use tauri::{AppHandle, Emitter, Listener, Manager, State, Window};
 use tauri_plugin_store::StoreExt;
 use tracing::warn;
@@ -341,6 +341,16 @@ pub async fn delete_app_id(
     Ok(())
 }
 
+static KEYRING_AVAILABLE: OnceLock<bool> = OnceLock::new();
+
 fn keyring_available() -> bool {
-    keyring::Entry::new("iloader", "test").is_ok()
+    *KEYRING_AVAILABLE.get_or_init(check_keyring_available)
+}
+
+fn check_keyring_available() -> bool {
+    let entry = keyring::Entry::new("iloader", "test");
+    if let Ok(entry) = entry {
+        return entry.set_password("test").is_ok() && entry.get_password().is_ok();
+    }
+    false
 }
