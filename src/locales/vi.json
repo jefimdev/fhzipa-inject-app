@@ -174,7 +174,7 @@
     "back_preset_servers": "Quay lại vơi các máy chủ được tích sẵn",
     "reset_anisette_title": "Đặt lại trạng thái máy chủ Anisette",
     "reset_anisette_message": "Bạn có chắc là bạn muốn đặt lại trạng thái của máy chủ Anisette không? Bạn sẽ phải nhập mã xác minh lại đấy.",
-    "resetting_anisette_state": "Đăng đặt lại trạng thái máy chủ Anisette",
+    "resetting_anisette_state": "Đang đặt lại trạng thái máy chủ Anisette",
     "anisette_state_reset_success": "Đã đặt lại trạng thát máy chủ Anisette thành công",
     "failed_reset_anisette_state": "Đặt lại trạng thái máy chủ Anisette thất bại",
     "reset_anisette_state": "Đặt lại trạng thái máy chủ Anisette",
