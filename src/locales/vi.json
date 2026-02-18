@@ -129,7 +129,7 @@
     "revoke": "Thu hồi"
   },
   "app_ids": {
-    "manage": "Quàn lí các ID ứng dụng",
+    "manage": "Quản lí các ID ứng dụng",
     "loading": "Đang tải các ID ứng dụng",
     "loaded_success": "Tải các ID ứng dụng thành công",
     "failed_load": "Tải các ID ứng dụng thất bại!",
@@ -140,7 +140,7 @@
     "name": "Tên",
     "expiration": "Ngày hết hạn",
     "id": "ID",
-    "identifier": "Công cụ xác minh",
+    "identifier": "Identifier",
     "never": "Không bao giờ"
   },
   "pairing": {
