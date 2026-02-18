@@ -129,7 +129,7 @@
     "revoke": "Thu hồi"
   },
   "app_ids": {
-    "manage": "Quản lí các ID ứng dụng",
+    "manage": "Quản lý các ID ứng dụng",
     "loading": "Đang tải các ID ứng dụng",
     "loaded_success": "Tải các ID ứng dụng thành công",
     "failed_load": "Tải các ID ứng dụng thất bại!",
@@ -144,7 +144,7 @@
     "never": "Không bao giờ"
   },
   "pairing": {
-    "manage": "Quản lí tệp ghép máy",
+    "manage": "Quản lý tệp ghép máy",
     "loading_apps": "Đang tải ứng dụng",
     "apps_loaded_success": "Tải ứng dụng thành công",
     "failed_load_apps": "Tải ứng dụng thất bại",
