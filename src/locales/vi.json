@@ -87,7 +87,7 @@
     "no_devices_found": "Không thấy thiết bị nào cả~",
     "found_device": "Đã tìm được thiết bị",
     "found_devices": "Đã tìm được các thiết bị",
-    "unable_load_devices_prefix": "Tải các thiết bị thất bại: ",
+    "unable_load_devices_prefix": "Tải các thiết bị thất bại",
     "no_devices_found_period": "Chẳng thấy thiết bị nào cả~",
     "selected": "Đã chọn"
   },
