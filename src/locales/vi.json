@@ -42,7 +42,7 @@
     "import_ipa": "Cài IPA",
     "settings": "Cài đặt",
     "must_be_logged_in": "Bạn phải đăng nhập mới có thể dùng được",
-    "must_select_device": "Ơ, phải chọn một thiết bị để cài chứ",
+    "must_select_device": "Thiết bị của bạn đâu rồi?",
     "ipa_files": "Các tệp IPAs",
     "logo_alt": "Logo iLoader"
   },
@@ -53,7 +53,7 @@
     "signing_out": "Đang đăng xuất...",
     "sign_out_failed": "Đăng xuất thất bại",
     "signed_out_success": "Đăng xuất thành công!",
-    "saved_logins": "Đã lưu thông tin đăng nhập",
+    "saved_logins": "Thông tin đăng nhập đã lưu",
     "sign_in": "Đăng nhập",
     "logging_in": "Đang đăng nhập...",
     "logged_in_success": "Đăng nhập thành công!",
@@ -135,7 +135,7 @@
     "failed_load": "Tải các ID ứng dụng thất bại!",
     "deleted_success": "Đã xóa ID ứng dụng thành công",
     "failed_delete": "Xoa ID ứng dụng thất bại",
-    "available": "Đang còn{{available}}/{{max}} chỗ",
+    "available": "Đang còn {{available}}/{{max}} chỗ cài ứng dụng",
     "none_found": "Không thấy ID ứng dụng nào cả~",
     "name": "Tên",
     "expiration": "Ngày hết hạn",
@@ -162,7 +162,7 @@
     "exporting_pairing_file": "Đang xuất tệp ghép máy...",
     "pairing_file_exported_success": "Đã xuất tệp ghép máy thành công!",
     "failed_export_pairing_file": "Xuất tệp ghép máy thất bại",
-    "export_not_recommended": "Xuất (Not Recommended)",
+    "export_not_recommended": "Xuất tệp ghép máy (Không khuyến khích)",
     "refresh_installed_apps": "Làm mới các ứng dụng đã tải"
   },
   "settings": {
@@ -173,7 +173,7 @@
     "use_custom_anisette": "Dùng máy chủ Anisette thủ công",
     "back_preset_servers": "Quay lại vơi các máy chủ được tích sẵn",
     "reset_anisette_title": "Đặt lại trạng thái máy chủ Anisette",
-    "reset_anisette_message": "Bản có chắc là bạn muốn đặt lại trạng thái của máy chủ Anisette không? Bạn sẽ phải nhập mã xác minh lại đấy.",
+    "reset_anisette_message": "Bạn có chắc là bạn muốn đặt lại trạng thái của máy chủ Anisette không? Bạn sẽ phải nhập mã xác minh lại đấy.",
     "resetting_anisette_state": "Đăng đặt lại trạng thái máy chủ Anisette",
     "anisette_state_reset_success": "Đã đặt lại trạng thát máy chủ Anisette thành công",
     "failed_reset_anisette_state": "Đặt lại trạng thái máy chủ Anisette thất bại",
@@ -195,12 +195,12 @@
   "error": {
     "title": "Một lỗi đã xảy ra: {{msg}}",
     "unknown": "Không xác định",
-    "support_message": "Nếu vẫn đề cứ tiếp diễn, bấm \"Sao chép vào bộ nhớ tạm\" và gửi đên máy chủ discord <discord>Discord</discord> hoặc một <github>vấn đề github</github> for support."
+    "support_message": "Nếu vấn đề vẫn tiếp diễn, bấm \"Sao chép vào bộ nhớ tạm\" và gửi đên server <discord>Discord</discord> hoặc một <github>vấn đề Github</github> for support."
   },
   "update": {
     "new_version_available": "Có phiên bản mới: {{version}}. Bạn có muốn cập nhật không?",
     "updating": "Đang cập nhật.",
-    "downloaded_restarting": "Tải xong cập nhật rồi, đang khởi động lại iLoader..",
+    "downloaded_restarting": "Đã cài đặt cập nhật, đang khởi động lại iLoader..",
     "failed_download": "Lỗi tải xuống cập nhật: {{error}}"
   }
 }
