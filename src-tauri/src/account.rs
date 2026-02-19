@@ -15,7 +15,7 @@ use serde_json::Value;
 use std::{path::PathBuf, sync::OnceLock, time::Duration};
 use tauri::{AppHandle, Emitter, Listener, Manager, State, Window};
 use tauri_plugin_store::StoreExt;
-use tracing::warn;
+use tracing::{debug, warn};
 
 use crate::sideload::{SideloaderGuard, SideloaderMutex};
 
@@ -192,9 +192,13 @@ async fn login(
         .await
         .map_err(|e| e.to_string())?;
 
+    debug!("Logged in");
+
     let dev_session = DeveloperSession::from_account(&mut account)
         .await
         .map_err(|e| e.to_string())?;
+
+    debug!("Created developer session");
 
     let max_certs_callback = {
         let window_clone = window.clone();
@@ -226,14 +230,17 @@ async fn login(
         }
     };
 
-    Ok(
-        // TODO: Team Selection
-        SideloaderBuilder::new(dev_session, email.to_lowercase())
-            .machine_name("iloader".to_string())
-            .storage(sideloader_storage)
-            .max_certs_behavior(MaxCertsBehavior::Prompt(Box::new(max_certs_callback)))
-            .build(),
-    )
+    // TODO: Team Selection
+
+    let sideloader = SideloaderBuilder::new(dev_session, email.to_lowercase())
+        .machine_name("iloader".to_string())
+        .storage(sideloader_storage)
+        .max_certs_behavior(MaxCertsBehavior::Prompt(Box::new(max_certs_callback)))
+        .build();
+
+    debug!("Built sideloader");
+
+    Ok(sideloader)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

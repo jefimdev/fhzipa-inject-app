@@ -2767,7 +2767,7 @@ dependencies = [
 
 [[package]]
 name = "iloader"
-version = "2.0.1"
+version = "2.0.4"
 dependencies = [
  "chrono",
  "futures",
@@ -2902,9 +2902,9 @@ checksum = "a6cb138bb79a146c1bd460005623e142ef0181e3d0219cb493e02f7d08a35695"
 
 [[package]]
 name = "isideload"
-version = "0.2.9"
+version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ffcb75e0cb80a9e6ac60e586c66bf0bf8b09b3724da251a07c96b201c5d5839d"
+checksum = "a0e93aa3b396303b3e13b922851196a09c0fffa5fd0aee30bd7f9705e2a5c2bd"
 dependencies = [
  "aes 0.9.0-rc.4",
  "aes-gcm",

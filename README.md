@@ -93,6 +93,8 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [basketshoe](https://github.com/basketshoe): Italian (it)
 - [baocreata](https://github.com/baocreata): Vietnamese (vt)
 - [IamArayel](https://github.com/IamArayel): French (fr)
+- [kkula9999](https://github.com/kkula9999): Traditional & Simplified Chinese (zh_tw & zh_cn)
+- [sibwaze](https://github.com/sibwaze): Russian (ru)
 
 ## Future Plans
 
