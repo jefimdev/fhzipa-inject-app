@@ -106,9 +106,9 @@
     "install_sidestore_step_pairing": "قم بوضع ملف الإقتران",
     "install_livecontainer_title": "LiveContainer+SideStore يتم تثبيت",
     "install_livecontainer_success_title": "LiveContainer+SideStore تم تثبيت",
-    "install_livecontainer_success_message": "لاستكمال العملية عليك فتح LiveContainer والذهاب الى الاعدادات والضغط على \"استيراد الشهادة من SideStore\" ثم من قائمة التطبيقات اضغط على أيقونة SideStore وقم يتحديث LiveContainer.",
-    "install_livecontainer_step_download": "تحميل LiveContainer+SideStore",
-    "install_livecontainer_step_install": "توقيع وتثبيت LiveContainer+SideStore",
+    "install_livecontainer_success_message": "لاستكمال العملية عليك فتح لايف كونتينر والذهاب الى الاعدادات ثم الضغط على \"استيراد الشهادة من سايدستور\" ثم من قائمة التطبيقات اضغط على أيقونة سايدستور وقم يتحديث لايف كونتينر",
+    "install_livecontainer_step_download": "LiveContainer+SideStore تحميل",
+    "install_livecontainer_step_install": "LiveContainer+SideStore توقيع وتثبيت",
     "install_livecontainer_step_pairing": "قم بوضع ملف الإقتران",
     "sideload_title": "يتم تثبيت التطبيق",
     "sideload_step_install": "توقيع وتثبيت التطبيق"
@@ -193,14 +193,14 @@
     "cancel": "إلغاء"
   },
   "error": {
-    "title": "حدث خطأ: {{msg}}",
+    "title": "{{msg}} :حدث خطأ",
     "unknown": "غير معروف",
-    "support_message": "اذا استمر هذا الخطأ اضغط على \"نسخ إلى الحافظة\" وأرسله إلى سيرفير <discord>Discord</discord> أو <github>GitHub issue</github> للحصول على المساعدة."
+    "support_message": "للحصول على المساعدة <github>GitHub مشاكل</github> أو <discord>Discord</discord> اذا استمر هذا الخطأ اضغط على \"نسخ إلى الحافظة\" وأرسله إلى سيرفير"
   },
   "update": {
-    "new_version_available": "هناك إصدار أحدث من التطبيق متوفر للتحميل: {{version}}. Do you want to update?",
+    "new_version_available": "هل ترغب بتحميله؟ {{version}} :هناك إصدار أحدث من التطبيق متوفر للتحميل",
     "updating": "يتم التحميل...",
-    "downloaded_restarting": "تم التحميل, يجرى إعادة التشغيل لتطبيقه...",
-    "failed_download": "فشل تحميل الإصدار الجديد: {{error}}"
+    "downloaded_restarting": "...تم التحميل, يجرى إعادة التشغيل لتطبيقه",
+    "failed_download": "{{error}}:فشل تحميل الإصدار الجديد"
   }
 }
