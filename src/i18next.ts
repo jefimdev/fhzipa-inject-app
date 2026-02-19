@@ -8,6 +8,7 @@ const languages = [
   ["it", "Italiano"],
   ["de", "Deutsch"],
   ["fr", "Français"],
+  ["pl", "Polski"],
   ["vi", "Tiếng Việt"],
   ["ru", "Русский"],
   ["zh_tw", "Traditional Chinese （繁體中文)"],
