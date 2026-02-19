@@ -95,6 +95,10 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [IamArayel](https://github.com/IamArayel): French (fr)
 - [kkula9999](https://github.com/kkula9999): Traditional & Simplified Chinese (zh_tw & zh_cn)
 - [sibwaze](https://github.com/sibwaze): Russian (ru)
+- [okinaau](https://github.com/okinaau): Arabic (ar)
+- [WingChunWong](https://github.com/WingChunWong): Improved Chinese (zh_tw & zh_cn)
+- [marcinmajsc](https://github.com/marcinmajsc): Polish (pl)
+- [ern775](https://github.com/ern775): Turkish (tr)
 
 ## Future Plans
 
