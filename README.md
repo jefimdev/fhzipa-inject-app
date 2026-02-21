@@ -99,6 +99,7 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [WingChunWong](https://github.com/WingChunWong): Improved Chinese (zh_tw & zh_cn)
 - [marcinmajsc](https://github.com/marcinmajsc): Polish (pl)
 - [ern775](https://github.com/ern775): Turkish (tr)
+- [jazoppix](https://github.com/jazoppix): Spanish (es)
 
 ## Future Plans
 
