@@ -15,6 +15,7 @@ const languages = [
   ["tr", "Türkçe"],
   ["zh_tw", "Traditional Chinese （繁體中文)"],
   ["zh_cn", "Simpified Chinese （简体中文)"],
+  ["zh_hk", "Cantonese （粵語)"]
 ] as const;
 
 export const sortedLanguages = [...languages].sort((a, b) =>
