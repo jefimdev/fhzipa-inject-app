@@ -19,7 +19,7 @@
 
 Install SideStore (or other apps) and import your pairing file with ease
 
-**This repository and [iloader.app](https://iloader.app) are the only official ways to download iloader. Do not download from any other sources or websites.**
+**This repository, [iloader.app](https://iloader.app), and [Homebrew](https://formulae.brew.sh/cask/iloader) are the only official ways to download iloader. Do not download from any other sources or websites.**
 
 <img width="1918" height="998" alt="iloader0" src="https://github.com/user-attachments/assets/93cd135d-6d89-46ee-9b9f-12c596806911" />
 
