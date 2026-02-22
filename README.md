@@ -96,10 +96,11 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [kkula9999](https://github.com/kkula9999): Traditional & Simplified Chinese (zh_tw & zh_cn)
 - [sibwaze](https://github.com/sibwaze): Russian (ru)
 - [okinaau](https://github.com/okinaau): Arabic (ar)
-- [WingChunWong](https://github.com/WingChunWong): Improved Chinese (zh_tw & zh_cn)
+- [WingChunWong](https://github.com/WingChunWong): Cantonese (zh_hk) & Improved Chinese (zh_tw & zh_cn)
 - [marcinmajsc](https://github.com/marcinmajsc): Polish (pl)
 - [ern775](https://github.com/ern775): Turkish (tr)
 - [jazoppix](https://github.com/jazoppix): Spanish (es)
+- [eseiker](https://github.com/eseiker): Korean (ko)
 
 ## Future Plans
 
