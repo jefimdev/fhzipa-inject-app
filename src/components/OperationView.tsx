@@ -24,7 +24,7 @@ export default ({
   const done =
     (opFailed &&
       operationState.started.length ==
-        operationState.completed.length + operationState.failed.length) ||
+      operationState.completed.length + operationState.failed.length) ||
     operationState.completed.length == operation.steps.length;
 
   const [moreDetailsOpen, setMoreDetailsOpen] = useState(false);
@@ -91,21 +91,25 @@ export default ({
                   {failed && (
                     <>
                       <pre className="operation-extra-details">
-                        {errorShort ?? failed.extraDetails.replace(/^\n+/, "")}
+                        {!errorShort ? failed.extraDetails.replace(/^\n+/, "") : errorShort}
                       </pre>
-                      <p
-                        className="operation-more-details"
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => setMoreDetailsOpen(!moreDetailsOpen)}
-                      >
-                        {t("common.more_details")} {moreDetailsOpen ? "▲" : "▼"}
-                      </p>
-                      {moreDetailsOpen && (
-                        <pre className="operation-extra-details">
-                          {failed.extraDetails.replace(/^\n+/, "")}
-                        </pre>
-                      )}
+                      {errorShort !== "" && errorShort !== null && errorShort !== undefined &&
+                        <>
+                          <p
+                            className="operation-more-details"
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => setMoreDetailsOpen(!moreDetailsOpen)}
+                          >
+                            {t("common.more_details")} {moreDetailsOpen ? "▲" : "▼"}
+                          </p>
+                          {moreDetailsOpen && (
+                            <pre className="operation-extra-details">
+                              {failed.extraDetails.replace(/^\n+/, "")}
+                            </pre>
+                          )}
+                        </>
+                      }
                     </>
                   )}
                 </div>
@@ -151,11 +155,11 @@ export default ({
             onClick={() => {
               navigator.clipboard.writeText(
                 "```\n" +
-                  (operationState.failed[0]?.extraDetails?.replace(
-                    /^\n+/,
-                    "",
-                  ) ?? t("common.no_error")) +
-                  "\n```",
+                (operationState.failed[0]?.extraDetails?.replace(
+                  /^\n+/,
+                  "",
+                ) ?? t("common.no_error")) +
+                "\n```",
               );
               toast.success(t("common.copied_success"));
             }}

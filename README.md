@@ -19,7 +19,7 @@
 
 Install SideStore (or other apps) and import your pairing file with ease
 
-**This repository and [iloader.app](https://iloader.app) are the only official ways to download iloader. Do not download from any other sources or websites.**
+**This repository and [iloader.app](https://iloader.app) are the only official ways to download iloader. There is also an unofficial [Homebrew cask](https://formulae.brew.sh/cask/iloader) and an unofficial [AUR package](https://aur.archlinux.org/packages/iloader-bin) maintained by the community. Do not download from any other sources or websites.**
 
 <img width="1918" height="998" alt="iloader0" src="https://github.com/user-attachments/assets/93cd135d-6d89-46ee-9b9f-12c596806911" />
 
@@ -95,6 +95,11 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [IamArayel](https://github.com/IamArayel): French (fr)
 - [kkula9999](https://github.com/kkula9999): Traditional & Simplified Chinese (zh_tw & zh_cn)
 - [sibwaze](https://github.com/sibwaze): Russian (ru)
+- [okinaau](https://github.com/okinaau): Arabic (ar)
+- [WingChunWong](https://github.com/WingChunWong): Improved Chinese (zh_tw & zh_cn)
+- [marcinmajsc](https://github.com/marcinmajsc): Polish (pl)
+- [ern775](https://github.com/ern775): Turkish (tr)
+- [jazoppix](https://github.com/jazoppix): Spanish (es)
 
 ## Future Plans
 
