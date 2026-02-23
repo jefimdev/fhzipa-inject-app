@@ -101,6 +101,7 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [ern775](https://github.com/ern775): Turkish (tr)
 - [jazoppix](https://github.com/jazoppix): Spanish (es)
 - [eseiker](https://github.com/eseiker): Korean (ko)
+- [seomin0610](https://github.com/seomin0610): Improved Korean (ko)
 
 ## Future Plans
 
