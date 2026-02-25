@@ -46,7 +46,7 @@ Install SideStore (or other apps) and import your pairing file with ease
 
 ## Troubleshooting
 
-- If you are unable to solve an issue on your own, copy the full error message and ask on the [idevice Discord server](https://discord.gg/gjH8RaqhMr) or [open an issue](https://github.com/nab138/iloader/issues).
+- If you are unable to solve an issue on your own, copy the full error message and ask on the [idevice Discord server](https://discord.gg/EA6yVgydBz) or [open an issue](https://github.com/nab138/iloader/issues).
 - You can view app logs with the "View Logs." If nothing is showing up, change the log level to "Debug."
 - If those logs aren't helpful, logs with additional are stored in the following locations:
   - Windows: `%APPDATA%\me.nabdev.iloader\logs`

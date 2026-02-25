@@ -58,8 +58,8 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
               onClick={() => {
                 navigator.clipboard.writeText(
                   "```\n" +
-                    (error?.replace(/^\n+/, "") ?? t("common.no_error")) +
-                    "\n```",
+                  (error?.replace(/^\n+/, "") ?? t("common.no_error")) +
+                  "\n```",
                 );
                 toast.success(t("common.copied_success"));
               }}
@@ -74,7 +74,7 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
               components={{
                 discord: (
                   <span
-                    onClick={() => openUrl("https://discord.gg/gjH8RaqhMr")}
+                    onClick={() => openUrl("https://discord.gg/EA6yVgydBz")}
                     role="link"
                     className="error-link"
                   />
