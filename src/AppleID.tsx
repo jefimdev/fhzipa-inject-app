@@ -207,7 +207,34 @@ export const AppleID = ({
           addAccountOpen) && (
           <div className="new-login">
             {storedIds.length > 0 && <h3>{t("apple_id.new_login")}</h3>}
-            <div className="credentials">
+            <form
+              className="credentials"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!emailInput || !passwordInput) {
+                  toast.warning(t("apple_id.enter_email_password"));
+                  return;
+                }
+                if (!emailInput.includes("@")) {
+                  toast.warning(t("apple_id.valid_email"));
+                  return;
+                }
+                let promise = async () => {
+                  await invoke("login_new", {
+                    email: emailInput,
+                    password: passwordInput,
+                    saveCredentials: saveCredentials,
+                    anisetteServer,
+                  });
+                  setForceUpdateIds((v) => v + 1);
+                };
+                toast.promise(promise, {
+                  loading: t("apple_id.logging_in"),
+                  success: t("apple_id.logged_in_success"),
+                  error: (e) => err(t("apple_id.login_failed"), e),
+                });
+              }}
+            >
               <input
                 type="email"
                 placeholder={t("apple_id.email_placeholder")}
@@ -237,34 +264,7 @@ export const AppleID = ({
                   </label>
                 </div>
               )}
-              <button
-                onClick={async () => {
-                  if (!emailInput || !passwordInput) {
-                    toast.warning(t("apple_id.enter_email_password"));
-                    return;
-                  }
-                  if (!emailInput.includes("@")) {
-                    toast.warning(t("apple_id.valid_email"));
-                    return;
-                  }
-                  let promise = async () => {
-                    await invoke("login_new", {
-                      email: emailInput,
-                      password: passwordInput,
-                      saveCredentials: saveCredentials,
-                      anisetteServer,
-                    });
-                    setForceUpdateIds((v) => v + 1);
-                  };
-                  toast.promise(promise, {
-                    loading: t("apple_id.logging_in"),
-                    success: t("apple_id.logged_in_success"),
-                    error: (e) => err(t("apple_id.login_failed"), e),
-                  });
-                }}
-              >
-                {t("apple_id.login")}
-              </button>
+              <button type="submit">{t("apple_id.login")}</button>
               {addAccountOpen && storedIds.length > 0 && (
                 <button
                   onClick={() => {
@@ -274,7 +274,7 @@ export const AppleID = ({
                   {t("common.cancel")}
                 </button>
               )}
-            </div>
+            </form>
           </div>
         )}
       </div>
