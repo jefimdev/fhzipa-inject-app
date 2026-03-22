@@ -281,15 +281,9 @@ export const AppleID = ({
       <Modal sizeFit isOpen={tfaOpen} zIndex={2000}>
         <h2>{t("apple_id.two_factor_title")}</h2>
         <p>{t("apple_id.two_factor_prompt")}</p>
-        <input
-          type="text"
-          placeholder={t("apple_id.verification_placeholder")}
-          value={tfaCode}
-          onChange={(e) => setTfaCode(e.target.value)}
-          style={{ marginRight: "0.5em" }}
-        />
-        <button
-          onClick={async () => {
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
             if (tfaCode.length !== 6) {
               toast.warning(t("apple_id.valid_6digit"));
               return;
@@ -299,8 +293,15 @@ export const AppleID = ({
             setTfaCode("");
           }}
         >
-          {t("apple_id.submit")}
-        </button>
+          <input
+            type="text"
+            placeholder={t("apple_id.verification_placeholder")}
+            value={tfaCode}
+            onChange={(e) => setTfaCode(e.target.value)}
+            style={{ marginRight: "0.5em" }}
+          />
+          <button type="submit">{t("apple_id.submit")}</button>
+        </form>
       </Modal>
       <Modal sizeFit isOpen={certs !== null} zIndex={2000}>
         <h2 className="cert-header">{t("apple_id.max_certs_title")}</h2>
