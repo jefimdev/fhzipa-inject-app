@@ -148,12 +148,12 @@
     "manage": "Manage Pairing File",
     "loading_apps": "Loading Apps...",
     "apps_loaded_success": "Apps loaded successfully!",
-    "failed_load_apps": "Failed to load Apps",
+    "failed_load_apps": "Failed to load apps",
     "placing_pairing_file": "Placing pairing file...",
     "pairing_file_placed_success": "Pairing file placed successfully!",
     "failed_place_pairing": "Failed to place pairing",
     "loading_app": "Loading App...",
-    "no_supported_apps_found": "No Supported Apps found.",
+    "no_supported_apps_found": "No supported apps found.",
     "name": "Name",
     "bundle_id": "Bundle ID",
     "place_pairing_file": "Place Pairing File",
@@ -164,7 +164,8 @@
     "pairing_file_exported_success": "Pairing file exported successfully!",
     "failed_export_pairing_file": "Failed to export pairing file",
     "export_not_recommended": "Export (Not Recommended)",
-    "refresh_installed_apps": "Refresh Installed Apps"
+    "refresh_installed_apps": "Refresh Installed Apps",
+    "place_all": "Place In All Apps"
   },
   "settings": {
     "title": "Settings",

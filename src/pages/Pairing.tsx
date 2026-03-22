@@ -17,6 +17,7 @@ export const Pairing = () => {
   const [apps, setApps] = useState<PairingAppInfo[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [failed, setFailed] = useState<boolean>(false);
   const loadingRef = useRef<boolean>(false);
   const { err } = useError();
   const { confirm } = useDialog();
@@ -26,10 +27,17 @@ export const Pairing = () => {
     const promise = async () => {
       loadingRef.current = true;
       setLoading(true);
-      let list = await invoke<PairingAppInfo[]>("installed_pairing_apps");
-      setApps(list);
-      setLoading(false);
-      loadingRef.current = false;
+      try {
+        let list = await invoke<PairingAppInfo[]>("installed_pairing_apps");
+        setApps(list);
+      } catch (e) {
+        setFailed(true);
+        throw e;
+      } finally {
+        setFailed(false);
+        setLoading(false);
+        loadingRef.current = false;
+      }
     };
     toast.promise(promise, {
       loading: t("pairing.loading_apps"),
@@ -64,7 +72,9 @@ export const Pairing = () => {
         <div>
           {loading
             ? t("pairing.loading_app")
-            : t("pairing.no_supported_apps_found")}
+            : failed
+              ? t("pairing.failed_load_apps")
+              : t("pairing.no_supported_apps_found")}
         </div>
       ) : (
         <div className="card">
@@ -103,6 +113,26 @@ export const Pairing = () => {
           </div>
         </div>
       )}
+      <button
+        style={{ marginTop: "1em", width: "100%" }}
+        onClick={() => {
+          let promise = async () => {
+            for (const app of apps) {
+              await invoke<void>("place_pairing_cmd", {
+                bundleId: app.bundleId,
+                path: app.path,
+              });
+            }
+          };
+          toast.promise(promise, {
+            loading: t("pairing.placing_pairing_file"),
+            success: t("pairing.pairing_file_placed_success"),
+            error: (e) => err(t("pairing.failed_place_pairing"), e),
+          });
+        }}
+      >
+        {t("pairing.place_all")}
+      </button>
       <button
         style={{ marginTop: "1em", width: "100%" }}
         onClick={() => {
