@@ -107,6 +107,10 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 
 ## Future Plans
 
+- Better error handling
+  - Checks for if device is in developer mode, has password set, etc
+  - Automatic anisette fallback
+  - Display list of solutions to common error messages
 - Team selection when an account has multiple teams
 - Auto-refresh installed apps
   - Minimize to tray
@@ -115,7 +119,6 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - Set a "default" account to automatically log into
 - Import SideStore account info automatically
 - Mount DDI and open sidestore after installation
-- Check for developer mode and warn about it if not enabled
 
 ## License
 
