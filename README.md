@@ -104,6 +104,7 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [seomin0610](https://github.com/seomin0610): Improved Korean (ko)
 - [Ordyan777](https://github.com/Ordyan777): Armenian (am)
 - [kakik0u](https://github.com/kakik0u): Japanese (ja)
+- [lkspodmol](https://github.com/lkspodmol): Czech (cs_cz)
 
 ## Future Plans
 
