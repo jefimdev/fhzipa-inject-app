@@ -4,7 +4,7 @@
   "common": {
     "confirm": "확인",
     "cancel": "취소",
-    "dismiss": "무시",
+    "dismiss": "닫기",
     "refresh": "새로고침",
     "delete": "삭제",
     "copy_to_clipboard": "클립보드로 복사",
@@ -79,6 +79,7 @@
     "hide_certificate_list": "인증서 목록 숨기기",
     "choose_what_to_revoke": "폐기할 인증서 선택",
     "continue": "계속"
+    "no_keyring_available": "이기기에 인증서를 저장할 수 없습니다."
   },
   "device": {
     "title": "기기",
@@ -164,6 +165,7 @@
     "failed_export_pairing_file": "페어링 파일 내보내기 실패",
     "export_not_recommended": "내보내기(권장되지 않음)",
     "refresh_installed_apps": "설치된 앱 새로고침"
+    "place_all": "모든 앱에 배치"
   },
   "settings": {
     "title": "설정",
@@ -173,7 +175,7 @@
     "use_custom_anisette": "사용자 지정 Anisette 서버 사용",
     "back_preset_servers": "기본 서버 사용",
     "reset_anisette_title": "Anisette 상태 초기화",
-    "reset_anisette_message": "Anisette 상태를 초기화하시겠어요? 이중 확인 코드를 다시 입력해야 합니다.",
+    "reset_anisette_message": "Anisette 상태를 초기화할까요? 이중 확인 코드를 다시 입력해야 합니다.",
     "resetting_anisette_state": "Anisette 상태 초기화 중...",
     "anisette_state_reset_success": "Anisette 상태 초기화 성공",
     "failed_reset_anisette_state": "Anisette 상태 초기화 실패",
