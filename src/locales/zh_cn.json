@@ -86,7 +86,7 @@
     "loading_devices": "正在加载设备...",
     "no_devices_found": "未找到设备",
     "found_device": "找到 1 台设备",
-    "found_devices": "找到 {{count}} 台设备",
+    "found_devices": "找到设备",
     "unable_load_devices_prefix": "无法加载设备：",
     "no_devices_found_period": "未找到设备。",
     "selected": "已选择"

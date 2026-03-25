@@ -86,7 +86,7 @@
         "loading_devices": "載入裝置緊...",
         "no_devices_found": "搵唔到裝置",
         "found_device": "搵到 1 部裝置",
-        "found_devices": "搵到 {{count}} 部裝置",
+        "found_devices": "搵到裝置",
         "unable_load_devices_prefix": "無法載入裝置：",
         "no_devices_found_period": "搵唔到裝置。",
         "selected": "已揀"
