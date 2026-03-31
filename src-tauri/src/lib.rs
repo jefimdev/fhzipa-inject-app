@@ -16,9 +16,7 @@ use crate::{
         revoke_certificate,
     },
     device::{DeviceInfoMutex, list_devices, set_selected_device},
-    pairing::{
-        export_pairing_cmd, installed_pairing_apps, place_lockdown_pairing, place_remote_pairing,
-    },
+    pairing::{export_pairing_cmd, installed_pairing_apps, place_pairing_cmd},
     sideload::{SideloaderMutex, install_sidestore_operation, sideload_operation},
 };
 use tauri::Manager;
@@ -111,8 +109,7 @@ pub fn run() {
             list_app_ids,
             delete_app_id,
             installed_pairing_apps,
-            place_lockdown_pairing,
-            place_remote_pairing,
+            place_pairing_cmd,
             reset_anisette_state,
             export_pairing_cmd,
             keyring_available

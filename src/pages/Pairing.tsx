@@ -10,8 +10,6 @@ type PairingAppInfo = {
   name: string;
   bundleId: string;
   path: string;
-  lockdown: boolean;
-  remote_pairing: boolean;
 };
 
 export const Pairing = () => {
@@ -49,19 +47,11 @@ export const Pairing = () => {
   }, [setApps, t]);
 
   const pair = useCallback(
-    async (app: PairingAppInfo, force_lockdown?: boolean) => {
-      let promise: Promise<void>;
-      if (app.remote_pairing && !(force_lockdown && app.lockdown)) {
-        promise = invoke<void>("place_remote_pairing", {
-          bundleId: app.bundleId,
-          path: app.path,
-        });
-      } else {
-        promise = invoke<void>("place_lockdown_pairing", {
-          bundleId: app.bundleId,
-          path: app.path,
-        });
-      }
+    async (app: PairingAppInfo) => {
+      const promise = invoke<void>("place_pairing_cmd", {
+        bundleId: app.bundleId,
+        path: app.path,
+      });
       toast.promise(promise, {
         loading: t("pairing.placing_pairing_file"),
         success: t("pairing.pairing_file_placed_success"),
@@ -110,7 +100,7 @@ export const Pairing = () => {
                     <td className="cert-item-part">{app.bundleId}</td>
                     <td
                       className="pairing-place"
-                      onClick={(e) => pair(app, e.shiftKey)}
+                      onClick={() => pair(app)}
                       role="button"
                       tabIndex={0}
                     >

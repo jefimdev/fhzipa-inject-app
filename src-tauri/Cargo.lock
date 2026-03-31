@@ -3064,6 +3064,8 @@ dependencies = [
  "isideload",
  "keyring",
  "once_cell",
+ "plist",
+ "plist-macro",
  "reqwest",
  "rustls",
  "serde",

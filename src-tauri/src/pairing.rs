@@ -7,12 +7,12 @@ use idevice::{
     house_arrest::HouseArrestClient,
     installation_proxy::InstallationProxyClient,
     lockdown::LockdownClient,
-    pairing_file::PairingFile,
     provider::IdeviceProvider,
     remote_pairing::{RemotePairingClient, RpPairingFile},
     rsd::RsdHandshake,
     usbmuxd::UsbmuxdConnection,
 };
+use plist_macro::{plist, plist_to_xml_bytes};
 use serde::Serialize;
 use tauri::{AppHandle, State};
 use tauri_plugin_dialog::DialogExt;
@@ -20,34 +20,27 @@ use tracing::info;
 
 use crate::device::{DeviceInfo, DeviceInfoMutex, get_provider, get_provider_from_connection};
 
-const PAIRING_APPS: &[(&str, &str, bool, bool)] = &[
-    (
-        "SideStore",
-        "ALTPairingFile.mobiledevicepairing",
-        true,
-        false,
-    ),
+const PAIRING_APPS: &[(&str, &str)] = &[
+    ("SideStore", "ALTPairingFile.mobiledevicepairing"),
     (
         "LiveContainer",
         "SideStore/Documents/ALTPairingFile.mobiledevicepairing",
-        true,
-        false,
     ),
-    ("Feather", "pairingFile.plist", true, false),
-    ("StikDebug", "pairingFile.plist", true, false),
-    ("StikDebug (Sideloaded)", "pairingFile.plist", false, true),
-    ("StikTest", "stiktest_pairing.plist", true, false),
-    ("Protokolle", "pairingFile.plist", true, false),
-    ("Antrag", "pairingFile.plist", true, false),
-    ("SparseBox", "pairingFile.plist", true, false),
-    ("StikStore", "pairingFile.plist", true, false),
-    ("ByeTunes", "pairing file/pairingFile.plist", true, false),
+    ("Feather", "pairingFile.plist"),
+    ("StikDebug", "pairingFile.plist"),
+    ("StikDebug (Sideloaded)", "pairingFile.plist"),
+    ("StikTest", "stiktest_pairing.plist"),
+    ("Protokolle", "pairingFile.plist"),
+    ("Antrag", "pairingFile.plist"),
+    ("SparseBox", "pairingFile.plist"),
+    ("StikStore", "pairingFile.plist"),
+    ("ByeTunes", "pairing file/pairingFile.plist"),
 ];
 
 pub async fn pairing_file(
     device: DeviceInfo,
     usbmuxd: &mut UsbmuxdConnection,
-) -> Result<PairingFile, String> {
+) -> Result<Vec<u8>, String> {
     let provider = get_provider(&device).await?;
 
     let mut pairing_file = usbmuxd.get_pair_record(&provider.udid).await.map_err(|e| {
@@ -75,10 +68,30 @@ pub async fn pairing_file(
     .await
     .map_err(|e| format!("Failed to enable wifi debugging: {}", e))?;
 
-    Ok(pairing_file)
+    let lockdown_plist = plist::Value::from_reader_xml(std::io::Cursor::new(
+        pairing_file
+            .serialize()
+            .map_err(|e| format!("Failed to serialize pairing file: {}", e))?,
+    ))
+    .map_err(|e| format!("Failed to parse pairing file as plist: {}", e))?;
+
+    let rppairing_plist = plist::Value::from_reader_xml(std::io::Cursor::new(
+        generate_rppairing(&provider, "iloader")
+            .await
+            .map_err(|e| format!("Failed to generate RPPairing: {}", e))?
+            .to_bytes(),
+    ))
+    .map_err(|e| format!("Failed to parse RPPairing file as plist: {}", e))?;
+
+    let pairing_plist = plist!(dict {
+        :< lockdown_plist,
+        :< rppairing_plist,
+    });
+
+    Ok(plist_to_xml_bytes(&pairing_plist))
 }
 
-async fn generate_rppairing_file(
+async fn generate_rppairing(
     provider: &dyn IdeviceProvider,
     hostname: &str,
 ) -> Result<RpPairingFile, IdeviceError> {
@@ -117,7 +130,7 @@ async fn generate_rppairing_file(
     Ok(pairing_file)
 }
 
-pub async fn place_pairing(
+pub async fn place_file(
     pairing: Vec<u8>,
     provider: &dyn IdeviceProvider,
     bundle_id: String,
@@ -159,7 +172,7 @@ pub async fn place_pairing(
 }
 
 #[tauri::command]
-pub async fn place_lockdown_pairing(
+pub async fn place_pairing_cmd(
     device_state: State<'_, DeviceInfoMutex>,
     bundle_id: String,
     path: String,
@@ -180,42 +193,7 @@ pub async fn place_lockdown_pairing(
 
     let pairing_file = pairing_file(device, &mut usbmuxd).await?;
 
-    place_pairing(
-        pairing_file
-            .serialize()
-            .map_err(|e| format!("Failed to serialize pairing file: {}", e))?,
-        &provider,
-        bundle_id,
-        path,
-    )
-    .await
-}
-
-#[tauri::command]
-pub async fn place_remote_pairing(
-    device_state: State<'_, DeviceInfoMutex>,
-    bundle_id: String,
-    path: String,
-) -> Result<(), String> {
-    let device = {
-        let device_guard = device_state.lock().unwrap();
-        match &*device_guard {
-            Some(d) => d.clone(),
-            None => return Err("No device selected".to_string()),
-        }
-    };
-
-    let mut usbmuxd = UsbmuxdConnection::default()
-        .await
-        .map_err(|e| format!("Failed to connect to usbmuxd: {}", e))?;
-
-    let provider = get_provider_from_connection(&device, &mut usbmuxd).await?;
-
-    let pairing_file = generate_rppairing_file(&provider, "iloader")
-        .await
-        .map_err(|e| format!("Failed to generate remote pairing file: {}", e))?;
-
-    place_pairing(pairing_file.to_bytes(), &provider, bundle_id, path).await
+    place_file(pairing_file, &provider, bundle_id, path).await
 }
 
 // prompt for a location to save the pairing file, then export it there. This is for advanced users who want to use the pairing file with other tools, or just want a backup of it. Normal users should use the "Place" button next to the app they want to pair with instead, which will transfer the pairing file automatically.
@@ -251,14 +229,9 @@ pub async fn export_pairing_cmd(
     if let Some(save_path) = save_path
         && let Some(save_path) = save_path.as_path()
     {
-        tokio::fs::write(
-            save_path,
-            &pairing_file
-                .serialize()
-                .map_err(|e| format!("Failed to serialize pairing file: {}", e))?,
-        )
-        .await
-        .map_err(|e| format!("Failed to write pairing file: {}", e))?;
+        tokio::fs::write(save_path, &pairing_file)
+            .await
+            .map_err(|e| format!("Failed to write pairing file: {}", e))?;
 
         Ok(())
     } else {
@@ -272,8 +245,6 @@ pub struct PairingAppInfo {
     pub name: String,
     pub bundle_id: String,
     pub path: String,
-    pub lockdown: bool,
-    pub remote_pairing: bool,
 }
 
 #[tauri::command]
@@ -304,7 +275,7 @@ pub async fn installed_pairing_apps(
             .and_then(|x| x.get("CFBundleDisplayName").and_then(|x| x.as_string()))
             .ok_or("Failed to parse installed apps".to_string())?;
 
-        if PAIRING_APPS.iter().any(|(name, _, _, _)| name == &n) {
+        if PAIRING_APPS.iter().any(|(name, _)| name == &n) {
             if bundle_id.contains("com.stik.stikdebug") {
                 installed.insert(format!("{} (Sideloaded)", n), bundle_id);
             } else {
@@ -314,14 +285,12 @@ pub async fn installed_pairing_apps(
     }
 
     let mut result = Vec::new();
-    for (name, path, lockdown, remote_pairing) in PAIRING_APPS {
+    for (name, path) in PAIRING_APPS {
         if let Some(bundle_id) = installed.get(*name) {
             result.push(PairingAppInfo {
                 name: name.to_string(),
                 bundle_id: bundle_id.to_string(),
                 path: path.to_string(),
-                lockdown: *lockdown,
-                remote_pairing: *remote_pairing,
             });
         }
     }
@@ -354,11 +323,9 @@ pub async fn get_sidestore_info(
                 bundle_id: bundle_id.to_string(),
                 path: PAIRING_APPS
                     .iter()
-                    .find(|(name, _, _, _)| name == &n)
-                    .map(|(_, path, _, _)| path.to_string())
+                    .find(|(name, _)| name == &n)
+                    .map(|(_, path)| path.to_string())
                     .unwrap_or_default(),
-                lockdown: true,
-                remote_pairing: false,
             }));
         }
     }

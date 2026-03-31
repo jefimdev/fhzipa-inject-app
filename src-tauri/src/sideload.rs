@@ -3,7 +3,7 @@ use std::{path::PathBuf, sync::Mutex};
 use crate::{
     device::{DeviceInfoMutex, get_provider, get_provider_from_connection},
     operation::Operation,
-    pairing::{get_sidestore_info, pairing_file, place_pairing},
+    pairing::{get_sidestore_info, pairing_file, place_file},
 };
 use idevice::usbmuxd::UsbmuxdConnection;
 use isideload::sideload::{application::SpecialApp, sideloader::Sideloader};
@@ -160,15 +160,9 @@ pub async fn install_sidestore_operation(
 
         let file = op.fail_if_err("pairing", pairing_file(device, &mut usbmuxd).await)?;
 
-        let bytes = op.fail_if_err(
-            "pairing",
-            file.serialize()
-                .map_err(|e| format!("Failed to serialize pairing file: {}", e)),
-        )?;
-
         op.fail_if_err(
             "pairing",
-            place_pairing(bytes, &provider, info.bundle_id, info.path).await,
+            place_file(file, &provider, info.bundle_id, info.path).await,
         )?;
     } else {
         return op.fail(
