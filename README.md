@@ -71,6 +71,8 @@ const languages = [
 ] as const;
 ```
 
+You can also add your name to the translators section of the README.
+
 Thank you for translating!
 
 ## Credits
@@ -105,6 +107,7 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [Ordyan777](https://github.com/Ordyan777): Armenian (am)
 - [kakik0u](https://github.com/kakik0u): Japanese (ja)
 - [lkspodmol](https://github.com/lkspodmol): Czech (cs_cz)
+- [marcusherelammonstyle-cmd](https://github.com/marcusherelammonstyle-cmd): Swedish (sv)
 
 ## Future Plans
 
