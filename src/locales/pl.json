@@ -168,7 +168,6 @@
     "place_all": "Umieść we wszystkich aplikacjach"
   },
   "settings": {
-    "title": "Ustawienia",
     "anisette_server": "Serwer Anisette:",
     "custom_anisette_placeholder": "Własny serwer Anisette",
     "custom_anisette": "Własny",
@@ -180,7 +179,6 @@
     "anisette_state_reset_success": "Stan Anisette został pomyślnie zresetowany",
     "anisette_state_not_found": "Brak stanu Anisette do zresetowania",
     "failed_reset_anisette_state": "Nie udało się zresetować stanu Anisette",
-    "reset_anisette_state": "Zresetuj stan Anisette",
     "view_logs": "Pokaż logi",
     "logs": "Logi",
     "log_level": "Poziom logów:",

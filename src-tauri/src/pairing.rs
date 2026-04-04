@@ -343,6 +343,30 @@ pub async fn pairing_file(
 }
 
 #[tauri::command]
+pub async fn delete_stored_rppairing(
+    device_state: State<'_, DeviceInfoMutex>,
+    app: AppHandle,
+) -> Result<(), String> {
+    let device = {
+        let device_guard = device_state.lock().unwrap();
+        match &*device_guard {
+            Some(d) => d.clone(),
+            None => return Err("No device selected".to_string()),
+        }
+    };
+
+    let storage = get_pairing_storage(&app);
+    let cache_key = format!("rppairing_file_{}", device.info.udid);
+
+    storage.as_ref().delete(&cache_key).map_err(|e| {
+        format!(
+            "Failed to delete stored RPPairing for device {}: {}",
+            device.info.name, e
+        )
+    })
+}
+
+#[tauri::command]
 pub async fn installed_pairing_apps(
     device_state: State<'_, DeviceInfoMutex>,
 ) -> Result<Vec<PairingAppInfo>, String> {

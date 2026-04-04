@@ -12,9 +12,11 @@ import { useDialog } from "../DialogContext";
 import { Trans, useTranslation } from "react-i18next";
 import i18n, { sortedLanguages } from "../i18next";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { DeviceInfo } from "../Device";
 
 type SettingsProps = {
-  showHeading?: boolean;
+  ensureSelectedDevice: () => boolean;
+  setSelectedDevice: (device: DeviceInfo | null) => void;
 };
 
 let anisetteServers = [
@@ -27,7 +29,10 @@ let anisetteServers = [
   ["ani.xu30.top", "SteX"],
   ["anisette.wedotstud.io", "WE. Studio"],
 ];
-export const Settings = ({ showHeading = true }: SettingsProps) => {
+export const Settings = ({
+  ensureSelectedDevice,
+  setSelectedDevice,
+}: SettingsProps) => {
   const { t } = useTranslation();
   const [anisetteServer, setAnisetteServer] = useStore<string>(
     "anisetteServer",
@@ -63,7 +68,6 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
 
   return (
     <>
-      {showHeading && <h2>{t("settings.title")}</h2>}
       <div className="settings-container">
         <Dropdown
           label={t("settings.anisette_server")}
@@ -128,7 +132,33 @@ export const Settings = ({ showHeading = true }: SettingsProps) => {
               )
             }
           >
-            {t("settings.reset_anisette_state")}
+            {t("settings.reset_anisette_title")}
+          </button>
+          <button
+            className="action-button danger"
+            onClick={() => {
+              if (!ensureSelectedDevice()) return;
+              confirm(
+                t("settings.delete_stored_rppairing"),
+                t("settings.delete_stored_rppairing_message"),
+                () =>
+                  toast.promise(
+                    async () => {
+                      await invoke("delete_stored_rppairing");
+                      await invoke("set_selected_device");
+                      setSelectedDevice(null);
+                    },
+                    {
+                      loading: t("settings.deleting_stored_rppairing"),
+                      success: t("settings.stored_rppairing_deleted_success"),
+                      error: (e) =>
+                        err(t("settings.failed_delete_stored_rppairing"), e),
+                    },
+                  ),
+              );
+            }}
+          >
+            {t("settings.delete_stored_rppairing")}
           </button>
           <button onClick={() => setLogsOpen(true)}>
             {t("settings.view_logs")}

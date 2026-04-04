@@ -168,7 +168,6 @@
     "place_all": "ضع ملف الاقتران في كل التطبيقات"
   },
   "settings": {
-    "title": "الإعدادات",
     "anisette_server": "سيرفيرات أنيسيت:",
     "custom_anisette_placeholder": "سيرفير أنيسيت مخصص",
     "custom_anisette": "مخصص",
@@ -178,9 +177,8 @@
     "reset_anisette_message": "هل أنت متأكد من رغبتك بإعادة تعيين سيرفيرات أنيسيت؟ سيتحتم عليك إعادة إدخال رمز التحقق بخطوتين.",
     "resetting_anisette_state": "يتم إعادة تعيين سيرفيرات أنيسيت",
     "anisette_state_reset_success": "تم إعادة تعيين سيرفيرات أنيسيت!",
-  	"anisette_state_not_found": "لا يوجد سيرفر أنيسيت لإعادة تعيينه",
+    "anisette_state_not_found": "لا يوجد سيرفر أنيسيت لإعادة تعيينه",
     "failed_reset_anisette_state": "فشل إعادة تعيين سيرفيرات أنيسيت.",
-    "reset_anisette_state": "إعادة تعيين سيرفيرات أنيسيت.",
     "view_logs": "عرض السجلات",
     "logs": "السجلات",
     "log_level": "مستوى السجل:",

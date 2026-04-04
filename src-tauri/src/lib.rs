@@ -19,7 +19,9 @@ use crate::{
     device::{
         DeviceInfoMutex, PairingCancelToken, cancel_pairing, list_devices, set_selected_device,
     },
-    pairing::{export_pairing_cmd, installed_pairing_apps, place_pairing_cmd},
+    pairing::{
+        delete_stored_rppairing, export_pairing_cmd, installed_pairing_apps, place_pairing_cmd,
+    },
     secure_storage::{force_disable_keyring, keyring_available},
     sideload::{SideloaderMutex, install_sidestore_operation, sideload_operation},
 };
@@ -117,6 +119,7 @@ pub fn run() {
             place_pairing_cmd,
             reset_anisette_state,
             export_pairing_cmd,
+            delete_stored_rppairing,
             keyring_available,
             force_disable_keyring,
             cancel_pairing
