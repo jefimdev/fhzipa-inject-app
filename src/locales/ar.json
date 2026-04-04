@@ -83,7 +83,6 @@
   },
   "device": {
     "title": "iDevice",
-    "failed_select_prefix": "فشل اختيار جهاز:",
     "loading_devices": "يتم البحث عن أجهزة",
     "no_devices_found": "لم يتم العثور على أي جهاز",
     "found_device": "تم العثور على جهاز",
@@ -91,6 +90,9 @@
     "unable_load_devices_prefix": "فشل تحديث الأجهزة:",
     "no_devices_found_period": "لم يتم العثور على أجهزة.",
     "selected": "تم الاختيار"
+    "pairing_in_progress_header": "{{device}} يتم الاقتران مع",
+    "pairing_in_progress_hint": "يرجى إلغاء قفل جهازك والضغط على \"الوثوق\" ثم كتابة رمزك للدخول في حال طلب منك ذلك",
+    "pairing_cancel": "إلغاء"
   },
   "operation": {
     "failed": "فشلت المهمة.",
