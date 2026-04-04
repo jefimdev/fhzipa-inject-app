@@ -362,7 +362,10 @@ function App() {
           <section className="workspace-section">
             <p className="section-label">{t("app.settings")}</p>
             <GlassCard className="panel settings-panel">
-              <Settings showHeading={false} />
+              <Settings
+                ensureSelectedDevice={ensureSelectedDevice}
+                setSelectedDevice={setSelectedDevice}
+              />
             </GlassCard>
           </section>
           {operationState && (

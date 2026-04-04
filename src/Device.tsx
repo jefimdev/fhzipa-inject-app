@@ -3,6 +3,7 @@ import "./Device.css";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { Modal } from "./components/Modal";
 
 export type DeviceInfo = {
   name: string;
@@ -22,15 +23,34 @@ export const Device = ({
 }) => {
   const { t } = useTranslation();
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
+  const [waitingToPair, setWaitingToPair] = useState<null | DeviceInfo>(null);
 
   const listingDevices = useRef<boolean>(false);
+  const pairingRequestId = useRef<number>(0);
 
   const selectDevice = useCallback(
     (device: DeviceInfo | null) => {
-      setSelectedDevice(device);
-      invoke("set_selected_device", { device }).catch((err) => {
-        toast.error(t("device.failed_select_prefix") + err);
-      });
+      const requestId = ++pairingRequestId.current;
+      setWaitingToPair(device);
+      invoke("set_selected_device", { device })
+        .then(() => {
+          if (pairingRequestId.current !== requestId) {
+            return;
+          }
+          setWaitingToPair(null);
+          setSelectedDevice(device);
+        })
+        .catch((err) => {
+          if (pairingRequestId.current !== requestId) {
+            return;
+          }
+
+          const message = String(err ?? "");
+          if (message !== "Pairing cancelled") {
+            toast.error(message);
+          }
+          setWaitingToPair(null);
+        });
     },
     [setSelectedDevice, t],
   );
@@ -75,9 +95,38 @@ export const Device = ({
 
   return (
     <>
+      <Modal
+        isOpen={waitingToPair !== null}
+        close={() => {
+          pairingRequestId.current += 1;
+          invoke("cancel_pairing").catch(() => {});
+          setWaitingToPair(null);
+        }}
+      >
+        <div className="pairing-modal-content">
+          <div className="spinner" />
+          <h2>
+            {t("device.pairing_in_progress_header", {
+              device: waitingToPair?.name ?? "Unknown Device",
+            })}
+          </h2>
+          <p>{t("device.pairing_in_progress_hint")}</p>
+          <button
+            onClick={async () => {
+              pairingRequestId.current += 1;
+              await invoke("cancel_pairing");
+              setWaitingToPair(null);
+            }}
+          >
+            {t("device.pairing_cancel")}
+          </button>
+        </div>
+      </Modal>
       <h2 style={{ marginTop: 0 }}>{t("device.title")}</h2>
       <div className="credentials-container">
-        {devices.length === 0 && <div>{t("device.no_devices_found_period")}</div>}
+        {devices.length === 0 && (
+          <div>{t("device.no_devices_found_period")}</div>
+        )}
         {devices.map((device) => {
           const isActive = selectedDevice?.id === device.id;
           return (
@@ -85,6 +134,7 @@ export const Device = ({
               key={device.id}
               className={"device-card card" + (isActive ? " active" : "")}
               onClick={() => selectDevice(device)}
+              disabled={waitingToPair !== null}
             >
               <div className="device-meta">
                 <span className="device-name">{device.name}</span>
@@ -93,12 +143,16 @@ export const Device = ({
                 </span>
               </div>
               {isActive && (
-                <span className="device-selected-pill">{t("device.selected")}</span>
+                <span className="device-selected-pill">
+                  {t("device.selected")}
+                </span>
               )}
             </button>
           );
         })}
-        <button onClick={loadDevices}>{t("common.refresh")}</button>
+        <button disabled={waitingToPair !== null} onClick={loadDevices}>
+          {t("common.refresh")}
+        </button>
       </div>
     </>
   );
