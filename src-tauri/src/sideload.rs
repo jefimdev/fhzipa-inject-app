@@ -158,7 +158,7 @@ pub async fn install_sidestore_operation(
             get_provider_from_connection(&device, &mut usbmuxd).await,
         )?;
 
-        let file = op.fail_if_err("pairing", pairing_file(device, &mut usbmuxd).await)?;
+        let file = op.fail_if_err("pairing", pairing_file(&handle, device, &mut usbmuxd).await)?;
 
         op.fail_if_err(
             "pairing",

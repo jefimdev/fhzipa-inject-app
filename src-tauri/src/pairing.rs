@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::OnceLock};
 
 // used https://github.com/jkcoxson/idevice_pair/ as a guide
 use idevice::{
@@ -12,13 +12,19 @@ use idevice::{
     rsd::RsdHandshake,
     usbmuxd::UsbmuxdConnection,
 };
+use isideload::util::storage::{InMemoryStorage, SideloadingStorage};
 use plist_macro::{plist, plist_to_xml_bytes};
 use serde::Serialize;
 use tauri::{AppHandle, State};
 use tauri_plugin_dialog::DialogExt;
-use tracing::info;
+use tracing::{error, info};
 
-use crate::device::{DeviceInfo, DeviceInfoMutex, get_provider, get_provider_from_connection};
+use crate::{
+    device::{DeviceInfo, DeviceInfoMutex, get_provider, get_provider_from_connection},
+    secure_storage::create_sideloading_storage,
+};
+
+static PAIRING_STORAGE: OnceLock<Box<dyn SideloadingStorage>> = OnceLock::new();
 
 const PAIRING_APPS: &[(&str, &str)] = &[
     ("SideStore", "ALTPairingFile.mobiledevicepairing"),
@@ -37,7 +43,15 @@ const PAIRING_APPS: &[(&str, &str)] = &[
     ("ByeTunes", "pairing file/pairingFile.plist"),
 ];
 
-pub async fn pairing_file(
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PairingAppInfo {
+    pub name: String,
+    pub bundle_id: String,
+    pub path: String,
+}
+
+async fn generate_pairing_file(
     device: DeviceInfo,
     usbmuxd: &mut UsbmuxdConnection,
 ) -> Result<Vec<u8>, String> {
@@ -173,6 +187,7 @@ pub async fn place_file(
 
 #[tauri::command]
 pub async fn place_pairing_cmd(
+    app: AppHandle,
     device_state: State<'_, DeviceInfoMutex>,
     bundle_id: String,
     path: String,
@@ -191,7 +206,7 @@ pub async fn place_pairing_cmd(
 
     let provider = get_provider_from_connection(&device, &mut usbmuxd).await?;
 
-    let pairing_file = pairing_file(device, &mut usbmuxd).await?;
+    let pairing_file = pairing_file(&app, device, &mut usbmuxd).await?;
 
     place_file(pairing_file, &provider, bundle_id, path).await
 }
@@ -215,7 +230,7 @@ pub async fn export_pairing_cmd(
             .await
             .map_err(|e| format!("Failed to connect to usbmuxd: {}", e))?;
 
-        pairing_file(device, &mut usbmuxd).await?
+        pairing_file(&app, device, &mut usbmuxd).await?
     };
 
     let save_path = app
@@ -239,12 +254,48 @@ pub async fn export_pairing_cmd(
     }
 }
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct PairingAppInfo {
-    pub name: String,
-    pub bundle_id: String,
-    pub path: String,
+fn get_pairing_storage(app: &AppHandle) -> &'static Box<dyn SideloadingStorage> {
+    PAIRING_STORAGE.get_or_init(|| {
+        create_sideloading_storage(app).unwrap_or_else(|e| {
+            error!(
+                "Failed to create sideloading storage, storing pairing file in memory: {}",
+                e
+            );
+            Box::new(InMemoryStorage::new())
+        })
+    })
+}
+
+pub async fn pairing_file(
+    app: &AppHandle,
+    device: DeviceInfo,
+    usbmuxd: &mut UsbmuxdConnection,
+) -> Result<Vec<u8>, String> {
+    let storage = get_pairing_storage(app);
+    let cache_key = format!("pairing_file_{}", device.udid);
+
+    if let Some(cached) = storage.as_ref().retrieve_data(&cache_key).map_err(|e| {
+        format!(
+            "Failed to get pairing file from storage for device {}: {}",
+            device.name, e
+        )
+    })? {
+        info!("Using cached pairing file for device {}", device.name);
+        Ok(cached)
+    } else {
+        info!("Generating new pairing file for device {}", device.name);
+        let pairing_file = generate_pairing_file(device.clone(), usbmuxd).await?;
+        storage
+            .as_ref()
+            .store_data(&cache_key, &pairing_file.clone())
+            .map_err(|e| {
+                format!(
+                    "Failed to store pairing file for device {}: {}",
+                    device.name, e
+                )
+            })?;
+        Ok(pairing_file)
+    }
 }
 
 #[tauri::command]

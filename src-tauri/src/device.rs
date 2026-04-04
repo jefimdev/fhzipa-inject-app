@@ -1,10 +1,10 @@
 use std::sync::Mutex;
 
 use idevice::{
+    IdeviceService,
     lockdown::LockdownClient,
     provider::UsbmuxdProvider,
     usbmuxd::{Connection, UsbmuxdAddr, UsbmuxdConnection},
-    IdeviceService,
 };
 use serde::{Deserialize, Serialize};
 use tauri::State;
@@ -14,7 +14,7 @@ use tauri::State;
 pub struct DeviceInfo {
     pub name: String,
     pub id: u32,
-    pub uuid: String,
+    pub udid: String,
     pub connection_type: String,
 }
 
@@ -54,7 +54,7 @@ pub async fn list_devices() -> Result<Vec<DeviceInfo>, String> {
                         connection_type,
                         name: String::from("Unknown Device"),
                         id: device_uid,
-                        uuid: d.udid.clone(),
+                        udid: d.udid.clone(),
                     };
                 }
             };
@@ -70,7 +70,7 @@ pub async fn list_devices() -> Result<Vec<DeviceInfo>, String> {
             DeviceInfo {
                 name: device_name,
                 id: device_uid,
-                uuid: d.udid.clone(),
+                udid: d.udid.clone(),
                 connection_type,
             }
         })
@@ -84,6 +84,7 @@ pub async fn set_selected_device(
     device_state: State<'_, DeviceInfoMutex>,
     device: Option<DeviceInfo>,
 ) -> Result<(), String> {
+    println!("AAAAAAAAA");
     let mut device_state = device_state.lock().unwrap();
     *device_state = device;
     Ok(())
@@ -102,7 +103,7 @@ pub async fn get_provider_from_connection(
     connection: &mut UsbmuxdConnection,
 ) -> Result<UsbmuxdProvider, String> {
     let device = connection
-        .get_device(&device_info.uuid)
+        .get_device(&device_info.udid)
         .await
         .map_err(|e| format!("Failed to get device: {}", e))?;
 
