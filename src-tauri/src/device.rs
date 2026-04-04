@@ -7,7 +7,10 @@ use idevice::{
     usbmuxd::{Connection, UsbmuxdAddr, UsbmuxdConnection},
 };
 use serde::{Deserialize, Serialize};
-use tauri::State;
+use tauri::{AppHandle, State};
+use tokio_util::sync::CancellationToken;
+
+use crate::pairing::pairing_file;
 
 #[derive(Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -18,7 +21,15 @@ pub struct DeviceInfo {
     pub connection_type: String,
 }
 
-pub type DeviceInfoMutex = Mutex<Option<DeviceInfo>>;
+#[derive(Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct DeviceInfoWithPairing {
+    pub info: DeviceInfo,
+    pub pairing: Vec<u8>,
+}
+
+pub type DeviceInfoMutex = Mutex<Option<DeviceInfoWithPairing>>;
+pub type PairingCancelToken = Mutex<Option<CancellationToken>>;
 
 #[tauri::command]
 pub async fn list_devices() -> Result<Vec<DeviceInfo>, String> {
@@ -81,12 +92,53 @@ pub async fn list_devices() -> Result<Vec<DeviceInfo>, String> {
 
 #[tauri::command]
 pub async fn set_selected_device(
+    app: AppHandle,
     device_state: State<'_, DeviceInfoMutex>,
+    cancel_state: State<'_, PairingCancelToken>,
     device: Option<DeviceInfo>,
 ) -> Result<(), String> {
-    println!("AAAAAAAAA");
+    if device.is_none() {
+        let mut device_state = device_state.lock().unwrap();
+        *device_state = None;
+        return Ok(());
+    }
+
+    let mut usbmuxd = UsbmuxdConnection::default()
+        .await
+        .map_err(|e| format!("Failed to connect to usbmuxd: {}", e))?;
+
+    let token = tokio_util::sync::CancellationToken::new();
+    {
+        let mut guard = cancel_state.lock().unwrap();
+        if let Some(old) = guard.replace(token.clone()) {
+            old.cancel();
+        }
+    }
+
+    let pairing_result = pairing_file(&app, device.as_ref().unwrap(), &mut usbmuxd, token.clone()).await;
+
+    if !token.is_cancelled() {
+        let mut guard = cancel_state.lock().unwrap();
+        *guard = None;
+    }
+
+    let pairing = pairing_result?;
+
+    let device_with_pairing = DeviceInfoWithPairing {
+        info: device.unwrap(),
+        pairing,
+    };
     let mut device_state = device_state.lock().unwrap();
-    *device_state = device;
+    *device_state = Some(device_with_pairing);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn cancel_pairing(cancel_state: State<'_, PairingCancelToken>) -> Result<(), String> {
+    let mut guard = cancel_state.lock().unwrap();
+    if let Some(token) = guard.take() {
+        token.cancel();
+    }
     Ok(())
 }
 

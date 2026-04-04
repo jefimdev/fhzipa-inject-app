@@ -3,7 +3,7 @@ use std::{path::PathBuf, sync::Mutex};
 use crate::{
     device::{DeviceInfoMutex, get_provider, get_provider_from_connection},
     operation::Operation,
-    pairing::{get_sidestore_info, pairing_file, place_file},
+    pairing::{get_sidestore_info, place_file},
 };
 use idevice::usbmuxd::UsbmuxdConnection;
 use isideload::sideload::{application::SpecialApp, sideloader::Sideloader};
@@ -53,7 +53,7 @@ pub async fn sideload(
         }
     };
 
-    let provider = get_provider(&device).await?;
+    let provider = get_provider(&device.info).await?;
 
     let mut sideloader = SideloaderGuard::take(&sideloader_state)?;
 
@@ -143,7 +143,7 @@ pub async fn install_sidestore_operation(
     op.move_on("install", "pairing")?;
     let sidestore_info = op.fail_if_err(
         "pairing",
-        get_sidestore_info(device.clone(), live_container).await,
+        get_sidestore_info(&device.info, live_container).await,
     )?;
     if let Some(info) = sidestore_info {
         let mut usbmuxd = op.fail_if_err(
@@ -155,14 +155,12 @@ pub async fn install_sidestore_operation(
 
         let provider = op.fail_if_err(
             "pairing",
-            get_provider_from_connection(&device, &mut usbmuxd).await,
+            get_provider_from_connection(&device.info, &mut usbmuxd).await,
         )?;
-
-        let file = op.fail_if_err("pairing", pairing_file(&handle, device, &mut usbmuxd).await)?;
 
         op.fail_if_err(
             "pairing",
-            place_file(file, &provider, info.bundle_id, info.path).await,
+            place_file(device.pairing, &provider, info.bundle_id, info.path).await,
         )?;
     } else {
         return op.fail(

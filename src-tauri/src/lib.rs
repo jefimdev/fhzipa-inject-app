@@ -16,7 +16,9 @@ use crate::{
         delete_account, delete_app_id, get_certificates, invalidate_account, list_app_ids,
         logged_in_as, login_new, login_stored, reset_anisette_state, revoke_certificate,
     },
-    device::{DeviceInfoMutex, list_devices, set_selected_device},
+    device::{
+        DeviceInfoMutex, PairingCancelToken, cancel_pairing, list_devices, set_selected_device,
+    },
     pairing::{export_pairing_cmd, installed_pairing_apps, place_pairing_cmd},
     secure_storage::{force_disable_keyring, keyring_available},
     sideload::{SideloaderMutex, install_sidestore_operation, sideload_operation},
@@ -94,6 +96,7 @@ pub fn run() {
 
             app.manage(DeviceInfoMutex::new(None));
             app.manage(SideloaderMutex::new(None));
+            app.manage(PairingCancelToken::new(None));
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -115,7 +118,8 @@ pub fn run() {
             reset_anisette_state,
             export_pairing_cmd,
             keyring_available,
-            force_disable_keyring
+            force_disable_keyring,
+            cancel_pairing
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -17,6 +17,7 @@ use plist_macro::{plist, plist_to_xml_bytes};
 use serde::Serialize;
 use tauri::{AppHandle, State};
 use tauri_plugin_dialog::DialogExt;
+use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
 use crate::{
@@ -187,7 +188,6 @@ pub async fn place_file(
 
 #[tauri::command]
 pub async fn place_pairing_cmd(
-    app: AppHandle,
     device_state: State<'_, DeviceInfoMutex>,
     bundle_id: String,
     path: String,
@@ -204,11 +204,9 @@ pub async fn place_pairing_cmd(
         .await
         .map_err(|e| format!("Failed to connect to usbmuxd: {}", e))?;
 
-    let provider = get_provider_from_connection(&device, &mut usbmuxd).await?;
+    let provider = get_provider_from_connection(&device.info, &mut usbmuxd).await?;
 
-    let pairing_file = pairing_file(&app, device, &mut usbmuxd).await?;
-
-    place_file(pairing_file, &provider, bundle_id, path).await
+    place_file(device.pairing, &provider, bundle_id, path).await
 }
 
 // prompt for a location to save the pairing file, then export it there. This is for advanced users who want to use the pairing file with other tools, or just want a backup of it. Normal users should use the "Place" button next to the app they want to pair with instead, which will transfer the pairing file automatically.
@@ -225,14 +223,6 @@ pub async fn export_pairing_cmd(
         }
     };
 
-    let pairing_file = {
-        let mut usbmuxd = UsbmuxdConnection::default()
-            .await
-            .map_err(|e| format!("Failed to connect to usbmuxd: {}", e))?;
-
-        pairing_file(&app, device, &mut usbmuxd).await?
-    };
-
     let save_path = app
         .dialog()
         .file()
@@ -244,7 +234,7 @@ pub async fn export_pairing_cmd(
     if let Some(save_path) = save_path
         && let Some(save_path) = save_path.as_path()
     {
-        tokio::fs::write(save_path, &pairing_file)
+        tokio::fs::write(save_path, &device.pairing)
             .await
             .map_err(|e| format!("Failed to write pairing file: {}", e))?;
 
@@ -268,8 +258,9 @@ fn get_pairing_storage(app: &AppHandle) -> &'static Box<dyn SideloadingStorage> 
 
 pub async fn pairing_file(
     app: &AppHandle,
-    device: DeviceInfo,
+    device: &DeviceInfo,
     usbmuxd: &mut UsbmuxdConnection,
+    cancel: CancellationToken,
 ) -> Result<Vec<u8>, String> {
     let storage = get_pairing_storage(app);
     let cache_key = format!("pairing_file_{}", device.udid);
@@ -280,22 +271,31 @@ pub async fn pairing_file(
             device.name, e
         )
     })? {
-        info!("Using cached pairing file for device {}", device.name);
-        Ok(cached)
-    } else {
-        info!("Generating new pairing file for device {}", device.name);
-        let pairing_file = generate_pairing_file(device.clone(), usbmuxd).await?;
-        storage
-            .as_ref()
-            .store_data(&cache_key, &pairing_file.clone())
-            .map_err(|e| {
-                format!(
-                    "Failed to store pairing file for device {}: {}",
-                    device.name, e
-                )
-            })?;
-        Ok(pairing_file)
+        return Ok(cached);
     }
+
+    let pairing_file = tokio::select! {
+        _ = cancel.cancelled() => {
+            return Err("Pairing cancelled".to_string());
+        }
+        res = generate_pairing_file(device.clone(), usbmuxd) => res?
+    };
+
+    if cancel.is_cancelled() {
+        return Err("Pairing cancelled".to_string());
+    }
+
+    storage
+        .as_ref()
+        .store_data(&cache_key, &pairing_file)
+        .map_err(|e| {
+            format!(
+                "Failed to store pairing file for device {}: {}",
+                device.name, e
+            )
+        })?;
+
+    Ok(pairing_file)
 }
 
 #[tauri::command]
@@ -309,7 +309,7 @@ pub async fn installed_pairing_apps(
             None => return Err("No device selected".to_string()),
         }
     };
-    let provider = get_provider(&device).await?;
+    let provider = get_provider(&device.info).await?;
     let mut installation_proxy = InstallationProxyClient::connect(&provider)
         .await
         .map_err(|e| format!("Failed to connect to installation proxy: {}", e))?;
@@ -349,10 +349,10 @@ pub async fn installed_pairing_apps(
 }
 
 pub async fn get_sidestore_info(
-    device: DeviceInfo,
+    device: &DeviceInfo,
     live_container: bool,
 ) -> Result<Option<PairingAppInfo>, String> {
-    let provider = get_provider(&device).await?;
+    let provider = get_provider(device).await?;
     let mut installation_proxy = InstallationProxyClient::connect(&provider)
         .await
         .map_err(|e| format!("Failed to connect to installation proxy: {}", e))?;
