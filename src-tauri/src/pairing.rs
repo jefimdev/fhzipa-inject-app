@@ -35,7 +35,7 @@ const PAIRING_APPS: &[(&str, &str)] = &[
     ),
     ("Feather", "pairingFile.plist"),
     ("StikDebug", "pairingFile.plist"),
-    ("StikDebug (Sideloaded)", "pairingFile.plist"),
+    ("StikDebug (Sideloaded)", "rp_pairing_file.plist"),
     ("StikTest", "stiktest_pairing.plist"),
     ("Protokolle", "pairingFile.plist"),
     ("Antrag", "pairingFile.plist"),
