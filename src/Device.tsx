@@ -23,20 +23,48 @@ export const Device = ({
 }) => {
   const { t } = useTranslation();
   const [devices, setDevices] = useState<DeviceInfo[]>([]);
-  const [waitingToPair, setWaitingToPair] = useState<null | DeviceInfo>(null);
+  const [waitingToPair, setWaitingToPair] = useState<DeviceInfo | null>(null);
+  const [showPairingModal, setShowPairingModal] = useState(false);
 
   const listingDevices = useRef<boolean>(false);
   const pairingRequestId = useRef<number>(0);
+  const pairingModalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearPairingModalTimer = useCallback(() => {
+    if (pairingModalTimer.current) {
+      clearTimeout(pairingModalTimer.current);
+      pairingModalTimer.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      clearPairingModalTimer();
+    };
+  }, [clearPairingModalTimer]);
 
   const selectDevice = useCallback(
     (device: DeviceInfo | null) => {
       const requestId = ++pairingRequestId.current;
+      clearPairingModalTimer();
+      setShowPairingModal(false);
       setWaitingToPair(device);
+
+      if (device) {
+        pairingModalTimer.current = setTimeout(() => {
+          if (pairingRequestId.current === requestId) {
+            setShowPairingModal(true);
+          }
+        }, 100);
+      }
+
       invoke("set_selected_device", { device })
         .then(() => {
           if (pairingRequestId.current !== requestId) {
             return;
           }
+          clearPairingModalTimer();
+          setShowPairingModal(false);
           setWaitingToPair(null);
           setSelectedDevice(device);
         })
@@ -49,10 +77,12 @@ export const Device = ({
           if (message !== "Pairing cancelled") {
             toast.error(message);
           }
+          clearPairingModalTimer();
+          setShowPairingModal(false);
           setWaitingToPair(null);
         });
     },
-    [setSelectedDevice, t],
+    [clearPairingModalTimer, setSelectedDevice, t],
   );
 
   const loadDevices = useCallback(async () => {
@@ -62,7 +92,14 @@ export const Device = ({
       try {
         const devices = await invoke<DeviceInfo[]>("list_devices");
         setDevices(devices);
-        selectDevice(devices.length > 0 ? devices[0] : null);
+        if (selectedDevice) {
+          const stillAvailable = devices.find(
+            (d) => d.id === selectedDevice.id,
+          );
+          if (!stillAvailable) {
+            selectDevice(null);
+          }
+        }
         listingDevices.current = false;
         resolve(devices.length);
       } catch (e) {
@@ -96,9 +133,11 @@ export const Device = ({
   return (
     <>
       <Modal
-        isOpen={waitingToPair !== null}
+        isOpen={showPairingModal && waitingToPair !== null}
         close={() => {
           pairingRequestId.current += 1;
+          clearPairingModalTimer();
+          setShowPairingModal(false);
           invoke("cancel_pairing").catch(() => {});
           setWaitingToPair(null);
         }}
@@ -114,6 +153,8 @@ export const Device = ({
           <button
             onClick={async () => {
               pairingRequestId.current += 1;
+              clearPairingModalTimer();
+              setShowPairingModal(false);
               await invoke("cancel_pairing");
               setWaitingToPair(null);
             }}
