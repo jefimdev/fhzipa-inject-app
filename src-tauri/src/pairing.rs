@@ -18,7 +18,7 @@ use serde::Serialize;
 use tauri::{AppHandle, State};
 use tauri_plugin_dialog::DialogExt;
 use tokio_util::sync::CancellationToken;
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
 use crate::{
     device::{DeviceInfo, DeviceInfoMutex, get_provider, get_provider_from_connection},
@@ -52,22 +52,21 @@ pub struct PairingAppInfo {
     pub path: String,
 }
 
-async fn generate_pairing_file(
-    device: DeviceInfo,
+async fn generate_lockdown_plist(
+    device: &DeviceInfo,
+    provider: &dyn IdeviceProvider,
     usbmuxd: &mut UsbmuxdConnection,
-) -> Result<Vec<u8>, String> {
-    let provider = get_provider(&device).await?;
-
-    let mut pairing_file = usbmuxd.get_pair_record(&provider.udid).await.map_err(|e| {
+) -> Result<plist::Value, String> {
+    let mut pairing_file = usbmuxd.get_pair_record(&device.udid).await.map_err(|e| {
         format!(
             "Failed to get pairing record for device {}: {}",
             device.name, e
         )
     })?;
 
-    pairing_file.udid = Some(provider.udid.clone());
+    pairing_file.udid = Some(device.udid.clone());
 
-    let mut lc = LockdownClient::connect(&provider)
+    let mut lc = LockdownClient::connect(provider)
         .await
         .map_err(|e| format!("Failed to connect to lockdown: {}", e))?;
 
@@ -83,27 +82,21 @@ async fn generate_pairing_file(
     .await
     .map_err(|e| format!("Failed to enable wifi debugging: {}", e))?;
 
-    let lockdown_plist = plist::Value::from_reader_xml(std::io::Cursor::new(
+    plist::Value::from_reader_xml(std::io::Cursor::new(
         pairing_file
             .serialize()
             .map_err(|e| format!("Failed to serialize pairing file: {}", e))?,
     ))
-    .map_err(|e| format!("Failed to parse pairing file as plist: {}", e))?;
+    .map_err(|e| format!("Failed to parse pairing file as plist: {}", e))
+}
 
-    let rppairing_plist = plist::Value::from_reader_xml(std::io::Cursor::new(
-        generate_rppairing(&provider, "iloader")
-            .await
-            .map_err(|e| format!("Failed to generate RPPairing: {}", e))?
-            .to_bytes(),
-    ))
-    .map_err(|e| format!("Failed to parse RPPairing file as plist: {}", e))?;
-
-    let pairing_plist = plist!(dict {
-        :< lockdown_plist,
-        :< rppairing_plist,
-    });
-
-    Ok(plist_to_xml_bytes(&pairing_plist))
+async fn generate_rppairing_plist(
+    provider: &dyn IdeviceProvider,
+) -> Result<(plist::Value, Vec<u8>), IdeviceError> {
+    let bytes = generate_rppairing(provider, "iloader").await?.to_bytes();
+    let plist = plist::Value::from_reader_xml(std::io::Cursor::new(&bytes))
+        .map_err(|e| IdeviceError::InternalError(format!("Invalid RPPairing plist: {}", e)))?;
+    Ok((plist, bytes))
 }
 
 async fn generate_rppairing(
@@ -262,40 +255,91 @@ pub async fn pairing_file(
     usbmuxd: &mut UsbmuxdConnection,
     cancel: CancellationToken,
 ) -> Result<Vec<u8>, String> {
-    let storage = get_pairing_storage(app);
-    let cache_key = format!("pairing_file_{}", device.udid);
+    let provider = get_provider(device).await?;
 
-    if let Some(cached) = storage.as_ref().retrieve_data(&cache_key).map_err(|e| {
-        format!(
-            "Failed to get pairing file from storage for device {}: {}",
-            device.name, e
-        )
-    })? {
-        return Ok(cached);
-    }
-
-    let pairing_file = tokio::select! {
+    let lockdown_plist = tokio::select! {
         _ = cancel.cancelled() => {
             return Err("Pairing cancelled".to_string());
         }
-        res = generate_pairing_file(device.clone(), usbmuxd) => res?
+        res = generate_lockdown_plist(device, &provider, usbmuxd) => res?
+    };
+
+    let storage = get_pairing_storage(app);
+    let cache_key = format!("rppairing_file_{}", device.udid);
+
+    let cached_rppairing = storage.as_ref().retrieve_data(&cache_key).map_err(|e| {
+        format!(
+            "Failed to get RPPairing from storage for device {}: {}",
+            device.name, e
+        )
+    })?;
+
+    let rppairing_plist = if let Some(cached) = cached_rppairing {
+        match plist::Value::from_reader_xml(std::io::Cursor::new(&cached)) {
+            Ok(plist) => plist,
+            Err(e) => {
+                warn!(
+                    "Cached RPPairing is invalid for device {}, regenerating: {}",
+                    device.name, e
+                );
+
+                let (generated_plist, generated_bytes) = tokio::select! {
+                    _ = cancel.cancelled() => {
+                        return Err("Pairing cancelled".to_string());
+                    }
+                    res = generate_rppairing_plist(&provider) => {
+                        res.map_err(|e| format!("Failed to generate RPPairing: {}", e))?
+                    }
+                };
+
+                storage
+                    .as_ref()
+                    .store_data(&cache_key, &generated_bytes)
+                    .map_err(|e| {
+                        format!(
+                            "Failed to store RPPairing for device {}: {}",
+                            device.name, e
+                        )
+                    })?;
+
+                generated_plist
+            }
+        }
+    } else {
+        info!("Generating new RPPairing for device {}", device.name);
+
+        let (generated_plist, generated_bytes) = tokio::select! {
+            _ = cancel.cancelled() => {
+                return Err("Pairing cancelled".to_string());
+            }
+            res = generate_rppairing_plist(&provider) => {
+                res.map_err(|e| format!("Failed to generate RPPairing: {}", e))?
+            }
+        };
+
+        storage
+            .as_ref()
+            .store_data(&cache_key, &generated_bytes)
+            .map_err(|e| {
+                format!(
+                    "Failed to store RPPairing for device {}: {}",
+                    device.name, e
+                )
+            })?;
+
+        generated_plist
     };
 
     if cancel.is_cancelled() {
         return Err("Pairing cancelled".to_string());
     }
 
-    storage
-        .as_ref()
-        .store_data(&cache_key, &pairing_file)
-        .map_err(|e| {
-            format!(
-                "Failed to store pairing file for device {}: {}",
-                device.name, e
-            )
-        })?;
+    let pairing_plist = plist!(dict {
+        :< lockdown_plist,
+        :< rppairing_plist,
+    });
 
-    Ok(pairing_file)
+    Ok(plist_to_xml_bytes(&pairing_plist))
 }
 
 #[tauri::command]
