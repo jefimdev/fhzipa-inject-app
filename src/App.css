@@ -178,6 +178,10 @@ body {
   color: var(--text-muted);
 }
 
+.text-muted {
+  color: var(--text-muted);
+}
+
 .section-hint {
   font-size: 0.9rem;
   color: rgba(247, 249, 255, 0.5);

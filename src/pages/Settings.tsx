@@ -17,6 +17,9 @@ import { DeviceInfo } from "../Device";
 type SettingsProps = {
   ensureSelectedDevice: () => boolean;
   setSelectedDevice: (device: DeviceInfo | null) => void;
+  platform: string;
+  shortcutLabel: (mac: string, windows: string, linux?: string) => string;
+  checkKeyring: () => Promise<void>;
 };
 
 let anisetteServers = [
@@ -32,6 +35,9 @@ let anisetteServers = [
 export const Settings = ({
   ensureSelectedDevice,
   setSelectedDevice,
+  platform,
+  shortcutLabel,
+  checkKeyring,
 }: SettingsProps) => {
   const { t } = useTranslation();
   const [anisetteServer, setAnisetteServer] = useStore<string>(
@@ -39,6 +45,14 @@ export const Settings = ({
     "ani.sidestore.io",
   );
 
+  const [overrideKeyring, setOverrideKeyring] = useStore<boolean>(
+    "overrideKeyring",
+    false,
+  );
+  // const [appIdDeletion, setAppIdDeletion] = useStore<boolean>(
+  //   "appIdDeletion",
+  //   false,
+  // );
   const [logsOpen, setLogsOpen] = useState(false);
   const [logLevelFilter, setLogLevelFilter] = useState("3");
   const logs = useLogs();
@@ -65,6 +79,30 @@ export const Settings = ({
   useEffect(() => {
     i18n.changeLanguage(lang);
   }, [lang]);
+
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === undefined) return;
+      const key = event.key.toLowerCase();
+      const primaryPressed = platform === "mac" ? event.metaKey : event.ctrlKey;
+      if (!primaryPressed) return;
+
+      if (!event.shiftKey && key === "l") {
+        event.preventDefault();
+        setLogsOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [platform]);
+
+  useEffect(() => {
+    (async () => {
+      await invoke("force_disable_keyring", { force: overrideKeyring });
+      checkKeyring();
+    })();
+  }, [overrideKeyring]);
 
   return (
     <>
@@ -162,6 +200,10 @@ export const Settings = ({
           </button>
           <button onClick={() => setLogsOpen(true)}>
             {t("settings.view_logs")}
+            <span
+              aria-hidden="true"
+              className="text-muted"
+            >{` (${shortcutLabel("⌘L", "Ctrl+L")})`}</span>
           </button>
         </div>
         <Modal isOpen={logsOpen} close={() => setLogsOpen(false)}>
@@ -216,6 +258,21 @@ export const Settings = ({
             )}
           </div>
         </Modal>
+        <div>
+          <label className="settings-label">
+            {t("settings.dont_use_keyring")}
+            <input
+              type="checkbox"
+              checked={overrideKeyring}
+              onChange={(e) => {
+                setOverrideKeyring(e.target.checked);
+              }}
+            />
+          </label>
+          <span className="settings-hint">
+            {t("settings.dont_use_keyring_message")}
+          </span>
+        </div>
         {/* <div>
           <label className="settings-label">
             Allow App ID deletion:

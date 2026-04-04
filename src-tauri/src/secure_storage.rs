@@ -1,4 +1,4 @@
-use std::sync::OnceLock;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use isideload::util::{
     fs_storage::FsStorage, keyring_storage::KeyringStorage, storage::SideloadingStorage,
@@ -6,16 +6,25 @@ use isideload::util::{
 use tauri::{AppHandle, Manager};
 use tracing::warn;
 
-static KEYRING_AVAILABLE: OnceLock<bool> = OnceLock::new();
+static FORCE_DISABLE_KEYRING: AtomicBool = AtomicBool::new(false);
 
 #[tauri::command]
-pub fn force_disable_keyring() {
-    KEYRING_AVAILABLE.set(false).ok();
+pub fn force_disable_keyring(force: bool) {
+    FORCE_DISABLE_KEYRING.store(force, Ordering::Relaxed);
+
+    if force {
+        warn!("Keyring has been forcefully disabled by the user.");
+    } else {
+        let available = check_keyring_available();
+        if !available {
+            warn!("Keyring is not available and cannot be enabled.");
+        }
+    }
 }
 
 #[tauri::command]
 pub fn keyring_available() -> bool {
-    *KEYRING_AVAILABLE.get_or_init(check_keyring_available)
+    !FORCE_DISABLE_KEYRING.load(Ordering::Relaxed) && check_keyring_available()
 }
 
 fn check_keyring_available() -> bool {

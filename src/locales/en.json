@@ -194,7 +194,9 @@
     "delete_stored_rppairing_message": "Are you sure you want to delete the stored pairing file for this device? This will require you to pair again.",
     "deleting_stored_rppairing": "Deleting stored pairing...",
     "stored_rppairing_deleted_success": "Stored pairing deleted successfully!",
-    "failed_delete_stored_rppairing": "Failed to delete stored pairing"
+    "failed_delete_stored_rppairing": "Failed to delete stored pairing",
+    "dont_use_keyring": "Don't use keyring",
+    "dont_use_keyring_message": "This makes iloader less secure by storing pairing files, anisette state, and certitficates on disk. Enable this only if the default keyring storage doesn't work and you understand the risks."
   },
   "dialog": {
     "confirm": "Confirm",

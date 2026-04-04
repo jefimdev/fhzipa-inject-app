@@ -1,4 +1,7 @@
-use std::{collections::HashMap, sync::OnceLock};
+use std::{
+    collections::HashMap,
+    sync::{Mutex, OnceLock},
+};
 
 // used https://github.com/jkcoxson/idevice_pair/ as a guide
 use idevice::{
@@ -22,10 +25,15 @@ use tracing::{error, info, warn};
 
 use crate::{
     device::{DeviceInfo, DeviceInfoMutex, get_provider, get_provider_from_connection},
-    secure_storage::create_sideloading_storage,
+    secure_storage::{create_sideloading_storage, keyring_available},
 };
 
-static PAIRING_STORAGE: OnceLock<Box<dyn SideloadingStorage>> = OnceLock::new();
+struct PairingStorageEntry {
+    keyring_enabled: bool,
+    storage: Box<dyn SideloadingStorage>,
+}
+
+static PAIRING_STORAGE: OnceLock<Mutex<PairingStorageEntry>> = OnceLock::new();
 
 const PAIRING_APPS: &[(&str, &str)] = &[
     ("SideStore", "ALTPairingFile.mobiledevicepairing"),
@@ -237,16 +245,44 @@ pub async fn export_pairing_cmd(
     }
 }
 
-fn get_pairing_storage(app: &AppHandle) -> &'static Box<dyn SideloadingStorage> {
-    PAIRING_STORAGE.get_or_init(|| {
-        create_sideloading_storage(app).unwrap_or_else(|e| {
-            error!(
-                "Failed to create sideloading storage, storing pairing file in memory: {}",
-                e
-            );
-            Box::new(InMemoryStorage::new())
-        })
-    })
+fn build_pairing_storage_entry(app: &AppHandle, keyring_enabled: bool) -> PairingStorageEntry {
+    let storage = create_sideloading_storage(app).unwrap_or_else(|e| {
+        error!(
+            "Failed to create sideloading storage, storing pairing file in memory: {}",
+            e
+        );
+        Box::new(InMemoryStorage::new())
+    });
+
+    PairingStorageEntry {
+        keyring_enabled,
+        storage,
+    }
+}
+
+fn with_pairing_storage<T>(
+    app: &AppHandle,
+    f: impl FnOnce(&dyn SideloadingStorage) -> Result<T, String>,
+) -> Result<T, String> {
+    let current_keyring_enabled = keyring_available();
+    let storage = PAIRING_STORAGE.get_or_init(|| {
+        Mutex::new(build_pairing_storage_entry(app, current_keyring_enabled))
+    });
+
+    let mut guard = storage
+        .lock()
+        .map_err(|_| "Failed to lock pairing storage".to_string())?;
+
+    if guard.keyring_enabled != current_keyring_enabled {
+        info!(
+            "Pairing storage backend changed at runtime (keyring_enabled: {} -> {}), recreating storage",
+            guard.keyring_enabled,
+            current_keyring_enabled
+        );
+        *guard = build_pairing_storage_entry(app, current_keyring_enabled);
+    }
+
+    f(guard.storage.as_ref())
 }
 
 pub async fn pairing_file(
@@ -264,14 +300,15 @@ pub async fn pairing_file(
         res = generate_lockdown_plist(device, &provider, usbmuxd) => res?
     };
 
-    let storage = get_pairing_storage(app);
     let cache_key = format!("rppairing_file_{}", device.udid);
 
-    let cached_rppairing = storage.as_ref().retrieve_data(&cache_key).map_err(|e| {
-        format!(
-            "Failed to get RPPairing from storage for device {}: {}",
-            device.name, e
-        )
+    let cached_rppairing = with_pairing_storage(app, |storage| {
+        storage.retrieve_data(&cache_key).map_err(|e| {
+            format!(
+                "Failed to get RPPairing from storage for device {}: {}",
+                device.name, e
+            )
+        })
     })?;
 
     let rppairing_plist = if let Some(cached) = cached_rppairing {
@@ -292,15 +329,14 @@ pub async fn pairing_file(
                     }
                 };
 
-                storage
-                    .as_ref()
-                    .store_data(&cache_key, &generated_bytes)
-                    .map_err(|e| {
+                with_pairing_storage(app, |storage| {
+                    storage.store_data(&cache_key, &generated_bytes).map_err(|e| {
                         format!(
                             "Failed to store RPPairing for device {}: {}",
                             device.name, e
                         )
-                    })?;
+                    })
+                })?;
 
                 generated_plist
             }
@@ -317,15 +353,14 @@ pub async fn pairing_file(
             }
         };
 
-        storage
-            .as_ref()
-            .store_data(&cache_key, &generated_bytes)
-            .map_err(|e| {
+        with_pairing_storage(app, |storage| {
+            storage.store_data(&cache_key, &generated_bytes).map_err(|e| {
                 format!(
                     "Failed to store RPPairing for device {}: {}",
                     device.name, e
                 )
-            })?;
+            })
+        })?;
 
         generated_plist
     };
@@ -346,7 +381,7 @@ pub async fn pairing_file(
 pub async fn delete_stored_rppairing(
     device_state: State<'_, DeviceInfoMutex>,
     app: AppHandle,
-) -> Result<(), String> {
+) -> Result<bool, String> {
     let device = {
         let device_guard = device_state.lock().unwrap();
         match &*device_guard {
@@ -355,15 +390,30 @@ pub async fn delete_stored_rppairing(
         }
     };
 
-    let storage = get_pairing_storage(&app);
     let cache_key = format!("rppairing_file_{}", device.info.udid);
 
-    storage.as_ref().delete(&cache_key).map_err(|e| {
-        format!(
-            "Failed to delete stored RPPairing for device {}: {}",
-            device.info.name, e
-        )
-    })
+    let had_pairing = with_pairing_storage(&app, |storage| {
+        storage
+            .retrieve_data(&cache_key)
+            .map_err(|e| {
+                format!(
+                    "Failed to check stored RPPairing for device {}: {}",
+                    device.info.name, e
+                )
+            })
+            .map(|data| data.is_some_and(|bytes| !bytes.is_empty()))
+    })?;
+
+    with_pairing_storage(&app, |storage| {
+        storage.delete(&cache_key).map_err(|e| {
+            format!(
+                "Failed to delete stored RPPairing for device {}: {}",
+                device.info.name, e
+            )
+        })
+    })?;
+
+    Ok(had_pairing)
 }
 
 #[tauri::command]
