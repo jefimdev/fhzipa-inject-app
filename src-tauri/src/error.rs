@@ -3,11 +3,17 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, thiserror::Error, Clone)]
 pub enum AppError {
+    #[error("{0}: {1}")]
+    HouseArrest(String, String),
+    #[error("{0}: {1}")]
+    LockdownPairing(String, String),
+    #[error("{0} canceled")]
+    Canceled(String),
     #[error("Failed to emit status to frontend: {0}")]
     OperationUpdate(String),
-    #[error("{0}")]
+    #[error("{0}: {1}")]
     DeviceComs(String, String),
-    #[error("{0}")]
+    #[error("{0}: {1}")]
     Usbmuxd(String, String),
     #[error("Not logged in")]
     NotLoggedIn,
@@ -19,6 +25,8 @@ pub enum AppError {
     Keyring(String, String),
     #[error("{0}")]
     Misc(String),
+    #[error("{0}: {1}")]
+    Filesystem(String, String),
 }
 
 // from rootcause report
