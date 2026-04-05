@@ -206,7 +206,11 @@ export const Settings = ({
             >{` (${shortcutLabel("⌘L", "Ctrl+L")})`}</span>
           </button>
         </div>
-        <Modal isOpen={logsOpen} close={() => setLogsOpen(false)}>
+        <Modal
+          isOpen={logsOpen}
+          close={() => setLogsOpen(false)}
+          zIndex={9999999999}
+        >
           <div className="log-outer">
             <div className="log-header">
               <h2>{t("settings.logs")}</h2>
