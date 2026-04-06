@@ -412,6 +412,22 @@ pub async fn delete_stored_rppairing(
 }
 
 #[tauri::command]
+pub async fn has_stored_rppairing(device: DeviceInfo, app: AppHandle) -> Result<bool, AppError> {
+    // rppairing not supported <17.4, returning true so the frontend can still automatically select it
+    if is_ios_version_below(&device.version, 17, 4) {
+        return Ok(true);
+    }
+    let cache_key = format!("rppairing_file_{}", device.udid);
+
+    with_pairing_storage(&app, |storage| {
+        storage.retrieve_data(&cache_key).map_err(|e| {
+            AppError::Storage("Failed to retrieve stored RPPairing".into(), e.to_string())
+        })
+    })
+    .map(|opt| opt.is_some())
+}
+
+#[tauri::command]
 pub async fn installed_pairing_apps(
     device_state: State<'_, DeviceInfoMutex>,
 ) -> Result<Vec<PairingAppInfo>, AppError> {

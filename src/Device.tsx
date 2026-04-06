@@ -104,6 +104,23 @@ export const Device = ({
             selectDevice(null);
           }
         }
+        if (devices.length > 0) {
+          const devicesWithPairing = await Promise.all(
+            devices.map(async (device) => {
+              const hasPairing = await invoke<boolean>("has_stored_rppairing", {
+                device,
+              });
+              return hasPairing ? device : null;
+            }),
+          )
+            .catch(() => [])
+            .then((results) =>
+              results.filter((d): d is DeviceInfo => d !== null),
+            );
+          if (devicesWithPairing.length > 0) {
+            selectDevice(devicesWithPairing[0]);
+          }
+        }
         listingDevices.current = false;
         resolve(devices.length);
       } catch (e) {

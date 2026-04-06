@@ -21,7 +21,8 @@ use crate::{
         DeviceInfoMutex, PairingCancelToken, cancel_pairing, list_devices, set_selected_device,
     },
     pairing::{
-        delete_stored_rppairing, export_pairing_cmd, installed_pairing_apps, place_pairing_cmd,
+        delete_stored_rppairing, export_pairing_cmd, has_stored_rppairing, installed_pairing_apps,
+        place_pairing_cmd,
     },
     secure_storage::{force_disable_keyring, keyring_available},
     sideload::{SideloaderMutex, install_sidestore_operation, sideload_operation},
@@ -123,7 +124,8 @@ pub fn run() {
             delete_stored_rppairing,
             keyring_available,
             force_disable_keyring,
-            cancel_pairing
+            cancel_pairing,
+            has_stored_rppairing,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
