@@ -306,6 +306,17 @@ pub async fn pairing_file(
         res = generate_lockdown_plist(device, &provider, usbmuxd) => res?
     };
 
+    // rppairing is 17.4+
+    if is_ios_version_below(device.version.as_str(), 17, 4) {
+        let lockdown_dict = lockdown_plist.as_dictionary().cloned().ok_or_else(|| {
+            AppError::LockdownPairing(
+                "Lockdown plist was not a dictionary".into(),
+                "Invalid lockdown plist".into(),
+            )
+        })?;
+        return Ok(plist_to_xml_bytes(&lockdown_dict));
+    }
+
     let cache_key = format!("rppairing_file_{}", device.udid);
 
     let cached_rppairing = with_pairing_storage(app, |storage| {
@@ -500,4 +511,24 @@ pub async fn get_sidestore_info(
     }
 
     Ok(None)
+}
+
+fn parse_version_component(segment: Option<&str>) -> u32 {
+    segment
+        .and_then(|s| {
+            let digits: String = s.chars().take_while(|c| c.is_ascii_digit()).collect();
+            if digits.is_empty() {
+                None
+            } else {
+                digits.parse().ok()
+            }
+        })
+        .unwrap_or(0)
+}
+
+fn is_ios_version_below(version: &str, target_major: u32, target_minor: u32) -> bool {
+    let mut parts = version.split('.');
+    let major = parse_version_component(parts.next());
+    let minor = parse_version_component(parts.next());
+    (major, minor) < (target_major, target_minor)
 }

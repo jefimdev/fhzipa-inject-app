@@ -282,7 +282,9 @@ function App() {
               <p className="section-label">{t("app.devices")}</p>
               <span className="section-hint">
                 {selectedDevice
-                  ? t("app.active_device", { name: selectedDevice.name })
+                  ? t("app.active_device", {
+                      name: `${selectedDevice.name} (${selectedDevice.version})`,
+                    })
                   : t("app.select_device")}
               </span>
             </div>

@@ -11,6 +11,7 @@ export type DeviceInfo = {
   id: number;
   uuid: string;
   connectionType: "USB" | "Network" | "Unknown";
+  version: string;
 };
 
 export const Device = ({

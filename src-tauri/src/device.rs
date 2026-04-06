@@ -19,6 +19,7 @@ pub struct DeviceInfo {
     pub id: u32,
     pub udid: String,
     pub connection_type: String,
+    pub version: String,
 }
 
 #[derive(Deserialize, Serialize, Clone)]
@@ -85,10 +86,23 @@ pub async fn list_devices() -> Result<Vec<DeviceInfo>, AppError> {
 
                 let device_name = device_name_value.as_string().ok_or_else(|| {
                     eprintln!("DeviceName for {} was not a string", d.udid);
-                    AppError::DeviceComsWithMessage(
-                        "Failed to fetch DeviceName".into(),
-                        "DeviceName was not a string".to_string(),
-                    )
+                    AppError::DeviceComs("DeviceName was not a string".into())
+                })?;
+
+                let version_value = lockdown_client
+                    .get_value(Some("ProductVersion"), None)
+                    .await
+                    .map_err(|e| {
+                        eprintln!("Failed to fetch ProductVersion for {}: {e:?}", d.udid);
+                        AppError::DeviceComsWithMessage(
+                            "Failed to fetch ProductVersion".into(),
+                            e.to_string(),
+                        )
+                    })?;
+
+                let version = version_value.as_string().ok_or_else(|| {
+                    eprintln!("ProductVersion for {} was not a string", d.udid);
+                    AppError::DeviceComs("Product version was not a string".into())
                 })?;
 
                 Ok::<DeviceInfo, AppError>(DeviceInfo {
@@ -96,6 +110,7 @@ pub async fn list_devices() -> Result<Vec<DeviceInfo>, AppError> {
                     id: device_uid,
                     udid: d.udid.clone(),
                     connection_type,
+                    version: version.to_string(),
                 })
             }
         })
