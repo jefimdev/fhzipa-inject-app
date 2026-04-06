@@ -220,61 +220,61 @@
         "حماية التحقق بخطوتين غير مدعومة، إن أمكن استعمل معرف آبل بدون تحقق بخطوتين او تحقق بخطوتين مفعل على الأجهزة المقترنة"
       ],
       "التحميل": [
-        "قم بتحميل سايدستور يدوياً من الرابط ((link:https://github.com/SideStore/SideStore/releases)) واستعمل /"استيراد ipa/" لتثبيته" 
+        "قم بتحميل سايدستور يدوياً من الرابط ((link:https://github.com/SideStore/SideStore/releases)) واستعمل \"استيراد ipa\" لتثبيته" 
       ],
-      "house_arrest": [
-        "[ios::26.3]Ensure your device is not on a developer beta of iOS 26.3, as it has a bug with house arrest"
+      "الإقامة الجبرية": [
+        "تأكد أن نظام جهازك ليس على نسخة تجريبية من iOS اصدار 26.3 حيث هناك مشكلة بما يدعى الإقامة الإجبارية [ios::26.3]"
       ],
-      "pairing": [
-        "Try reconnecting the device and running the action again.",
-        "Ensure your device has a passcode set.",
-        "Ensure your device is connected via USB, not wirelessly."
+      "الإقتران": [
+        "حاول إعادة توصيل جهازك والقيام بذلك مجدداً",
+        "تأكد أن جهازك عليه رمز حماية لإلغاء القفل",
+        "تأكد أن جهازك موصول عن طريق USB وليس لاسلكياً"
       ],
-      "canceled": [],
-      "operation_update": [],
+      "تم الإلغاء": [],
+      "تحديث_العملية": [],
       "usbmuxd": [
-        "[platform::windows]Ensure you have iTunes installed and check that it can detect your device.",
-        "[platform::windows]Uninstall iTunes and Apple Mobile Device Support, then install \"Apple Devices\" from the Microsoft Store.",
-        "[platform::linux]Make sure usbmuxd is installed and running."
+        "[platform::windows]تأكد من تثبيتك لأيتونز وأنه يتعرف على جهازك",
+        "[platform::windows]من متجر مايكروسوفت apple devices وقم بتثبيت  apple mobile device support قم بإلغاء تثبيت أيتونز و ",
+        "[platform::linux]تم تثبيته وقيد التشغيل USBMUXD تأكد أن "
       ],
-      "trust": [
-        "Unlock your device, go to the home screen, and accept any trust prompts that appear."
+      "الوقوق": [
+        "قم بفتح قفل جهازك واذهب الى الشاشة الرئيسية قم وافق على اقتراح الإقتران عبر الضغط على \"الوثوق\""
       ],
       "device_coms": [
-        "Ensure your device is properly connected to your computer.",
-        "Unplug and reconnect the device. If the issue persists, try a different USB port and cable."
+        "تأكد أن جهازك فعلاً متصل",
+        "حاول إعادة توصيل جهازك مجدداً. اذا استمر الخطأ حاول استعمال منفذ USB آخر او وصلة مختلفة"
       ],
-      "not_logged_in": ["Sign in to your Apple ID first."],
-      "no_device_selected": ["Select a device before continuing."],
+      "not_logged_in": ["سجل دخول لمعرف آبل الخاص بك اولاً"],
+      "no_device_selected": ["قم باختيار جهاز اولاً عبر الضغط عليه"],
       "anisette": [
-        "Ensure your computer is connected to the internet.",
-        "Change your anisette server. Try several different servers.",
-        "Make sure you can access ((link:{{anisetteServerUrl}})) in a browser."
+        "تأكد أن لديك اتصال انترنت فعال",
+        "قم بتغيير سيرفير أنيسيت. حاول عدة سيرفيرات",
+        "تأكد أن بامكانك الدخول إلى ((link:{{anisetteServerUrl}})) في متصفحك"
       ],
       "keyring": [
-        "Try enabling \"Don't use keyring\" in settings to bypass this issue. Note that this is less secure."
+        "حاول تفعيل إعداد \"لا تستخدم تشفير حلقة المفاتيح keyring\" لتفادي هذا الخطأ. مع العلم أن هذا أقل أماناً"
       ],
       "misc": [
-        "Try again. Restarting the app, your computer, and/or your phone may also help."
+        "حاول مجدداً. إعادة تشغيل التطبيق، حاسوبك وجهازك قد يفيد في بعض الحالات"
       ],
       "admin": [
-        "Try running the app with elevated permissions (as administrator/root)."
+        "حاول إعادة تشغيل التطبيق كمسؤول"
       ],
       "filesystem": [
-        "Make sure iloader has permission to read and write files on your system."
+        "تأكد أن التطبيق يمتلك صلاحيات القراءة والكتابة على حاسوبك"
       ],
       "not_enough_app_ids": [
-        "You do not have enough App IDs available to install this app.",
-        "Wait for App IDs to expire after 7 days (cannot be deleted sooner), then try again.",
-        "Installing apps from SideStore sometimes allows you to use less App IDs, so try installing from there instead."
+        "ليس لديك مساحة كافية من معرفات التطبيقات لاستكمال عملية التثبيت",
+        "عليك الانتظار مدة أقصاها سبع أيام ليتوفر خانات معرفات تطبيقات كافية. مع العلم أنه لا يمكن حذفهم يدويا وبالتالي عليك الانتظار",
+        "تثبيت التطبيقات من خلال SideStore يسمح لك باستعمال معرفات تطبيقات أقل أحياناً، لذا حاول ذلك"
       ],
       "max_apps": [
-        "You can only have 3 sideloaded apps installed at a time with a free Apple ID.",
-        "Delete other sideloaded apps to free up space for this one.",
-        "Expired apps still count towards the 3 app limit."
+        "يمكنك فقط تثبيت ثلاث تطبيقات جانبياً عند استعمالك لحساب مطور مجاني من آبل",
+        "قم بحذف احد التطبيقات المثبتة لتتمكن من تثبيت هذا التطبيق",
+        "التطبيقات المنتهية صلاحيتها ولا يمكن فتحها أيضاً تحسب من ضمن الثلاث تطبيقات المسموحة فقط"
       ]
     },
-    "support_message": "If the issue persists, press \"Copy to clipboard\" and send the copied error to the <discord>Discord</discord> or a <github>GitHub issue</github> for support."
+    "support_message": "للحصول على المساعدة <github>GitHub مشاكل</github> أو <discord>Discord</discord> اذا استمر هذا الخطأ اضغط على \"نسخ إلى الحافظة\" وأرسله إلى سيرفير"
   },
   "update": {
     "new_version_available": "هل ترغب بتحميله؟ {{version}} :هناك إصدار أحدث من التطبيق متوفر للتحميل",
