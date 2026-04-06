@@ -24,7 +24,8 @@ use tokio_util::sync::CancellationToken;
 use tracing::{error, info, warn};
 
 use crate::{
-    device::{DeviceInfo, DeviceInfoMutex, get_provider, get_provider_from_connection},
+    device::{DeviceInfo, DeviceInfoMutex, get_provider},
+    error::AppError,
     secure_storage::{create_sideloading_storage, keyring_available},
 };
 
@@ -64,23 +65,23 @@ async fn generate_lockdown_plist(
     device: &DeviceInfo,
     provider: &dyn IdeviceProvider,
     usbmuxd: &mut UsbmuxdConnection,
-) -> Result<plist::Value, String> {
+) -> Result<plist::Value, AppError> {
     let mut pairing_file = usbmuxd.get_pair_record(&device.udid).await.map_err(|e| {
-        format!(
-            "Failed to get pairing record for device {}: {}",
-            device.name, e
+        AppError::LockdownPairing(
+            "Failed to get pairing record for device".into(),
+            e.to_string(),
         )
     })?;
 
     pairing_file.udid = Some(device.udid.clone());
 
-    let mut lc = LockdownClient::connect(provider)
-        .await
-        .map_err(|e| format!("Failed to connect to lockdown: {}", e))?;
+    let mut lc = LockdownClient::connect(provider).await.map_err(|e| {
+        AppError::DeviceComsWithMessage("Failed to connect to lockdown".into(), e.to_string())
+    })?;
 
-    lc.start_session(&pairing_file)
-        .await
-        .map_err(|e| format!("Failed to start lockdown session: {}", e))?;
+    lc.start_session(&pairing_file).await.map_err(|e| {
+        AppError::DeviceComsWithMessage("Failed to start lockdown session".into(), e.to_string())
+    })?;
 
     lc.set_value(
         "EnableWifiDebugging",
@@ -88,14 +89,19 @@ async fn generate_lockdown_plist(
         Some("com.apple.mobile.wireless_lockdown"),
     )
     .await
-    .map_err(|e| format!("Failed to enable wifi debugging: {}", e))?;
+    .map_err(|e| {
+        AppError::LockdownPairing("Failed to enable wifi debugging".into(), e.to_string())
+    })?;
 
-    plist::Value::from_reader_xml(std::io::Cursor::new(
-        pairing_file
-            .serialize()
-            .map_err(|e| format!("Failed to serialize pairing file: {}", e))?,
-    ))
-    .map_err(|e| format!("Failed to parse pairing file as plist: {}", e))
+    plist::Value::from_reader_xml(std::io::Cursor::new(pairing_file.serialize().map_err(
+        |e| AppError::LockdownPairing("Failed to serialize pairing file".into(), e.to_string()),
+    )?))
+    .map_err(|e| {
+        AppError::LockdownPairing(
+            "Failed to parse pairing file as plist".into(),
+            e.to_string(),
+        )
+    })
 }
 
 async fn generate_rppairing_plist(
@@ -151,15 +157,15 @@ pub async fn place_file(
     provider: &dyn IdeviceProvider,
     bundle_id: String,
     path: String,
-) -> Result<(), String> {
-    let house_arrest_client = HouseArrestClient::connect(provider)
-        .await
-        .map_err(|e| format!("Failed to connect to house arrest: {}", e))?;
+) -> Result<(), AppError> {
+    let house_arrest_client = HouseArrestClient::connect(provider).await.map_err(|e| {
+        AppError::HouseArrest("Failed to connect to house arrest".into(), e.to_string())
+    })?;
 
     let mut afc_client = house_arrest_client
         .vend_documents(bundle_id)
         .await
-        .map_err(|e| format!("Failed to vend documents: {}", e))?;
+        .map_err(|e| AppError::HouseArrest("Failed to vend documents".into(), e.to_string()))?;
 
     afc_client
         .mk_dir(format!(
@@ -167,7 +173,9 @@ pub async fn place_file(
             path.rsplit_once('/').map(|x| x.0).unwrap_or("")
         ))
         .await
-        .map_err(|e| format!("Failed to create Documents directory: {}", e))?;
+        .map_err(|e| {
+            AppError::HouseArrest("Failed to create Documents directory".into(), e.to_string())
+        })?;
 
     let mut file = afc_client
         .open(
@@ -175,14 +183,16 @@ pub async fn place_file(
             idevice::afc::opcode::AfcFopenMode::Wr,
         )
         .await
-        .map_err(|e| format!("Failed to open file on device: {}", e))?;
+        .map_err(|e| {
+            AppError::HouseArrest("Failed to open file on device".into(), e.to_string())
+        })?;
 
     file.write_entire(&pairing)
         .await
-        .map_err(|e| format!("Failed to write pairing file: {}", e))?;
+        .map_err(|e| AppError::HouseArrest("Failed to write pairing file".into(), e.to_string()))?;
     file.close()
         .await
-        .map_err(|e| format!("Failed to close file: {}", e))?;
+        .map_err(|e| AppError::HouseArrest("Failed to close file".into(), e.to_string()))?;
 
     Ok(())
 }
@@ -192,20 +202,16 @@ pub async fn place_pairing_cmd(
     device_state: State<'_, DeviceInfoMutex>,
     bundle_id: String,
     path: String,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
     let device = {
         let device_guard = device_state.lock().unwrap();
         match &*device_guard {
             Some(d) => d.clone(),
-            None => return Err("No device selected".to_string()),
+            None => return Err(AppError::NoDeviceSelected),
         }
     };
 
-    let mut usbmuxd = UsbmuxdConnection::default()
-        .await
-        .map_err(|e| format!("Failed to connect to usbmuxd: {}", e))?;
-
-    let provider = get_provider_from_connection(&device.info, &mut usbmuxd).await?;
+    let provider = get_provider(&device.info).await?;
 
     place_file(device.pairing, &provider, bundle_id, path).await
 }
@@ -215,12 +221,12 @@ pub async fn place_pairing_cmd(
 pub async fn export_pairing_cmd(
     device_state: State<'_, DeviceInfoMutex>,
     app: AppHandle,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
     let device = {
         let device_guard = device_state.lock().unwrap();
         match &*device_guard {
             Some(d) => d.clone(),
-            None => return Err("No device selected".to_string()),
+            None => return Err(AppError::NoDeviceSelected),
         }
     };
 
@@ -237,11 +243,13 @@ pub async fn export_pairing_cmd(
     {
         tokio::fs::write(save_path, &device.pairing)
             .await
-            .map_err(|e| format!("Failed to write pairing file: {}", e))?;
+            .map_err(|e| {
+                AppError::Filesystem("Failed to write pairing file".into(), e.to_string())
+            })?;
 
         Ok(())
     } else {
-        Err("Save cancelled".to_string())
+        Err(AppError::Canceled("Export".into()))
     }
 }
 
@@ -262,15 +270,15 @@ fn build_pairing_storage_entry(app: &AppHandle, keyring_enabled: bool) -> Pairin
 
 fn with_pairing_storage<T>(
     app: &AppHandle,
-    f: impl FnOnce(&dyn SideloadingStorage) -> Result<T, String>,
-) -> Result<T, String> {
+    f: impl FnOnce(&dyn SideloadingStorage) -> Result<T, AppError>,
+) -> Result<T, AppError> {
     let current_keyring_enabled = keyring_available();
     let storage = PAIRING_STORAGE
         .get_or_init(|| Mutex::new(build_pairing_storage_entry(app, current_keyring_enabled)));
 
     let mut guard = storage
         .lock()
-        .map_err(|_| "Failed to lock pairing storage".to_string())?;
+        .map_err(|_| AppError::Misc("Failed to lock pairing storage".to_string()))?;
 
     if guard.keyring_enabled != current_keyring_enabled {
         info!(
@@ -288,12 +296,12 @@ pub async fn pairing_file(
     device: &DeviceInfo,
     usbmuxd: &mut UsbmuxdConnection,
     cancel: CancellationToken,
-) -> Result<Vec<u8>, String> {
+) -> Result<Vec<u8>, AppError> {
     let provider = get_provider(device).await?;
 
     let lockdown_plist = tokio::select! {
         _ = cancel.cancelled() => {
-            return Err("Pairing cancelled".to_string());
+            return Err(AppError::Canceled("Pairing".into()));
         }
         res = generate_lockdown_plist(device, &provider, usbmuxd) => res?
     };
@@ -302,10 +310,7 @@ pub async fn pairing_file(
 
     let cached_rppairing = with_pairing_storage(app, |storage| {
         storage.retrieve_data(&cache_key).map_err(|e| {
-            format!(
-                "Failed to get RPPairing from storage for device {}: {}",
-                device.name, e
-            )
+            AppError::Storage("Failed to get RPPairing from storage".into(), e.to_string())
         })
     })?;
 
@@ -320,10 +325,10 @@ pub async fn pairing_file(
 
                 let (generated_plist, generated_bytes) = tokio::select! {
                     _ = cancel.cancelled() => {
-                        return Err("Pairing cancelled".to_string());
+                        return Err(AppError::Canceled("Pairing".into()));
                     }
                     res = generate_rppairing_plist(&provider) => {
-                        res.map_err(|e| format!("Failed to generate RPPairing: {}", e))?
+                        res.map_err(|e| AppError::RemotePairing(e.to_string()))?
                     }
                 };
 
@@ -331,10 +336,7 @@ pub async fn pairing_file(
                     storage
                         .store_data(&cache_key, &generated_bytes)
                         .map_err(|e| {
-                            format!(
-                                "Failed to store RPPairing for device {}: {}",
-                                device.name, e
-                            )
+                            AppError::Storage("Failed to store RPPairing".into(), e.to_string())
                         })
                 })?;
 
@@ -346,29 +348,24 @@ pub async fn pairing_file(
 
         let (generated_plist, generated_bytes) = tokio::select! {
             _ = cancel.cancelled() => {
-                return Err("Pairing cancelled".to_string());
+                return Err(AppError::Canceled("Pairing".into()));
             }
             res = generate_rppairing_plist(&provider) => {
-                res.map_err(|e| format!("Failed to generate RPPairing: {}", e))?
+                res.map_err(|e| AppError::RemotePairing(e.to_string()))?
             }
         };
 
         with_pairing_storage(app, |storage| {
             storage
                 .store_data(&cache_key, &generated_bytes)
-                .map_err(|e| {
-                    format!(
-                        "Failed to store RPPairing for device {}: {}",
-                        device.name, e
-                    )
-                })
+                .map_err(|e| AppError::Storage("Failed to store RPPairing".into(), e.to_string()))
         })?;
 
         generated_plist
     };
 
     if cancel.is_cancelled() {
-        return Err("Pairing cancelled".to_string());
+        return Err(AppError::Canceled("Pairing".into()));
     }
 
     let pairing_plist = plist!(dict {
@@ -383,68 +380,61 @@ pub async fn pairing_file(
 pub async fn delete_stored_rppairing(
     device_state: State<'_, DeviceInfoMutex>,
     app: AppHandle,
-) -> Result<bool, String> {
+) -> Result<(), AppError> {
     let device = {
         let device_guard = device_state.lock().unwrap();
         match &*device_guard {
             Some(d) => d.clone(),
-            None => return Err("No device selected".to_string()),
+            None => return Err(AppError::NoDeviceSelected),
         }
     };
 
     let cache_key = format!("rppairing_file_{}", device.info.udid);
 
-    let had_pairing = with_pairing_storage(&app, |storage| {
-        storage
-            .retrieve_data(&cache_key)
-            .map_err(|e| {
-                format!(
-                    "Failed to check stored RPPairing for device {}: {}",
-                    device.info.name, e
-                )
-            })
-            .map(|data| data.is_some_and(|bytes| !bytes.is_empty()))
-    })?;
-
     with_pairing_storage(&app, |storage| {
         storage.delete(&cache_key).map_err(|e| {
-            format!(
-                "Failed to delete stored RPPairing for device {}: {}",
-                device.info.name, e
-            )
+            AppError::Storage("Failed to delete stored RPPairing".into(), e.to_string())
         })
     })?;
 
-    Ok(had_pairing)
+    Ok(())
 }
 
 #[tauri::command]
 pub async fn installed_pairing_apps(
     device_state: State<'_, DeviceInfoMutex>,
-) -> Result<Vec<PairingAppInfo>, String> {
+) -> Result<Vec<PairingAppInfo>, AppError> {
     let device = {
         let device_guard = device_state.lock().unwrap();
         match &*device_guard {
             Some(d) => d.clone(),
-            None => return Err("No device selected".to_string()),
+            None => return Err(AppError::NoDeviceSelected),
         }
     };
     let provider = get_provider(&device.info).await?;
-    let mut installation_proxy = InstallationProxyClient::connect(&provider)
-        .await
-        .map_err(|e| format!("Failed to connect to installation proxy: {}", e))?;
+    let mut installation_proxy =
+        InstallationProxyClient::connect(&provider)
+            .await
+            .map_err(|e| {
+                AppError::DeviceComsWithMessage(
+                    "Failed to connect to installation proxy".into(),
+                    e.to_string(),
+                )
+            })?;
 
     let installed_apps = installation_proxy
         .get_apps(Some("User"), None)
         .await
-        .map_err(|e| format!("Failed to get installed apps: {}", e))?;
+        .map_err(|e| {
+            AppError::DeviceComsWithMessage("Failed to get installed apps".into(), e.to_string())
+        })?;
 
     let mut installed = HashMap::new();
     for (bundle_id, app) in installed_apps {
         let n = app
             .as_dictionary()
             .and_then(|x| x.get("CFBundleDisplayName").and_then(|x| x.as_string()))
-            .ok_or("Failed to parse installed apps".to_string())?;
+            .ok_or(AppError::Misc("Failed to parse installed apps".to_string()))?;
 
         if PAIRING_APPS.iter().any(|(name, _)| name == &n) {
             if bundle_id.contains("com.stik.stikdebug") {
@@ -471,22 +461,30 @@ pub async fn installed_pairing_apps(
 pub async fn get_sidestore_info(
     device: &DeviceInfo,
     live_container: bool,
-) -> Result<Option<PairingAppInfo>, String> {
+) -> Result<Option<PairingAppInfo>, AppError> {
     let provider = get_provider(device).await?;
-    let mut installation_proxy = InstallationProxyClient::connect(&provider)
-        .await
-        .map_err(|e| format!("Failed to connect to installation proxy: {}", e))?;
+    let mut installation_proxy =
+        InstallationProxyClient::connect(&provider)
+            .await
+            .map_err(|e| {
+                AppError::DeviceComsWithMessage(
+                    "Failed to connect to installation proxy".into(),
+                    e.to_string(),
+                )
+            })?;
 
     let installed_apps = installation_proxy
         .get_apps(Some("User"), None)
         .await
-        .map_err(|e| format!("Failed to get installed apps: {}", e))?;
+        .map_err(|e| {
+            AppError::DeviceComsWithMessage("Failed to get installed apps".into(), e.to_string())
+        })?;
 
     for (bundle_id, app) in installed_apps {
         let n = app
             .as_dictionary()
             .and_then(|x| x.get("CFBundleDisplayName").and_then(|x| x.as_string()))
-            .ok_or("Failed to parse installed apps".to_string())?;
+            .ok_or(AppError::Misc("Failed to parse installed apps".to_string()))?;
 
         if n == "SideStore" || (live_container && n == "LiveContainer") {
             return Ok(Some(PairingAppInfo {
