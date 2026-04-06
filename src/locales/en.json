@@ -224,8 +224,7 @@
         "Download SideStore manually from ((link:https://github.com/SideStore/SideStore/releases)) and use the \"Import IPA\" button to install it."
       ],
       "house_arrest": [
-        "Make sure the device is unlocked and trusted on this computer.",
-        "Try reconnecting the device and running the action again."
+        "[ios::26.3]Ensure your device is not on a developer beta of iOS 26.3, as it has a bug with house arrest"
       ],
       "pairing": [
         "Try reconnecting the device and running the action again.",

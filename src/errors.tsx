@@ -6,7 +6,11 @@ export const errorSuggestionKeys = {
   developer: ["error.suggestions.developer"],
   auth: ["error.suggestions.auth"],
   download: ["error.suggestions.download"],
-  house_arrest: ["error.suggestions.house_arrest"],
+  house_arrest: [
+    "error.suggestions.house_arrest",
+    "error.suggestions.trust",
+    "error.suggestions.device_coms",
+  ],
   remote_pairing: ["error.suggestions.trust", "error.suggestions.pairing"],
   lockdown_pairing: ["error.suggestions.trust", "error.suggestions.pairing"],
   canceled: [],
@@ -91,7 +95,13 @@ const getSuggestionBlock = (
       }
       return true;
     })
-    .map((s) => s.replace(/^\[platform::.*?\]/, "").trim());
+    .map((s) =>
+      s
+        .replace(/^\[platform::.*?\]/, "")
+        // TODO: actually check ios version
+        .replace(/\[ios::.*?\]/g, "")
+        .trim(),
+    );
 };
 
 export const getErrorSuggestions = (
