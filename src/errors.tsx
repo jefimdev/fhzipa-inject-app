@@ -29,6 +29,10 @@ export const errorSuggestionKeys = {
   no_device_selected: ["error.suggestions.no_device_selected"],
   anisette: ["error.suggestions.anisette"],
   keyring: ["error.suggestions.keyring", "error.suggestions.admin"],
+  keyring_with_message: [
+    "error.suggestions.keyring",
+    "error.suggestions.admin",
+  ],
   storage: [
     "error.suggestions.keyring",
     "error.suggestions.admin",
