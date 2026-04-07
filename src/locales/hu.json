@@ -90,7 +90,10 @@
     "found_devices": "Talált eszközök",
     "unable_load_devices_prefix": "Nem sikerült betölteni az eszközt: ",
     "no_devices_found_period": "Nincs talált eszköz.",
-    "selected": "Kiválasztva"
+    "selected": "Kiválasztva",
+    "pairing_in_progress_header": "Párosítás a {{device}} készülékkel...",
+    "pairing_in_progress_hint": "Kérjük, oldja fel a készülék zárolását és kattintson a \"Trust,\" gombra, majd ha a rendszer kéri, írja be a jelszavát.",
+    "pairing_cancel": "Megszakítás"
   },
   "operation": {
     "failed": "Sikertelen művelet.",
@@ -187,7 +190,14 @@
     "info": "Információ",
     "warn": "Figyelmeztetés",
     "error": "Hiba",
-    "language_hint": "Tudsz segíteni fordítással <translation>itt</translation>."
+    "language_hint": "Tudsz segíteni fordítással <translation>itt</translation>.",
+    "delete_stored_rppairing": "Eltárolt párosítófájlok törlése",
+    "delete_stored_rppairing_message": "Biztosan törölni szeretné az eszközhöz mentett párosítási fájlt? Ez esetben újra kell párosítania az eszközt.",
+    "deleting_stored_rppairing": "Tárolt párosítófájlok törlése...",
+    "stored_rppairing_deleted_success": "Tárolt párosítófáljok törölve!",
+    "failed_delete_stored_rppairing": "Nem sikerült törölni a tárolt párosítófájlokat",
+    "dont_use_keyring": "Ne használjon keyringet",
+    "dont_use_keyring_message": "Ezáltal az iloader kevésbé biztonságos lesz, mivel a párosítási fájlokat, az Anisette állapotát és a tanúsítványokat a merevlemezen tárolja. Ezt a beállítást csak akkor kapcsolja be, ha az alapértelmezett kulcstartó-tárolás nem működik, és tisztában van a kockázatokkal."
   },
   "dialog": {
     "confirm": "Megerősítés",
@@ -196,6 +206,79 @@
   "error": {
     "title": "Egy hiba történt: {{msg}}",
     "unknown": "Ismeretlen",
+    "suggestions_heading": "Tippek",
+    "suggestions": {
+      "underage": [
+        "Lehet, hogy az Apple ID-d nem éri el a fejlesztői szolgáltatások igénybevételéhez szükséges életkort.."
+      ],
+      "account_locked": [
+        "Ne ess pánikba! Ez általában több sikertelen bejelentkezési kísérlet után fordul elő, de teljesen ártalmatlan.",
+        "Látogass el a ((link:https://iforgot.apple.com/)) oldalra a fiókod feloldásához!"
+      ],
+      "auth": [
+        "Ellenőrizze, hogy a bejelentkezési adatai helyesek-e, és próbálja meg újra, még akkor is, ha helyes volt.",
+        "Ha ez a probléma fennmarad, próbálkozz egy másik Apple ID-vel",
+        "A biztonsági kulcsos kétfaktoros hitelesítés (2FA) nem támogatott. Ha lehetséges, használjon olyan Apple ID-t, amelynél nincs beállítva a kétfaktoros hitelesítés, vagy amelynél a megbízható eszközökön történő hitelesítés van beállítva."
+      ],
+      "download": [
+        "Töltsd le a SideStoret manuálisan innen: ((link:https://github.com/SideStore/SideStore/releases)) és nyomj az \"IPA importálása\" gombra hogy települjön."
+      ],
+      "house_arrest": [
+        "[ios::26.3]Biztosítsa, hogy a készüléke nem egy iOS 26.3 fejlesztői bétán van, mivel a házi őrizet funkcióban hiba van."
+      ],
+      "pairing": [
+        "Próbáld meg újra csatlakoztatni a készüléket, majd próbáld újra a lépést.",
+        "Biztosítsd, hogy a készüléken nincs jelkód beállítva.",
+        "Biztosítsd, hogy a készüléken USB-n van csatlakoztatva, nem vezeték nélkül."
+      ],
+      "canceled": [],
+      "operation_update": [],
+      "usbmuxd": [
+        "[platform::windows]Biztosítsd, hogy az iTunes fel van telepítve és hogy látja-e a készüléked.",
+        "[platform::windows]Távolítsa el az iTunes és az Apple Mobile Device Support alkalmazást, majd telepítse az \"Apple Devices\" alkalmazást a Microsoft Store-ból.",
+        "[platform::linux]Nézd meg hogy az usbmuxd telepítve van, és hogy el van indítva."
+      ],
+      "trust": [
+        "Oldd fel a készüléked, menj a kezdőképernyőre, és fogadd el az esetleges Trust felhivásokat."
+      ],
+      "device_coms": [
+        "Biztosítsd, hogy a készüléked rendesen csatlakoztatva van a gépedhez.",
+        "Húzd ki és csatlakoztasd újra a készüléket. Ha a probléma még mindig fennáll, próbálj egy másik USB portot vagy kábelt."
+      ],
+      "not_logged_in": [
+        "Jelentkezz be az Apple fiókoddal először."
+      ],
+      "no_device_selected": [
+        "Válassz ki egy készüléket mielőtt folytatnád."
+      ],
+      "anisette": [
+        "Biztosítsd, hogy a géped csatlakozva van az internedhez.",
+        "Caseréld le az Anisette szervered. Próbálj meg másik szervereket.",
+        "Nézd meg hogy eléred-e ezt a linket: ((link:{{anisetteServerUrl}})) egy böngészőben."
+      ],
+      "keyring": [
+        "Próbáld meg bekapcsolni a \"Ne használjon keyringet\" a beállításokban hogy kikerüld ezt a hibát. Tudd, hogy ez kevésbé biztonságos."
+      ],
+      "misc": [
+        "Próbáld újra. Indítsd újra az appot, a géped, vagy / próbáld a készüléked újraindítani."
+      ],
+      "admin": [
+        "Próbáld meg az appott nagyobb jogosultsággal megnyitni (adminisztrátor/root)."
+      ],
+      "filesystem": [
+        "Nézd meg, hogy az iloadernek van-e jogosultsága írás/olvasáshoz a rendszereden."
+      ],
+      "not_enough_app_ids": [
+        "Nincs elég app id a fiókodon, hogy telepítsd ezt az alkalmazást.",
+        "Várj, amíg az App ID-k leválnak 7 nap múlva (nem lehet hamarabb törölni), és próbáld újra.",
+        "Az alkalmazások SideStore-ból történő telepítése néha kevesebb App ID használatát teszi lehetővé, ezért próbáld meg inkább onnan telepíteni őket."
+      ],
+      "max_apps": [
+        "Csak 3 sideloadolt appod lehet egyidőben ingyenes Apple ID-vel.",
+        "Törölj le egyéb sideloadolt appokat, hogy szabaduljon fel hely ennek az appnak.",
+        "A lejárt alkalmazások is beleszámítanak a 3 alkalmazásos korlátba."
+      ]
+    },
     "support_message": "Ha a hiba még mindig fennáll, kattintson a \"Kimásolás a vágólap\" gombra és küldje el a kimásolt hibát <discord>Discordon</discord> vagy <github>GitHub hibában</github> támogatásért."
   },
   "update": {
