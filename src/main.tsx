@@ -12,15 +12,15 @@ import { PlatformProvider } from "./PlatformContext";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <PlatformProvider>
-      <ErrorProvider>
-        <DialogProvider>
-          <LogProvider>
-            <StoreProvider>
+      <StoreProvider>
+        <ErrorProvider>
+          <DialogProvider>
+            <LogProvider>
               <App />
-            </StoreProvider>
-          </LogProvider>
-        </DialogProvider>
-      </ErrorProvider>
+            </LogProvider>
+          </DialogProvider>
+        </ErrorProvider>
+      </StoreProvider>
     </PlatformProvider>
     <Toaster richColors expand />
   </React.StrictMode>,
