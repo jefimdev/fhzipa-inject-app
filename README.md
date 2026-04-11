@@ -30,6 +30,7 @@ Install SideStore (or other apps) and import your pairing file with ease
     - macOS: Included
     - Linux: Potentially included, if not, install via your package manager
 - Install the latest version for your platform from the [releases](https://github.com/nab138/iloader/releases)
+    - NixOS: Use the flake `github:nab138/iloader`
 - Plug in your iDevice to your computer
 - Open the app
 - Sign into your Apple ID
