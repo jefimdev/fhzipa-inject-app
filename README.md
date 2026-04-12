@@ -14,8 +14,8 @@
 </a>
 
 ---
+[![Build iloader](https://img.shields.io/github/actions/workflow/status/nab138/iloader/build.yml?style=flat&logo=github&logoColor=white&label=Build%20iloader)](https://github.com/nab138/iloader/actions/workflows/build.yml) ![Downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fnab138%2F28258aff7e3f1d3a3084a21f4cff2e57%2Fraw%2Filoader_downloads.json&style=flat)
 
-[![Build iloader](https://github.com/nab138/iloader/actions/workflows/build.yml/badge.svg)](https://github.com/nab138/iloader/actions/workflows/build.yml)
 
 Install SideStore (or other apps) and import your pairing file with ease
 
@@ -26,9 +26,9 @@ Install SideStore (or other apps) and import your pairing file with ease
 ## How to use
 
 - Install usbmuxd for your platform
-  - Windows: [iTunes](https://apple.co/ms)
-  - macOS: Included
-  - Linux: Potentially included, if not, install via your package manager
+    - Windows: [iTunes](https://apple.co/ms)
+    - macOS: Included
+    - Linux: Potentially included, if not, install via your package manager
 - Install the latest version for your platform from the [releases](https://github.com/nab138/iloader/releases)
 - Plug in your iDevice to your computer
 - Open the app
@@ -48,9 +48,9 @@ Install SideStore (or other apps) and import your pairing file with ease
 - If you are unable to solve an issue on your own, copy the full error message and ask on the [idevice Discord server](https://discord.gg/EA6yVgydBz) or [open an issue](https://github.com/nab138/iloader/issues).
 - You can view app logs with the "View Logs." If nothing is showing up, change the log level to "Debug."
 - If those logs aren't helpful, logs with additional are stored in the following locations:
-  - Windows: `%APPDATA%\me.nabdev.iloader\logs`
-  - macOS: `~/Library/Application Support/me.nabdev.iloader/logs`
-  - Linux: `~/.local/share/me.nabdev.iloader/logs/`
+    - Windows: `%APPDATA%\me.nabdev.iloader\logs`
+    - macOS: `~/Library/Application Support/me.nabdev.iloader/logs`
+    - Linux: `~/.local/share/me.nabdev.iloader/logs/`
 
 ## Translating
 
@@ -64,9 +64,9 @@ To add a new language, add your language to `src/i18next.ts`, and in `src/locale
 
 ```ts
 const languages = [
-  ["en", "English"],
-  ["es", "Español"],
-  // Your language here...
+    ["en", "English"],
+    ["es", "Español"],
+    // Your language here...
 ] as const;
 ```
 
@@ -89,9 +89,9 @@ Make a production build: `bun tauri build` (or `npm run tauri build`)
 - UI improved by [StephenDev0](https://github.com/StephenDev0)
 - [idevice](https://github.com/jkcoxson/idevice) by [jkcoxson](https://github.com/jkcoxson) for communicating with iOS devices
 - [isideload](https://github.com/nab138/isideload) for installing apps
-  - A [modified version of apple-platform-rs](https://github.com/nab138/isideload-apple-platform-rs) was used for codesigning, based off [plume-apple-platform-rs](https://github.com/plumeimpactor/plume-apple-platform-rs)
-  - [Impactor](https://github.com/khcrysalis/Impactor) was used as a reference for cryptography, codesigning, and provision file parsing.
-  - [Sideloader](https://github.com/Dadoum/Sideloader) was used as a reference for how apple private developer endpoints work
+    - A [modified version of apple-platform-rs](https://github.com/nab138/isideload-apple-platform-rs) was used for codesigning, based off [plume-apple-platform-rs](https://github.com/plumeimpactor/plume-apple-platform-rs)
+    - [Impactor](https://github.com/khcrysalis/Impactor) was used as a reference for cryptography, codesigning, and provision file parsing.
+    - [Sideloader](https://github.com/Dadoum/Sideloader) was used as a reference for how apple private developer endpoints work
 - [idevice_pair](https://github.com/jkcoxson/idevice_pair) was used as a reference for pairing file management
 - App made with [tauri](https://tauri.app)
 
@@ -105,6 +105,7 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [IamArayel](https://github.com/IamArayel): French (fr)
 - [kkula9999](https://github.com/kkula9999): Traditional & Simplified Chinese (zh_tw & zh_cn)
 - [sibwaze](https://github.com/sibwaze): Russian (ru)
+- [mirdukkkkk](https://github.com/mirdukkkkk): Improved Russian (ru)
 - [okinaau](https://github.com/okinaau): Arabic (ar)
 - [WingChunWong](https://github.com/WingChunWong): Cantonese (zh_hk) & Improved Chinese (zh_tw & zh_cn)
 - [marcinmajsc](https://github.com/marcinmajsc): Polish (pl)
@@ -135,9 +136,9 @@ You may retain or use branding materials in forks, tutorials, or documentation i
 - Automatic anisette fallback
 - Team selection when an account has multiple teams
 - Auto-refresh installed apps
-  - Minimize to tray
-  - Detect installed apps
-  - Refresh apps automatically
+    - Minimize to tray
+    - Detect installed apps
+    - Refresh apps automatically
 - Set a "default" account to automatically log into
 - Import SideStore account info automatically
 - Mount DDI and open sidestore after installation
