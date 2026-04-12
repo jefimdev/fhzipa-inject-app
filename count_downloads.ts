@@ -3,12 +3,22 @@
 
 const REPO = "nab138/iloader";
 const API_URL = `https://api.github.com/repos/${REPO}/releases?per_page=100`;
+const TOKEN = process.env.GITHUB_TOKEN;
 
 async function fetchReleases(url: string): Promise<[any[], string | null]> {
-  const resp = await fetch(url, {
-    headers: { "User-Agent": "download-counter" },
-  });
+  const headers: Record<string, string> = { "User-Agent": "download-counter" };
+  if (TOKEN) headers["Authorization"] = `Bearer ${TOKEN}`;
+
+  const resp = await fetch(url, { headers });
   const data = await resp.json();
+
+  if (!resp.ok) {
+    throw new Error(`GitHub API error ${resp.status}: ${JSON.stringify(data)}`);
+  }
+  if (!Array.isArray(data)) {
+    throw new Error(`Unexpected response: ${JSON.stringify(data)}`);
+  }
+
   const linkHeader = resp.headers.get("Link") ?? "";
   let nextUrl: string | null = null;
   for (const part of linkHeader.split(",")) {
