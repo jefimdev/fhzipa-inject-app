@@ -126,3 +126,34 @@ export const getErrorSuggestions = (
     ),
   );
 };
+
+export const parseLinkToken = (
+  token: string,
+): { url: string; text: string } | null => {
+  const doubleColonMatch = token.match(/^\(\(link::([^)]+)\)\)$/);
+  if (doubleColonMatch) {
+    const url = doubleColonMatch[1].trim();
+    return url ? { url, text: url } : null;
+  }
+
+  const singleColonMatch = token.match(/^\(\(link:([^)]+)\)\)$/);
+  if (!singleColonMatch) {
+    return null;
+  }
+
+  const payload = singleColonMatch[1].trim();
+  if (!payload) {
+    return null;
+  }
+
+  const lastColon = payload.lastIndexOf(":");
+  if (lastColon > 0) {
+    const possibleUrl = payload.slice(0, lastColon).trim();
+    const possibleText = payload.slice(lastColon + 1).trim();
+    if (possibleText && /^[a-z][a-z0-9+.-]*:\/\//i.test(possibleUrl)) {
+      return { url: possibleUrl, text: possibleText };
+    }
+  }
+
+  return { url: payload, text: payload };
+};

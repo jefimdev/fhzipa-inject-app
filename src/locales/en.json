@@ -234,7 +234,7 @@
       "canceled": [],
       "operation_update": [],
       "usbmuxd": [
-        "[platform::windows]Ensure you have iTunes installed and check that it can detect your device.",
+        "[platform::windows]Ensure you have ((link:https://apple.co/ms:iTunes)) installed and check that it can detect your device.",
         "[platform::windows]Uninstall iTunes and Apple Mobile Device Support, then install \"Apple Devices\" from the Microsoft Store.",
         "[platform::linux]Make sure usbmuxd is installed and running."
       ],
@@ -245,12 +245,8 @@
         "Ensure your device is properly connected to your computer.",
         "Unplug and reconnect the device. If the issue persists, try a different USB port and cable."
       ],
-      "not_logged_in": [
-        "Sign in to your Apple ID first."
-      ],
-      "no_device_selected": [
-        "Select a device before continuing."
-      ],
+      "not_logged_in": ["Sign in to your Apple ID first."],
+      "no_device_selected": ["Select a device before continuing."],
       "anisette": [
         "Ensure your computer is connected to the internet.",
         "Change your anisette server. Try several different servers.",

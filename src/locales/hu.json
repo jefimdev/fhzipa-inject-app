@@ -234,7 +234,7 @@
       "canceled": [],
       "operation_update": [],
       "usbmuxd": [
-        "[platform::windows]Biztosítsd, hogy az iTunes fel van telepítve és hogy látja-e a készüléked.",
+        "[platform::windows]Biztosítsd, hogy az ((link:https://apple.co/ms:iTunes)) fel van telepítve és hogy látja-e a készüléked.",
         "[platform::windows]Távolítsa el az iTunes és az Apple Mobile Device Support alkalmazást, majd telepítse az \"Apple Devices\" alkalmazást a Microsoft Store-ból.",
         "[platform::linux]Nézd meg hogy az usbmuxd telepítve van, és hogy el van indítva."
       ],
@@ -245,12 +245,8 @@
         "Biztosítsd, hogy a készüléked rendesen csatlakoztatva van a gépedhez.",
         "Húzd ki és csatlakoztasd újra a készüléket. Ha a probléma még mindig fennáll, próbálj egy másik USB portot vagy kábelt."
       ],
-      "not_logged_in": [
-        "Jelentkezz be az Apple fiókoddal először."
-      ],
-      "no_device_selected": [
-        "Válassz ki egy készüléket mielőtt folytatnád."
-      ],
+      "not_logged_in": ["Jelentkezz be az Apple fiókoddal először."],
+      "no_device_selected": ["Válassz ki egy készüléket mielőtt folytatnád."],
       "anisette": [
         "Biztosítsd, hogy a géped csatlakozva van az internedhez.",
         "Caseréld le az Anisette szervered. Próbálj meg másik szervereket.",
