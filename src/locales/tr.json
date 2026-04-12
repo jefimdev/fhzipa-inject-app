@@ -220,11 +220,11 @@
       ],
       "download":,
       "house_arrest":"Aygıtınızın iOS 26.3 geliştirici beta sürümünde olmadığından emin olun; bu sürümde 'house arrest' ile ilgili bilinen bir hata bulunmaktadır."
-      ],
       "pairing":,
       "canceled": [],
       "operation_update": [],
-      "usbmuxd":"iTunes'un yüklü olduğundan ve aygıtınızı algılayabildiğinden emin olun.",
+      "usbmuxd": [
+        "iTunes'un yüklü olduğundan ve aygıtınızı algılayabildiğinden emin olun.",
         "iTunes ve Apple Mobile Device Support'u bilgisayardan tamamen kaldırın, ardından Microsoft Store'dan \"Apple Devices\" uygulamasını yükleyin.",
         "usbmuxd'nin sisteminizde yüklü ve çalışır durumda olduğundan emin olun."
       ],
