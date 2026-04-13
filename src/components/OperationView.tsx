@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { Trans, useTranslation } from "react-i18next";
-import { ErrorVariant, getErrorSuggestions } from "../errors";
+import { ErrorVariant, getErrorSuggestions, parseLinkToken } from "../errors";
 import { useStore } from "../StoreContext";
 import { usePlatform } from "../PlatformContext";
 
@@ -173,12 +173,12 @@ export default ({
             <ul>
               {suggestions.map((s) => (
                 <li key={s}>
-                  {
-                    // replace ((link:URL)) with a clickable link but still keep it as li
-                    s.split(/(\(\(link:[^)]+\)\))/g).map((part, index) => {
-                      const match = part.match(/\(\(link:([^)]+)\)\)/);
-                      if (match) {
-                        const url = match[1];
+                  {s
+                    .split(/(\(\(link:[^)]+\)\)|\(\(link:[^)]+\)\))/g)
+                    .map((part, index) => {
+                      const parsed = parseLinkToken(part);
+                      if (parsed) {
+                        const { url, text } = parsed;
                         return (
                           <span
                             key={index}
@@ -186,13 +186,12 @@ export default ({
                             role="link"
                             className="error-link"
                           >
-                            {url}
+                            {text}
                           </span>
                         );
                       }
                       return <span key={index}>{part}</span>;
-                    })
-                  }
+                    })}
                 </li>
               ))}
             </ul>

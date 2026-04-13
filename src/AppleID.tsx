@@ -10,7 +10,7 @@ import { useError } from "./ErrorContext";
 import { Certificate } from "./pages/Certificates";
 import { useTranslation } from "react-i18next";
 
-const store = await load("data.json");
+const storePromise = load("data.json");
 
 export const AppleID = ({
   loggedInAs,
@@ -45,6 +45,7 @@ export const AppleID = ({
       setLoggedInAs(account);
     };
     let getStoredIds = async () => {
+      const store = await storePromise;
       let ids = (await store.get<string[]>("ids")) ?? [];
       setStoredIds(ids);
     };

@@ -11,7 +11,12 @@ import { toast } from "sonner";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { Trans, useTranslation } from "react-i18next";
 import { useStore } from "./StoreContext";
-import { AppError, ErrorVariant, getErrorSuggestions } from "./errors";
+import {
+  AppError,
+  ErrorVariant,
+  getErrorSuggestions,
+  parseLinkToken,
+} from "./errors";
 import { usePlatform } from "./PlatformContext";
 
 export const ErrorContext = createContext<{
@@ -124,12 +129,12 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
               <ul>
                 {suggestions.map((s) => (
                   <li key={s}>
-                    {
-                      // replace ((link:URL)) with a clickable link but still keep it as li
-                      s.split(/(\(\(link:[^)]+\)\))/g).map((part, index) => {
-                        const match = part.match(/\(\(link:([^)]+)\)\)/);
-                        if (match) {
-                          const url = match[1];
+                    {s
+                      .split(/(\(\(link:[^)]+\)\)|\(\(link:[^)]+\)\))/g)
+                      .map((part, index) => {
+                        const parsed = parseLinkToken(part);
+                        if (parsed) {
+                          const { url, text } = parsed;
                           return (
                             <span
                               key={index}
@@ -137,13 +142,12 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
                               role="link"
                               className="error-link"
                             >
-                              {url}
+                              {text}
                             </span>
                           );
                         }
                         return <span key={index}>{part}</span>;
-                      })
-                    }
+                      })}
                   </li>
                 ))}
               </ul>

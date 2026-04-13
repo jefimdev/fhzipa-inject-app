@@ -234,7 +234,7 @@
       "canceled": [],
       "operation_update": [],
       "usbmuxd": [
-        "[platform::windows] Убедитесь, что iTunes установлен и видит ваше устройство.",
+        "[platform::windows] Убедитесь, что ((link:https://apple.co/ms:iTunes)) установлен и видит ваше устройство.",
         "[platform::windows] Удалите iTunes и Apple Mobile Device Support, затем установите приложение \"Устройства Apple\" из Microsoft Store.",
         "[platform::linux] Убедитесь, что сервис usbmuxd установлен и запущен."
       ],
