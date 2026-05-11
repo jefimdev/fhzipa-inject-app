@@ -120,6 +120,7 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [lkspodmol](https://github.com/lkspodmol): Czech (cs_cz)
 - [marcusherelammonstyle-cmd](https://github.com/marcusherelammonstyle-cmd): Swedish (sv)
 - [MCI49312](https://github.com/MCI49312): Hungarian (hu)
+- [Kynonim](https://github.com/Kynonim): Indonesian (id)
 
 ## License
 
