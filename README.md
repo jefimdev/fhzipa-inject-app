@@ -100,6 +100,7 @@ Make a production build: `bun tauri build` (or `npm run tauri build`)
 
 Thank you to everyone who has contributed translations! See the [Translating](#translating) section if you would like to contribute as well.
 
+- [By3lish](https://github.com/by3lish): Azerbaijani (az)
 - [TNT-333](https://github.com/TNT-333): German (de)
 - [basketshoe](https://github.com/basketshoe): Italian (it)
 - [baocreata](https://github.com/baocreata): Vietnamese (vt)

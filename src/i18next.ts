@@ -3,6 +3,7 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
 const languages = [
+  ["az", "Azərbaycan"],
   ["en", "English"],
   ["am", "Հայերեն"],
   ["es", "Español"],
