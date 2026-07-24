@@ -3066,7 +3066,7 @@ dependencies = [
 
 [[package]]
 name = "iloader"
-version = "2.2.6"
+version = "2.2.7"
 dependencies = [
  "chrono",
  "futures",
