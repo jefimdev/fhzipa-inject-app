@@ -145,9 +145,9 @@ async fn generate_rppairing(
     info!("Starting RPPairing...");
     info!("(You may need to tap Trust on the device)");
     let mut pairing_file = RpPairingFile::generate(hostname);
-    let mut pairing_client = RemotePairingClient::new(remote_xpc, hostname, &mut pairing_file);
+    let mut pairing_client = RemotePairingClient::new(remote_xpc, hostname);
     pairing_client
-        .connect(async |_| "000000".to_string(), ())
+        .connect(&mut pairing_file, async || "000000".to_string())
         .await?;
 
     // use it right away to try and convince the device to commmit it to the keychain
@@ -156,9 +156,9 @@ async fn generate_rppairing(
     let mut remote_xpc = RemoteXpcClient::new(tunnel_service_stream).await?;
     remote_xpc.do_handshake().await?;
     let _ = remote_xpc.recv_root().await;
-    let mut pairing_client = RemotePairingClient::new(remote_xpc, hostname, &mut pairing_file);
+    let mut pairing_client = RemotePairingClient::new(remote_xpc, hostname);
     pairing_client
-        .connect(async |_| "000000".to_string(), ())
+        .connect(&mut pairing_file, async || "000000".to_string())
         .await?;
 
     Ok(pairing_file)
