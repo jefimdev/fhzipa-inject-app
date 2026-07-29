@@ -1,6 +1,6 @@
 use isideload::{
     anisette::remote_v3::RemoteV3AnisetteProvider,
-    auth::apple_account::AppleAccount,
+    auth::apple_account::{AppleAccount, TwoFactorCallbackParams, TwoFactorCallbackResponse},
     dev::{
         app_ids::{AppIdsApi, ListAppIdsResponse},
         certificates::{CertificatesApi, DevelopmentCertificate},
@@ -161,9 +161,10 @@ async fn login(
     anisette_server: String,
 ) -> Result<Sideloader, AppError> {
     let window_clone = window.clone();
-    let tfa_closure = move || -> Option<String> {
+    // TODO: Display phone nums two frontend to allow choosing SMS auth
+    let tfa_closure = move |params: TwoFactorCallbackParams| -> TwoFactorCallbackResponse {
         window_clone
-            .emit("2fa-required", ())
+            .emit("2fa-required", params)
             .expect("Failed to emit 2fa-required event");
 
         let (tx, rx) = std::sync::mpsc::channel::<String>();
@@ -178,9 +179,9 @@ async fn login(
         match result {
             Ok(code) => {
                 let code = code.trim_matches('"').to_string();
-                Some(code)
+                TwoFactorCallbackResponse::SubmitCode(code)
             }
-            Err(_) => None,
+            Err(_) => TwoFactorCallbackResponse::Abort,
         }
     };
 
@@ -197,7 +198,7 @@ async fn login(
                 .set_storage(create_sideloading_storage(app)?)
                 .set_url(&anisette_url),
         )
-        .login(password, tfa_closure)
+        .login(password, Box::new(tfa_closure))
         .await?;
 
     debug!("Logged in");
