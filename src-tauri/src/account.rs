@@ -1,3 +1,4 @@
+use futures::FutureExt;
 use isideload::{
     anisette::remote_v3::RemoteV3AnisetteProvider,
     auth::apple_account::{AppleAccount, TwoFactorCallbackParams, TwoFactorCallbackResponse},
@@ -9,6 +10,7 @@ use isideload::{
     sideload::{SideloaderBuilder, builder::MaxCertsBehavior, sideloader::Sideloader},
 };
 use keyring::Entry;
+use rootcause::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::time::Duration;
@@ -160,28 +162,29 @@ async fn login(
     password: &str,
     anisette_server: String,
 ) -> Result<Sideloader, AppError> {
-    let window_clone = window.clone();
-    // TODO: Display phone nums two frontend to allow choosing SMS auth
-    let tfa_closure = move |params: TwoFactorCallbackParams| -> TwoFactorCallbackResponse {
-        window_clone
-            .emit("2fa-required", params)
-            .expect("Failed to emit 2fa-required event");
+    let tfa_closure = {
+        let window_clone = window.clone();
+        move |params: TwoFactorCallbackParams| {
+            let window_clone = window_clone.clone();
 
-        let (tx, rx) = std::sync::mpsc::channel::<String>();
-        let handler_id = window_clone.listen("2fa-recieved", move |event| {
-            let code = event.payload();
-            let _ = tx.send(code.to_string());
-        });
+            async move {
+                window_clone
+                    .emit("2fa-required", params)
+                    .context("Failed to emit 2fa-required event")?;
 
-        let result = rx.recv_timeout(Duration::from_secs(120));
-        window_clone.unlisten(handler_id);
+                let (tx, rx) = std::sync::mpsc::channel::<String>();
+                let handler_id = window_clone.listen("2fa-recieved", move |event| {
+                    let code = event.payload();
+                    let _ = tx.send(code.to_string());
+                });
 
-        match result {
-            Ok(code) => {
-                let code = code.trim_matches('"').to_string();
-                TwoFactorCallbackResponse::SubmitCode(code)
+                let result = rx.recv_timeout(Duration::from_secs(120))?;
+                window_clone.unlisten(handler_id);
+
+                let code = result.trim_matches('"').to_string();
+                Ok(TwoFactorCallbackResponse::SubmitCode(code))
             }
-            Err(_) => TwoFactorCallbackResponse::Abort,
+            .boxed()
         }
     };
 

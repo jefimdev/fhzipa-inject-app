@@ -59,7 +59,12 @@ pub async fn sideload(
 
     let special = sideloader
         .get_mut()
-        .install_app(&provider, app_path.into(), false)
+        .install_app(
+            &provider,
+            app_path.into(),
+            false,
+            None::<fn(f32) -> std::future::Ready<()>>,
+        )
         .await?;
 
     Ok(special)
