@@ -111,7 +111,7 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [notmalicik](https://github.com/notmalicik): Română (ro)
 - [mirdukkkkk](https://github.com/mirdukkkkk): Improved Russian (ru)
 - [okinaau](https://github.com/okinaau): Arabic (ar)
-- [WingChunWong](https://github.com/WingChunWong): Cantonese (zh_hk) & Improved Chinese (zh_tw & zh_cn)
+- [ChouChiu](https://github.com/ChouChiu): Cantonese (zh_hk) & Improved Chinese (zh_tw & zh_cn)
 - [marcinmajsc](https://github.com/marcinmajsc): Polish (pl)
 - [ern775](https://github.com/ern775): Turkish (tr)
 - [canpng](https://github.com/canpng): Improved Turkish (tr)
