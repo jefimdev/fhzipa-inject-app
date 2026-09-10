@@ -129,7 +129,8 @@ Thank you to everyone who has contributed translations! See the [Translating](#t
 - [marcinmajsc](https://github.com/marcinmajsc): Improved Polish (pl)
 - [dleiferives](https://github.com/dleiferives): Greek (el)
 - [ShadowWLX](https://github.com/ShadowWLX): Improved French (fr)
-- [fkpcomposer](https://github.com/fkpcomposer) Brazilian Portuguese (pt_br)
+- [fkpcomposer](https://github.com/fkpcomposer): Brazilian Portuguese (pt_br)
+- [474FrediFred](https://github.com/474FrediFred): Swiss German (de_ch)
 
 ## License
 
