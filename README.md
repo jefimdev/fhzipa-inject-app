@@ -142,6 +142,10 @@ Branding, logos, media assets, and the name “iloader” are not licensed under
 
 You may retain or use branding materials in forks, tutorials, or documentation if you include a clear link to either the official site (https://iloader.app) or the iloader source code repository (https://github.com/nab138/iloader) and do not imply official endorsement. See [LICENSE-BRANDING](/LICENSE-BRANDING) for full details.
 
+## Contributing
+
+Please read our [Contributing](/CONTRIBUTING.md) policy before making a contribution.
+
 ## Future Plans
 
 - Checks for if device is in developer mode, has password set, etc
