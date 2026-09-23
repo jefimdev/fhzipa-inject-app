@@ -104,9 +104,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
-name = "apple-codesign"
+name = "apple-codesign-quick"
 version = "0.1.0"
-source = "git+https://github.com/nab138/apple-crates#5da0b8df9b202434b1eff2700059b1ee142592ac"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "519defc726db80b8a43836bbd6f69eb606a42783db799716a103436042593f0b"
 dependencies = [
  "byteorder",
  "cms 0.2.3",
@@ -2728,12 +2729,13 @@ dependencies = [
 
 [[package]]
 name = "isideload"
-version = "0.3.17"
-source = "git+https://github.com/nab138/isideload?branch=apple-codesign-quick#37a1c64112c680f2f272a77bc7605fd13fdab9dd"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec15f715854513ea29c71ac061dcfd6e053ccda71dc5e39e5145d22d32299343"
 dependencies = [
  "aes 0.9.3",
  "aes-gcm",
- "apple-codesign",
+ "apple-codesign-quick",
  "async-trait",
  "base64 0.22.1",
  "cbc 0.2.1",
