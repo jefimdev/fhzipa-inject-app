@@ -6,14 +6,17 @@ use crate::{
     operation::Operation,
     pairing::{get_sidestore_info, place_file},
 };
-use isideload::sideload::{application::SpecialApp, sideloader::Sideloader};
+use isideload::{
+    sideload::{application::SpecialApp, sideloader::Sideloader},
+    util::callbacks::MaxCertsCallbackBox,
+};
 use tauri::{AppHandle, Manager, State, Window};
 
-pub type SideloaderMutex = Mutex<Option<Sideloader>>;
+pub type SideloaderMutex = Mutex<Option<Sideloader<MaxCertsCallbackBox>>>;
 
 pub struct SideloaderGuard<'a> {
     state: &'a SideloaderMutex,
-    sideloader: Option<Sideloader>,
+    sideloader: Option<Sideloader<MaxCertsCallbackBox>>,
 }
 
 impl<'a> SideloaderGuard<'a> {
@@ -26,7 +29,7 @@ impl<'a> SideloaderGuard<'a> {
         })
     }
 
-    pub fn get_mut(&mut self) -> &mut Sideloader {
+    pub fn get_mut(&mut self) -> &mut Sideloader<MaxCertsCallbackBox> {
         self.sideloader
             .as_mut()
             .expect("Sideloader should be present")
