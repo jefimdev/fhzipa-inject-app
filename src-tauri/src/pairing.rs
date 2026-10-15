@@ -6,6 +6,7 @@ use std::{
 // used https://github.com/jkcoxson/idevice_pair/ as a guide
 use idevice::{
     IdeviceError, IdeviceService,
+    afc::AfcClient,
     house_arrest::HouseArrestClient,
     installation_proxy::InstallationProxyClient,
     lockdown::LockdownClient,
@@ -35,14 +36,17 @@ struct PairingStorageEntry {
 static PAIRING_STORAGE: OnceLock<Mutex<PairingStorageEntry>> = OnceLock::new();
 
 const PAIRING_APPS: &[(&str, &str)] = &[
-    ("SideStore", "ALTPairingFile.mobiledevicepairing"),
+    (
+        "SideStore",
+        "ALTPairingFile.mobiledevicepairing;PairingFile_RemoteRP.plist;PairingFile_Lockdown.plist",
+    ),
     (
         "LiveContainer",
         "SideStore/Documents/ALTPairingFile.mobiledevicepairing",
     ),
     ("Feather", "pairingFile.plist"),
     ("StikDebug", "pairingFile.plist"),
-    ("StikDebug (Sideloaded)", "rp_pairing_file.plist"),
+    ("StikDebug (Sideloaded)", "pairingFile.plist"),
     ("StikTest", "stiktest_pairing.plist"),
     ("Protokolle", "pairingFile.plist"),
     ("Antrag", "pairingFile.plist"),
@@ -173,6 +177,19 @@ pub async fn place_file(
         .await
         .map_err(|e| AppError::HouseArrest("Failed to vend documents".into(), e.to_string()))?;
 
+    let files = path.split(';').map(|s| s.trim()).filter(|s| !s.is_empty());
+    for file in files {
+        place_individual_file(&mut afc_client, pairing.clone(), file.to_string()).await?;
+    }
+
+    Ok(())
+}
+
+async fn place_individual_file(
+    afc_client: &mut AfcClient,
+    pairing: Vec<u8>,
+    path: String,
+) -> Result<(), AppError> {
     afc_client
         .mk_dir(format!(
             "/Documents/{}",
