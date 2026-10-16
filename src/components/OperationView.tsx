@@ -32,8 +32,8 @@ export default ({
 
   const [moreDetailsOpen, setMoreDetailsOpen] = useState(false);
   const [anisetteServer] = useStore<string>(
-    "anisetteServerWin",
-    "ani.jkcoxson.com",
+    "anisetteServerMac",
+    "mac-ani.jkcoxson.com",
   );
   const { platform } = usePlatform();
   const [suggestions, setSuggestions] = useState<string[]>([]);

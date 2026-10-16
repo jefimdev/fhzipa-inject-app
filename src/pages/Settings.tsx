@@ -36,7 +36,8 @@ type SettingsProps = {
 // ];
 // new windows servers
 let anisetteServers = [
-  ["ani.jkcoxson.com", "Jkcoxson"],
+  ["mac-ani.jkcoxson.com", "Jkcoxson (Mac)"],
+  ["ani.jkcoxson.com", "Jkcoxson (Windows)"],
   ["ani2.stikstore.app", "StikStore (secondary)"],
 ];
 
@@ -49,8 +50,8 @@ export const Settings = ({
 }: SettingsProps) => {
   const { t } = useTranslation();
   const [anisetteServer, setAnisetteServer] = useStore<string>(
-    "anisetteServerWin",
-    "ani.jkcoxson.com",
+    "anisetteServerMac",
+    "mac-ani.jkcoxson.com",
   );
 
   const [overrideKeyring, setOverrideKeyring] = useStore<boolean>(

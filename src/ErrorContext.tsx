@@ -33,8 +33,8 @@ export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
   const [moreDetailsOpen, setMoreDetailsOpen] = useState<boolean>(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [anisetteServer] = useStore<string>(
-    "anisetteServerWin",
-    "ani.jkcoxson.com",
+    "anisetteServerMac",
+    "mac-ani.jkcoxson.com",
   );
   const { platform } = usePlatform();
 
