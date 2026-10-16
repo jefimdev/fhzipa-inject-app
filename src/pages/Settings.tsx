@@ -38,7 +38,8 @@ type SettingsProps = {
 let anisetteServers = [
   ["mac-ani.jkcoxson.com", "Jkcoxson (Mac)"],
   ["ani.jkcoxson.com", "Jkcoxson (Windows)"],
-  ["ani2.stikstore.app", "StikStore (secondary)"],
+  ["ani3.stikstore.app", "StikStore (Mac)"],
+  ["ani2.stikstore.app", "StikStore (Windows)"],
 ];
 
 export const Settings = ({
