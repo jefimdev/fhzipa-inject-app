@@ -34,11 +34,13 @@ type SettingsProps = {
 //   ["ani.xu30.top", "SteX"],
 //   ["anisette.wedotstud.io", "WE. Studio"],
 // ];
-// new windows servers
+// new mac/windows servers
 let anisetteServers = [
+  ["new.ani.sidestore.io", "SideStore (Mac, .io)"],
   ["mac-ani.jkcoxson.com", "Jkcoxson (Mac)"],
-  ["ani.jkcoxson.com", "Jkcoxson (Windows)"],
   ["ani3.stikstore.app", "StikStore (Mac)"],
+  // works ~50% of the time, and doesn't work with SMS 2FA
+  ["ani.jkcoxson.com", "Jkcoxson (Windows)"],
   ["ani2.stikstore.app", "StikStore (Windows)"],
 ];
 
