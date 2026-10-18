@@ -53,8 +53,8 @@ export const Settings = ({
 }: SettingsProps) => {
   const { t } = useTranslation();
   const [anisetteServer, setAnisetteServer] = useStore<string>(
-    "anisetteServerMac",
-    "mac-ani.jkcoxson.com",
+    "newAnisetteServer",
+    "new.ani.sidestore.io",
   );
 
   const [overrideKeyring, setOverrideKeyring] = useStore<boolean>(
