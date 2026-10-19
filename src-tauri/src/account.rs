@@ -7,8 +7,12 @@ use isideload::{
         certificates::{CertificatesApi, DevelopmentCertificate},
         developer_session::DeveloperSession,
     },
-    sideload::{SideloaderBuilder, builder::MaxCertsBehavior, sideloader::Sideloader},
-    util::callbacks::MaxCertsCallbackBox,
+    sideload::{
+        SideloaderBuilder,
+        builder::{ExtensionsBehavior, ExtensionsBehaviorSelection, MaxCertsBehavior},
+        sideloader::Sideloader,
+    },
+    util::callbacks::{ExtensionsBehaviorCallbackBox, MaxCertsCallbackBox},
 };
 use keyring::Entry;
 use rootcause::prelude::*;
@@ -119,10 +123,9 @@ pub fn delete_account(handle: AppHandle, email: String) -> Result<(), AppError> 
 #[tauri::command]
 pub fn logged_in_as(sideloader_state: State<'_, SideloaderMutex>) -> Option<String> {
     let sideloader_guard = sideloader_state.lock().unwrap();
-    if let Some(account) = &*sideloader_guard {
-        return Some(account.get_email().to_string());
-    }
-    None
+    sideloader_guard
+        .as_ref()
+        .map(|account| account.get_email().to_string())
 }
 
 #[tauri::command]
@@ -162,7 +165,7 @@ async fn login(
     email: &str,
     password: &str,
     anisette_server: String,
-) -> Result<Sideloader<MaxCertsCallbackBox>, AppError> {
+) -> Result<Sideloader<MaxCertsCallbackBox, ExtensionsBehaviorCallbackBox>, AppError> {
     let tfa_closure = {
         let window_clone = window.clone();
         move |params: TwoFactorCallbackParams| {
@@ -245,6 +248,9 @@ async fn login(
     let sideloader = SideloaderBuilder::new(dev_session, email.to_lowercase())
         .machine_name("iloader".into())
         .storage(create_sideloading_storage(app)?)
+        .extensions_behavior(ExtensionsBehaviorSelection::Fixed(
+            ExtensionsBehavior::ReuseMain,
+        ))
         .max_certs_behavior(MaxCertsBehavior::Prompt(max_certs_callback))
         .build();
 

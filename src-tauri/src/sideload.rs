@@ -8,15 +8,16 @@ use crate::{
 };
 use isideload::{
     sideload::{application::SpecialApp, sideloader::Sideloader},
-    util::callbacks::MaxCertsCallbackBox,
+    util::callbacks::{ExtensionsBehaviorCallbackBox, MaxCertsCallbackBox},
 };
 use tauri::{AppHandle, Manager, State, Window};
 
-pub type SideloaderMutex = Mutex<Option<Sideloader<MaxCertsCallbackBox>>>;
+pub type SideloaderMutex =
+    Mutex<Option<Sideloader<MaxCertsCallbackBox, ExtensionsBehaviorCallbackBox>>>;
 
 pub struct SideloaderGuard<'a> {
     state: &'a SideloaderMutex,
-    sideloader: Option<Sideloader<MaxCertsCallbackBox>>,
+    sideloader: Option<Sideloader<MaxCertsCallbackBox, ExtensionsBehaviorCallbackBox>>,
 }
 
 impl<'a> SideloaderGuard<'a> {
@@ -29,7 +30,9 @@ impl<'a> SideloaderGuard<'a> {
         })
     }
 
-    pub fn get_mut(&mut self) -> &mut Sideloader<MaxCertsCallbackBox> {
+    pub fn get_mut(
+        &mut self,
+    ) -> &mut Sideloader<MaxCertsCallbackBox, ExtensionsBehaviorCallbackBox> {
         self.sideloader
             .as_mut()
             .expect("Sideloader should be present")
