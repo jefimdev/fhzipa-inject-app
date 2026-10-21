@@ -1387,10 +1387,40 @@ PARTE 6 - REMOCAO DOS CONTRIBUINTES (21/10/2026, 11:30-11:50)
   deixar um registro claro dessa origem no NOTICE.md.
 
   APOS O FORCE PUSH
-  A API de commits ja devolve 100% jefimdev. A rota /contributors do
-  GitHub ainda devolveva a lista antiga logo apos a operacao: e um indice
-  recalculado de forma assincrona, que se invalida com os pushes
-  seguintes.
+  A API de commits ja devolve 100% jefimdev (477 commits lidos um a um),
+  e /stats/contributors, que recalcula sob demanda, devolve 1 autor. A rota
+  /contributors ainda devolvia 50: o cabecalho Last-Modified dela era
+  POSTERIOR ao force push, ou seja, nao era cache velho. O GitHub mantem
+  internamente os commits da branch anterior (refs internas de
+  "keep-around"), e o indice de contribuintes conta esse grafo todo. Como o
+  GitHub recusa apagar a branch padrao, a unica forma de zerar esse indice
+  e recriar o repositorio.
+
+  PARA CONCLUIR (o que falta e so a sua autorizacao)
+  O token guardado no Git Credential Manager tem os escopos "repo" e
+  "user", mas nao o "delete_repo", que o GitHub exige para excluir um
+  repositorio. Para ampliar, o fluxo oficial e:
+
+      gh auth refresh -h github.com -s delete_repo
+
+  Isso abre https://github.com/login/device com um codigo de uso unico
+  (ele vai para a area de transferencia). Depois de autorizado, o
+  procedimento e:
+
+      powershell -ExecutionPolicy Bypass -File RECRIAR-REPOSITORIO.ps1
+
+  O script guarda as configuracoes atuais, exclui o repositorio, recria
+  como PRIVADO com o mesmo nome e descricao, desabilita o GitHub Actions de
+  novo, reenvia a main (ja reescrita) e verifica: visibilidade privada,
+  conteudo byte a byte igual e um so contribuinte. O historico com a
+  autoria original esta guardado no bundle em
+  Backups-FHZIPA-INJECT\historico-antes-da-reescrita-2026-10-21-113807\.
+
+  ALTERNATIVA SEM RECRIAR
+  Deixar como esta. A autoria de todos os commits ja e do dono e o
+  conteudo nao mudou; o indice de contribuintes do GitHub se corrige
+  sozinho quando ele expurgar os commits antigos. O que voce vera no
+  meantime e uma lista desatualizada, nao autoria real.
 
 ================================================================================
 FIM DO RELATORIO
