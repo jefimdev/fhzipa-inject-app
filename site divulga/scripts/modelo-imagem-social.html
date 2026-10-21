@@ -1,0 +1,71 @@
+<!doctype html>
+<!--
+  Modelo da imagem de compartilhamento (Open Graph / Twitter Card).
+  Renderizado em 1200x630 pelo script gerar-imagem-social.mjs.
+  Edite os textos e os dados do pacote neste arquivo.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    width:1200px;height:630px;overflow:hidden;background:#080b12;
+    font-family:"Segoe UI",system-ui,-apple-system,Inter,Arial,sans-serif;color:#f5f7fa;
+    display:grid;grid-template-columns:1fr 560px;gap:48px;padding:56px 64px;position:relative;
+  }
+  body::before{
+    content:"";position:absolute;inset:-40% -20% auto -20%;height:760px;
+    background:radial-gradient(720px 400px at 26% 6%,rgba(255,35,68,.22),transparent 68%);
+    pointer-events:none;
+  }
+  .esquerda{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:space-between}
+  .direita{position:relative;z-index:1;display:flex;align-items:center}
+  .marca{display:flex;align-items:center;gap:15px}
+  .marca img{width:58px;height:58px;border-radius:14px}
+  .nome{font-size:32px;font-weight:700;letter-spacing:.01em}
+  .nome em{color:#ff2344;font-style:normal}
+  .titulo{font-size:58px;line-height:1.1;font-weight:700;letter-spacing:-.022em;margin:26px 0 0;max-width:15ch}
+  .titulo span{color:#ff2344}
+  .sub{margin-top:22px;font-size:23px;color:#a6b2c2;max-width:26ch;line-height:1.45}
+  .chips{display:flex;gap:9px;flex-wrap:wrap;margin-top:30px}
+  .chip{border:1px solid #2c3a4d;background:#11171f;color:#a6b2c2;border-radius:999px;padding:8px 16px;font-size:18px}
+  .chip b{color:#f5f7fa;font-weight:600}
+  .janela{
+    width:560px;border:1px solid #2c3a4d;border-radius:16px;overflow:hidden;
+    background:#0d1119;box-shadow:0 30px 70px rgba(0,0,0,.6);
+    position:relative;
+  }
+  .janela::after{
+    content:"";position:absolute;inset:-14% -18%;z-index:-1;
+    background:radial-gradient(closest-side,rgba(255,35,68,.28),transparent 72%);
+  }
+  .janela img{display:block;width:100%}
+  .rodape-janela{padding:9px 14px;font-size:15px;color:#788596;border-top:1px solid #212c3a;background:#11171f}
+</style>
+</head>
+<body>
+  <div class="esquerda">
+    <div>
+      <div class="marca">
+        <img src="../img/logo.svg" alt="">
+        <span class="nome">FHZIPA<em>INJECT</em></span>
+      </div>
+      <h1 class="titulo">Instale aplicativos <span>.ipa</span> no seu iPhone ou iPad.</h1>
+      <p class="sub">Aplicativo desktop para Windows, com a sua própria conta Apple ID.</p>
+      <div class="chips">
+        <span class="chip"><b>Windows</b> 10 ou 11</span>
+        <span class="chip"><b>64 bits</b> (x64)</span>
+        <span class="chip">versão <b data-versao>1.0.0</b></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="direita">
+    <figure class="janela">
+      <img src="../img/captura-visao-geral.png" alt="">
+      <figcaption class="rodape-janela">A interface real do aplicativo, em Visão geral.</figcaption>
+    </figure>
+  </div>
+</body>
+</html>

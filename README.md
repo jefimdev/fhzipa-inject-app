@@ -162,6 +162,27 @@ instalador\out\publish\FHZIPA_INJECT_Setup.exe --preview
 - Arquitetura e decisões técnicas: [`instalador/DOCUMENTACAO-TECNICA-DO-INSTALADOR.md`](instalador/DOCUMENTACAO-TECNICA-DO-INSTALADOR.md)
 - O que foi verificado e o que não foi: [`instalador/RELATORIO-DE-VALIDACAO-DO-INSTALADOR.txt`](instalador/RELATORIO-DE-VALIDACAO-DO-INSTALADOR.txt)
 
+### O site de divulgação
+
+A página de divulgação e download do projeto fica na pasta
+[`site divulga/`](site%20divulga/) deste repositório. É um site estático
+(HTML, CSS e JavaScript, sem build e sem dependências) que apresenta o
+aplicativo, mostra capturas reais e entrega o instalador por link direto.
+
+Para ver localmente:
+
+```powershell
+cd "site divulga"
+python -m http.server 8899 --bind 127.0.0.1
+```
+
+- Manual de edição do site: [`site divulga/GUIA-DE-EDICAO-DO-SITE.txt`](site%20divulga/GUIA-DE-EDICAO-DO-SITE.txt)
+- O que falta para publicar: [`site divulga/CHECKLIST-DE-PUBLICACAO-DO-SITE.txt`](site%20divulga/CHECKLIST-DE-PUBLICACAO-DO-SITE.txt)
+
+O código-fonte continua privado. O site é publicado separado, em hospedagem
+de arquivos estáticos, e nunca precisa do repositório para servir o
+instalador.
+
 ### Onde está a documentação do projeto
 
 - Manual de edição, com o mapa de cada tela e o que mexer em cada

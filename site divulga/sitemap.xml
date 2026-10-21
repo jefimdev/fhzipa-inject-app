@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  O dominio de publicacao ainda nao foi definido. Troque SEU-DOMINIO pelo
+  dominio real antes de publicar e envie este arquivo no robots.txt
+  (veja CHECKLIST-DE-PUBLICACAO-DO-SITE.txt).
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://SEU-DOMINIO/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

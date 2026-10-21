@@ -1,0 +1,273 @@
+===============================================================================
+CHECKLIST DE PUBLICACAO DO SITE - FHZIPA INJECT
+===============================================================================
+Site ...............: site divulga\  (site estatico, sem build)
+Artefato vinculado .: FHZIPA_INJECT_Setup.exe
+Versao .............: 1.0.0
+Data desta revisao .: 21/10/2026
+
+COMO USAR
+  Cada item esta marcado como:
+    [x]  conferido e resolvido
+    [ ]  pendente - precisa de decisao ou de dado que ainda nao existe
+    ( )  bloqueante: sem este item, o site nao deve ser publicado
+
+  Os itens pendentes que dependem do dominio e da hospedagem so podem ser
+  fechados depois que esses dois dados existirem.
+
+
+-------------------------------------------------------------------------------
+1. CONTEUDO REVISADO
+-------------------------------------------------------------------------------
+  [x] Texto do titulo, resumo e secoes conferidos contra o codigo do
+      aplicativo e o README (nada descrito que o app nao faca).
+  [x] Os 6 recursos listados existem no codigo (login/2FA, deteccao USB,
+      loja de 5 fontes, assinatura com certificado, pareamento e App IDs,
+      log de diagnostico).
+  [x] Requisitos conferidos: Windows 10/11 x64, iTunes ou Apple Devices,
+      cabo USB, iPhone/iPad desbloqueado, Apple ID valida, 2FA, internet,
+      Modo de Desenvolvedor no iOS 16+.
+  [x] Limites da conta Apple ID gratuita conferidos (7 dias, ~3 apps,
+      ~10 App IDs por semana) - they're limits da Apple, nao do app.
+  [x] Nenhum numero de usuarios, downloads, avaliacoes, depoimentos,
+      certificado ou preco inventado.
+  [x] Nenhuma promessa de "100% seguro", "sem risco" ou "compativel com
+      qualquer dispositivo".
+  [x] O site nao se apresenta como codigo aberto: o codigo e privado.
+  [x] O aviso de assinatura digital ausente esta escrito de forma correta
+      ("Nao assinado digitalmente"), e a FAQ explica o aviso do Windows.
+  [x] As diferencas entre o site e o aplicativo estao separadas no bloco
+      de transparencia.
+
+-------------------------------------------------------------------------------
+2. IDENTIDADE VISUAL
+-------------------------------------------------------------------------------
+  [x] Paleta herdada do tema do aplicativo (src\estilos\tema.css).
+  [x] Logo oficial do projeto usado no cabecalho, no rodape e na imagem
+      social.
+  [x] Tipografia legivel, espacamento confortavel, bordas discretas.
+  [x] O vermelho orienta acoes (botoes, titulos, links) sem dominar a tela.
+  [x] Sem efeitos excessivos, sem brilho que atrapalhe a leitura, sem
+      animacao constante, sem contadores ou urgencia artificial.
+  [x] Respeito a prefers-reduced-motion.
+
+-------------------------------------------------------------------------------
+3. CAPTURAS DE TELA
+-------------------------------------------------------------------------------
+  [x] Capturas reais do aplicativo em execucao na versao 1.0.0.
+  [x] Captura do instalador real (nao e mockup).
+  [x] Revisadas uma a uma: nenhum e-mail, nome de conta, identificador de
+      aparelho, token ou dado pessoal aparece.
+  [x] Todas tem texto alternativo e dimensoes explicitas (evita salto de
+      layout).
+  [x] Imagens fora da primeira tela usam loading="lazy".
+  [x] As imagens podem ser ampliadas (dialogo com foco preso, fecha com
+      Esc, foco volta para a imagem de origem).
+
+-------------------------------------------------------------------------------
+4. REQUISITOS E LIMITACOES INFORMADOS
+-------------------------------------------------------------------------------
+  [x] Windows suportado e arquitetura informados.
+  [x] Espaco necessario informado.
+  [x] Internet e dependencias reais informados.
+  [x] Requisitos de funcoes especificas separados (instalar x usar o
+      sideloading).
+  [x] Plataformas nao suportadas declaradas (macOS e Linux).
+  [ (] NAO existe botao de download para macOS ou Linux (nao ha pacote
+      validado para eles) - resolvido: nao ha botao.
+
+-------------------------------------------------------------------------------
+5. PACOTE DE DOWNLOAD
+-------------------------------------------------------------------------------
+  [x] Nome do arquivo: FHZIPA_INJECT_Setup.exe
+  [x] Versao: 1.0.0
+  [x] Plataforma: Windows 10 ou 11
+  [x] Arquitetura: x64 (64 bits)
+  [x] Tamanho: 70.824.110 bytes (67,5 MB)
+  [x] Data da versao: 21 de outubro de 2026
+  [x] SHA-256: 743e40a4a176962e62e50a564661e83d80af6406872dbfefe1bfb7bf6572aef5
+  [x] Situacao da assinatura descrita corretamente: NAO ASSINADO
+  [x] SHA-256 exibido em area expansivel, com comando de conferencia
+  [x] Os valores vem de uma fonte unica (#dados-download no index.html)
+  [x] O pacote exibido e o mesmo que e baixado (mesmo nome, mesmo tamanho,
+      mesmo hash, conferido por teste automatico)
+  [x] O instalador corresponde ao artefato validado na instalacao real
+      (RELATORIO-DE-VALIDACAO-DO-INSTALADOR.txt)
+
+-------------------------------------------------------------------------------
+6. DOWNLOAD FUNCIONAL E PUBLICO
+-------------------------------------------------------------------------------
+  [x] O download comeca so por clique explicito (nada de download
+      automatico ao abrir a pagina).
+  [x] O link usa o atributo download e o arquivo esta no mesmo dominio.
+  [x] Testado no navegador: o arquivo baixado tem 70.824.110 bytes e o
+      nome correto.
+  [x] Testado sem sessao autenticada: o mesmo arquivo, o mesmo tamanho.
+  [x] Nenhum token, Authorization header ou chamada a api.github.com no
+      HTML ou no JavaScript.
+  [x] A pagina mostra o estado real do arquivo (HEAD): "Instalador
+      disponivel para download agora."
+  [x] O repositorio do codigo-fonte NAO e exposto e NAO precisa virar
+      publico para o download funcionar.
+  [ ] ( ) ESCOLHER A HOSPEDAGEM E DEFINIR O ENDERECO PUBLICO do instalador.
+      Enquanto isso nao existir, a pasta downloads/ do servidor local tem o
+      arquivo, mas nao ha URL publica.
+  [ ] ( ) Verificar o limite de tamanho de arquivo e de armazenamento da
+      hospedagem escolhida antes de subir os 67 MB.
+  [ ] ( ) Conferir se a hospedagem envia Content-Type binario e o
+      Content-Length correto (curl -sI ...).
+
+-------------------------------------------------------------------------------
+7. REPOSITORIO PRIVADO
+-------------------------------------------------------------------------------
+  [x] O codigo-fonte do aplicativo e do site continua em repositorio
+      privado (jefimdev/fhzipa-inject-app).
+  [x] O site nao contem nenhuma referencia a URL do repositorio privado.
+  [x] O site nao usa links de issues ou de releases de repositorio privado.
+  [x] A pasta downloads/ esta no .gitignore do site: os 67 MB do
+      instalador nao entram no git.
+  [x] Nenhum arquivo .env, backup, log ou captura de instalacao antiga foi
+      incluido.
+
+-------------------------------------------------------------------------------
+8. SEGREDOS E DADOS PRIVADOS
+-------------------------------------------------------------------------------
+  [x] Nenhum token, chave de API, senha ou credencial nos arquivos.
+  [x] Nenhum arquivo .env.
+  [x] Nenhum backup ou diretorio .git no site.
+  [x] As capturas nao contem dados pessoais.
+  [x] O site nao tem formulario, cookie, analytics nem rastreador.
+
+-------------------------------------------------------------------------------
+9. SEO E COMPARTILHAMENTO
+-------------------------------------------------------------------------------
+  [x] Title e meta description escritos para o produto real.
+  [x] Idioma declarado: pt-BR.
+  [x] Favicon presente (SVG + ICO 16/32/48).
+  [x] Open Graph completo (tipo, titulo, descricao, imagem, largura,
+      altura, texto alternativo).
+  [x] Twitter Card: summary_large_image.
+  [x] Imagem de compartilhamento 1200x630 gerada a partir da identidade
+      real do projeto, com a captura do aplicativo.
+  [x] Dados estruturados SoftwareApplication apenas com informacoes
+      verificadas (sem preco, sem avaliacao, sem numero de downloads).
+  [x] robots.txt e sitemap.xml presentes.
+  [ ] ( ) Definir o dominio real e acrescentar a URL canonica no index.html
+      (linha comentada no <head>).
+  [ ] ( ) Trocar SEU-DOMINIO pelo dominio real em sitemap.xml.
+  [ ] ( ) Transformar a URL do og:image em absoluta
+      (https://SEU-DOMINIO/img/social-compartilhamento.png) - as redes
+      sociais nao aceitam URL relativa.
+  [ ] ( ) Liberar a indexacao no robots.txt (hoje esta "Disallow: /"
+      de proposito, para a previa nao ser indexada).
+  [ ] ( ) Registrar no Google Search Console e enviar o sitemap.xml.
+
+-------------------------------------------------------------------------------
+10. RESPONSIVIDADE
+-------------------------------------------------------------------------------
+  [x] Celular pequeno (320 px), celular (390), celular grande (430),
+      tablet (820), notebook (1280), desktop (1440) e desktop grande
+      (1920) testados.
+  [x] Sem rolagem horizontal indevida em nenhuma dessas larguras.
+  [x] Textos legiveis e botoes com area de toque confortavel.
+  [x] Imagens sem distorcao (as capturas aparecem inteiras, sem corte).
+  [x] Tabelas de dados do pacote se adaptam em telas estreitas.
+  [x] O botao principal de download aparece logo no topo, no celular e no
+      desktop.
+  [x] Nenhuma informacao essencial escondida no celular.
+
+-------------------------------------------------------------------------------
+11. ACESSIBILIDADE
+-------------------------------------------------------------------------------
+  [x] HTML semantico, com um unico H1 e hierarquia de titulos coerente.
+  [x] Link "Pular para o conteudo" como primeiro elemento focavel.
+  [x] Foco visivel em todos os elementos interativos.
+  [x] Menu do celular operavel por teclado, com aria-expanded correto e
+      retorno do foco no Esc.
+  [x] FAQ com <details>/<summary> nativo: abre e fecha com Enter, sem
+      armadilha de foco e sem JavaScript.
+  [x] Dialogo da galeria com role="dialog", aria-modal, foco preso,
+      fechamento por Esc e devolucao do foco.
+  [x] Estados nao dependem so de cor (o ponto de status tem texto).
+  [x] Contraste verificado: todos os textos com razao >= 4,8 (WCAG AA).
+  [x] prefers-reduced-motion respeitado.
+  [x] Imagens com texto alternativo; as decorativas com alt vazio.
+  [x] aria usado como complemento do HTML, nunca no lugar dele.
+
+-------------------------------------------------------------------------------
+12. DESEMPENHO
+-------------------------------------------------------------------------------
+  [x] Sem framework e sem biblioteca: uma folha de estilo e um script.
+  [x] Sem fonte externa (pilha do sistema): nenhuma requisicao de terceiros.
+  [x] Imagens fora da primeira tela com loading="lazy".
+  [x] Dimensoes explicitas nas imagens: sem salto de layout.
+  [x] O instalador NAO e carregado ao abrir a pagina.
+  [x] Total da pagina (sem o instalador) abaixo de 1 MB.
+  [ ] ( ) Medir o desempenho no endereco publico (Lighthouse) e registrar o
+      resultado real, sem afirmar meta nao medida.
+
+-------------------------------------------------------------------------------
+13. SEGURANCA
+-------------------------------------------------------------------------------
+  [x] Sem credencial em qualquer arquivo.
+  [x] Sem requisicao a servico de terceiro.
+  [x] Links externos com rel="noopener".
+  [ ] ( ) HTTPS ativo no endereco publico.
+  [ ] ( ) Definir os cabecalhos de seguranca no servidor, compativeis com
+      um site estatico (exemplo: Strict-Transport-Security,
+      X-Content-Type-Options, Referrer-Policy, e uma Content-Security-Policy
+      restritiva, ja que nao ha script externo).
+  [ ] ( ) Servir o instalador com Content-Type binario, sem
+      Content-Disposition inline para um .exe.
+
+-------------------------------------------------------------------------------
+14. TESTES EXECUTADOS (21/10/2026)
+-------------------------------------------------------------------------------
+  [x] Pagina carregada sem erro de console e sem requisicao com erro.
+  [x] Todas as ancoras internas resolvem (nenhum link quebrado).
+  [x] Menu do celular: abre, navega, fecha com Esc e devolve o foco.
+  [x] FAQ: 12 perguntas, todas abrem e fecham com Enter.
+  [x] Galeria: amplia, mostra a legenda, fecha com Esc e devolve o foco.
+  [x] Download real pelo botao: arquivo de 70.824.110 bytes, nome correto.
+  [x] Download sem sessao autenticada: mesmo resultado.
+  [x] SHA-256 do arquivo baixado confere com o publicado.
+  [x] Sem token no HTML, sem cookie, sem localStorage.
+  [x] Sem JavaScript: versao, tamanho e link continuam corretos.
+  [x] Contrastes medidos (13 pares de cor), todos acima de 4,5.
+  [x] Rolagem horizontal verificada em 7 larguras.
+  [x] Capturas de tela revisadas: desktop (primeira tela, pagina inteira,
+      recursos, capturas, download, duvidas, privacidade, rodape), tablet
+      e celular (primeira tela, menu, download, duvidas).
+  [x] Instalador baixado NAO foi executado na maquina.
+
+-------------------------------------------------------------------------------
+15. CUSTOS E LIMITES DA HOSPEDAGEM
+-------------------------------------------------------------------------------
+  [ ] ( ) Decidir a hospedagem. Nenhum servico pago foi contratado ate aqui.
+  [ ] ( ] Conferir: limite por arquivo (o instalador tem 67 MB), limite
+      mensal de armazenamento, limite de banda, suporte a arquivos grandes
+      e politica de retencao.
+  [ ] ( ] Conferir se a hospedagem exige cartao, se lanca recurso
+      gratuito com prazo, e qual a politica de suspensao.
+  [ ] ( ) Estimar o trafego: cada visita ao site baixa cerca de 700 KB de
+      paginas e imagens; o instalador so e baixado por quem clica.
+  [ ] ( ) Registrar o custo mensal previsto e a forma de pagamento.
+  [ ] ( ) Confirmar que a hospedagem nao exige transformar o repositorio
+      do codigo em publico (nao deve: sao coisas separadas).
+
+-------------------------------------------------------------------------------
+16. O QUE FALTA PARA PUBLICAR
+-------------------------------------------------------------------------------
+  1. Escolher o dominio (ou confirmar o uso de um subdominio).
+  2. Escolher a hospedagem estatica e confirmar os limites de arquivo.
+  3. Definir o endereco publico do instalador e subir o .exe.
+  4. Ligar o HTTPS.
+  5. Trocar o dominio no sitemap.xml, acrescentar a URL canonica e deixar a
+     og:image absoluta.
+  6. Trocar o robots.txt para permitir a indexacao.
+  7. Rodar o site no endereco publico e repetir os testes do item 14.
+  8. Enviar o sitemap no Search Console.
+
+===============================================================================
+FIM DO CHECKLIST
+===============================================================================

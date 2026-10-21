@@ -1,0 +1,5 @@
+# Enquanto o site estiver em previa, a indexacao fica desligada.
+# Na publicacao: troque esta linha por "Allow: /" e informe o dominio real
+# em Sitemap (veja CHECKLIST-DE-PUBLICACAO-DO-SITE.txt).
+User-agent: *
+Disallow: /

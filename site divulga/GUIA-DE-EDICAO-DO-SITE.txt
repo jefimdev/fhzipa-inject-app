@@ -1,0 +1,504 @@
+===============================================================================
+GUIA DE EDICAO DO SITE - FHZIPA INJECT
+===============================================================================
+Pasta do site .....: site divulga\
+Última atualização .: 21/10/2026
+Natureza .........: site estático (HTML + CSS + JavaScript, sem build)
+Objetivo .........: página única de divulgação e download do FHZIPA INJECT
+
+
+===============================================================================
+1. O QUE ESTE SITE É
+===============================================================================
+
+Uma página única (index.html) que apresenta o aplicativo, mostra capturas
+reais, explica os requisitos e entrega o instalador por link direto.
+
+Tecnologia: HTML5 + CSS3 + JavaScript puro (sem framework, sem biblioteca,
+sem etapa de compilação). Escolha feita porque:
+
+  - o site é uma página só, com um menu, uma galeria, um FAQ e um bloco de
+    download;
+  - não existe dependência para instalar, o que mantém o site separado do
+    aplicativo (que usa React + Tauri) e impede mistura de dependências;
+  - o resultado pode ser publicado em qualquer hospedagem de arquivos
+    estáticos, sem servidor, sem banco de dados e sem backend;
+  - o carregamento é imediato: uma folha de estilo e um script pequeno.
+
+O site NÃO usa analytics, rastreadores, pixel de publicidade, cookies não
+essenciais nem formulários. Não há backend nem endpoint de download: o
+arquivo é servido direto do servidor de arquivos estáticos.
+
+
+===============================================================================
+2. COMO ABRIR O PROJETO
+===============================================================================
+
+O site fica dentro do repositório do aplicativo, na pasta "site divulga":
+
+  C:\Users\fheiz\Downloads\projetos codes\fhzipa-inject-app\site divulga\
+
+Estrutura dos arquivos:
+
+  site divulga\
+    index.html                          pagina principal (todo o conteudo)
+    estilo... -> css\estilo.css         cores, layout, responsividade
+    js\site.js                          menu, galeria, copiar hash, status
+    favicon.ico                         icone 16/32/48 px
+    robots.txt                          regras de indexacao
+    sitemap.xml                         mapa do site
+    img\
+      logo.svg                          logo oficial (usado no cabecalho)
+      favicon.svg                       mesmo logo, em SVG
+      captura-visao-geral.png            captura real (1320x820)
+      captura-loja.png                   captura real (1320x820)
+      captura-dispositivos.png           captura real (1320x580)
+      captura-ajustes.png                captura real (1320x580)
+      captura-instalador.png             captura real do instalador (760x520)
+      captura-instalacao-concluida.png   captura real (760x520, guardada)
+      social-compartilhamento.png        imagem Open Graph (1200x630)
+    downloads\                          artefato de download (nao versionado)
+      FHZIPA_INJECT_Setup.exe
+      SHA256SUMS.txt
+    scripts\
+      modelo-imagem-social.html         modelo da imagem de compartilhamento
+      gerar-imagem-social.mjs           gera a imagem de compartilhamento
+      preparar-distribuicao.ps1         copia e confere o instalador
+    capturas-revisao\                   capturas da revisao visual
+    GUIA-DE-EDICAO-DO-SITE.txt           este arquivo
+    CHECKLIST-DE-PUBLICACAO-DO-SITE.txt  lista de verificacao da publicacao
+    .gitignore                          ignora downloads\ e capturas temporarias
+
+
+===============================================================================
+3. REQUISITOS
+===============================================================================
+
+Para editar o conteudo (só texto, cores, links):
+  - um editor de texto. Nenhuma instalacao necessaria.
+
+Para executar localmente:
+  - Python 3 (ja vem com o Windows 11 e com o Windows 10 atual) ou Node.js.
+  - Alternativa: abrir o index.html direto no navegador com duplo clique
+    (funciona, mas as consultas HEAD de disponibilidade do instalador sao
+    bloqueadas pelo navegador em file://; nesse caso a pagina mostra
+    "O download comeca quando voce clica no botao").
+
+Para gerar a imagem de compartilhamento:
+  - Node.js 18 ou superior.
+  - Playwright (playwright-core) instalado. Este script foi feito com o
+    pacote global do Playwright MCP:
+      CAMINHO_PLAYWRIGHT\\node_modules\\@playwright\\mcp\\node_modules\\playwright-core
+    Ajuste a variavel CAMINHO_PLAYWRIGHT ou instale localmente com:
+      npm i -D playwright-core
+    E o navegador precisa estar em:
+      %LOCALAPPDATA%\\ms-playwright\\chromium-1248\\chrome-win64\\chrome.exe
+    (ajuste a variavel NAVEGADOR se a versao do Chromium for outra).
+
+Para preparar o download:
+  - Windows com PowerShell 5.1 ou superior. Nao precisa de .NET SDK.
+
+Nao e preciso de Node, Rust, Visual Studio ou Android Studio para publicar o
+site. Esses itens sao do desenvolvimento do APLICATIVO, nao do site.
+
+
+===============================================================================
+4. COMO EXECUTAR LOCALMENTE
+===============================================================================
+
+  cd "C:\Users\fheiz\Downloads\projetos codes\fhzipa-inject-app\site divulga"
+
+  python -m http.server 8899 --bind 127.0.0.1
+
+Depois abra:  http://127.0.0.1:8899/
+
+Para conferir o download localmente, a pasta downloads\ precisa estar
+preenchida (secao 10).
+
+Para encerrar o servidor: feche a janela do PowerShell ou pressione Ctrl+C.
+
+Se a porta 8899 estiver ocupada, use outra (por exemplo 8080) e ajuste a
+URL.
+
+
+===============================================================================
+5. COMO GERAR A VERSAO FINAL PARA PUBLICAR
+===============================================================================
+
+O site ja e a versao final: nao ha build. Para preparar a pasta de upload:
+
+  1) Confirme que o instalador aprovado esta em downloads\:
+       powershell -ExecutionPolicy Bypass -File scripts\preparar-distribuicao.ps1
+
+  2) (Opcional, so se a versao mudou) regenere a imagem de compartilhamento:
+       node scripts\gerar-imagem-social.mjs
+
+  3) Suba a pasta INTEIRA (index.html, css, js, img, favicon.ico,
+     robots.txt, sitemap.xml e downloads\). A pasta scripts\ e as
+     capturas-revisao\ nao precisam ser publicadas.
+
+Nao existe "npm run build" para este site. Se voce adicionou arquivos novos,
+basta recarregar a pagina no navegador.
+
+
+===============================================================================
+6. ONDE EDITAR OS TEXTOS
+===============================================================================
+
+Tudo o que o visitante le esta em index.html, em português do Brasil.
+
+  Textos                         Onde
+  ------------------------------ --------------------------------------------
+  Titulo e resumo da primeira     index.html -> <title> e <meta name="description">
+  tela
+  Texto principal (titulo H1)    index.html -> .apresentacao h1
+  Resumo do aplicativo            index.html -> .apresentacao-resumo
+  Lista de recursos               index.html -> #recursos -> .recursos-grade
+  Legendas das capturas           index.html -> #capturas -> .galeria-item
+  Passo a passo                   index.html -> #como-comecar -> .passos
+  Requisitos                      index.html -> #requisitos
+  Limites da conta gratuita       index.html -> .limites
+  Detalhes do pacote              index.html -> #download -> .download-detalhes
+  Perguntas frequentes            index.html -> #duvidas -> .faq
+  Privacidade e transparencia     index.html -> #privacidade
+  Rodape e contatos               index.html -> footer.rodape
+
+As secoes usam ids fixos. Se voce renomear um id, atualize tambem o link
+correspondente no menu (nav.navegacao) e o link no rodape.
+
+Regra de conteudo: escreva apenas o que o aplicativo realmente faz. Se
+recursos novos forem entregues no aplicativo, atualize a lista de recursos e
+o FAQ antes de publicar. Nao anuncie recurso que ainda nao existe.
+
+
+===============================================================================
+7. ONDE TROCAR O LOGO
+===============================================================================
+
+  Cabecalho ....... index.html -> .marca -> <img src="img/logo.svg">
+  Rodape .......... index.html -> .rodape-bloco -> <img src="img/logo.svg">
+  Imagem social ... scripts\modelo-imagem-social.html -> .marca > img
+  Favicon ......... index.html -> <link rel="icon" ...> (img/favicon.svg e favicon.ico)
+
+O logo atual vem de src\recursos\imagens\fhzipa-inject.svg do aplicativo.
+Para trocar: substitua img\logo.svg e img\favicon.svg pelo novo arquivo
+(mantendo o nome), gere o favicon.ico novamente e regenere a imagem social.
+
+
+===============================================================================
+8. ONDE TROCAR AS IMAGENS
+===============================================================================
+
+Todas as capturas estao em img\ e sao incluidas no index.html por caminho.
+
+  Imagem                            Onde e usada
+  --------------------------------- ----------------------------------------
+  img\captura-visao-geral.png       primeira tela e imagem social
+  img\captura-loja.png              galeria (Baixar apps)
+  img\captura-dispositivos.png      galeria (Dispositivos)
+  img\captura-ajustes.png           galeria (Ajustes)
+  img\captura-instalador.png        galeria (O instalador)
+  img\captura-instalacao-concluida.png   disponivel, ainda nao usada
+
+Como trocar:
+  1) tire a nova captura do aplicativo rodando de verdade;
+  2) salve com o mesmo nome do arquivo que esta substituindo;
+  3) atualize o atributo alt e a legenda correspondente no index.html;
+  4) se as dimensoes mudaram, atualize os atributos width e height da tag
+     <img> (eles evitam salto de layout durante o carregamento).
+
+ATENCAO - privacidade: as capturas devem mostrar o aplicativo com a tela de
+login vazia. Confira antes de publicar que nao aparece nenhum e-mail, nome de
+conta, identificador de aparelho, token ou dado pessoal. O mesmo vale para a
+imagem de compartilhamento.
+
+Como tirar captura nova do aplicativo nativo (WebView2 com depuracao remota):
+
+  $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--remote-debugging-port=9222"
+  # iniciar o aplicativo; depois conectar em http://127.0.0.1:9222
+
+  As telas do aplicativo foram capturadas assim, com a janela do aplicativo
+  redimensionada (o aplicativo e sem moldura, entao o tamanho da janela e o
+  tamanho da captura):
+
+    Janela 1320 x 820 .... Visao geral, Baixar apps
+    Janela 1320 x 580 .... Dispositivos, Ajustes
+    Captura ja pronta .... instalador (760 x 520)
+
+  A tela Baixar apps so fica completa depois que o catalogo carrega: espere
+  alguns segundos antes de capturar, senao aparece "Carregando o catalogo".
+
+  Para redimensionar a janela pelo CDP:
+
+    const cdp = await ctx.newCDPSession(page);
+    const { windowId } = await cdp.send("Browser.getWindowForTarget");
+    await cdp.send("Browser.setWindowBounds", {
+      windowId,
+      bounds: { left: 60, top: 40, width: 1320, height: 820, windowState: "normal" },
+    });
+
+  As capturas ja existentes foram feitas assim e estao em
+  ..\..\instalador fhzipa\evidencias\instalacao-real\.
+
+
+===============================================================================
+9. ONDE MUDAR AS CORES
+===============================================================================
+
+Todas as cores estao em css\estilo.css, no bloco :root do inicio do arquivo.
+
+  Variavel               Uso
+  ---------------------- -------------------------------------------------
+  --fundo                fundo geral do site
+  --fundo-alto           fundo das secoes alternadas e do rodape
+  --superficie           fundo dos cartoes e blocos
+  --superficie-alta      fundo de cartoes em destaque (FAQ aberto, limites)
+  --borda / --borda-forte  linhas e bordas
+  --texto                texto principal
+  --texto-medio          texto de apoio
+  --texto-fraco          rotulos, legendas e avisos
+  --vermelho             cor de destaque (botoes, titulos, links)
+  --vermelho-escuro      final do gradiente do botao principal
+  --verde / --amarelo    cores de estado (disponivel / indisponivel)
+
+As cores foram herdadas do tema do aplicativo (src\estilos\tema.css). Ao
+mudar o vermelho, confira o contraste: o padrao #ff2344 sobre #080b12 da
+razao 5,23 e passa no nivel AA da WCAG para texto normal.
+
+Tipografia: a pilha de fontes do sistema (Segoe UI / system-ui). Nao ha
+download de fonte externa, o que mantem o site rapido.
+
+
+===============================================================================
+10. ONDE MUDAR OS LINKS E CONTATOS
+===============================================================================
+
+Os links externos estao no index.html. Confira cada um antes de publicar
+(para saber se continuam de pe, use o comando curl):
+
+  Link                                      Onde
+  ----------------------------------------- -----------------------------------
+  https://discord.gg/EA6yVgydBz            rodape (Contato) e FAQ
+  https://github.com/jefimdev               rodape (Perfil no GitHub)
+  https://github.com/sponsors/jefimdev      rodape (Apoiar o projeto)
+  https://github.com/nab138/iloader         rodape (Projeto original)
+  https://apple.co/ms                       secao Como comecar
+
+Para conferir:
+
+  curl.exe -s -o /dev/null -w "%{http_code}" -L https://discord.gg/EA6yVgydBz
+
+Regra importante: o repositorio do codigo-fonte e PRIVADO. Nao publique
+links de issues, de releases ou de qualquer pagina que exija autenticacao.
+O canal de suporte publico do projeto e o Discord.
+
+Verificacao de links externos (sem trocar nada no site):
+
+  $site = Invoke-WebRequest -Uri "http://127.0.0.1:8899/" -UseBasicParsing
+  $site.Links | Where-Object { $_.href -like "http*" } | ForEach-Object {
+    "{0,-50} {1}" -f $_.href, (curl.exe -s -o /dev/null -w "%{http_code}" -L $_.href)
+  }
+
+
+===============================================================================
+11. COMO ATUALIZAR A VERSAO E A URL DO INSTALADOR
+===============================================================================
+
+A fonte unica de verdade dos dados do pacote e o bloco JSON no inicio do
+index.html:
+
+  <script type="application/json" id="dados-download">
+  {
+    "arquivo": "FHZIPA_INJECT_Setup.exe",
+    "url": "downloads/FHZIPA_INJECT_Setup.exe",
+    "versao": "1.0.0",
+    "plataforma": "Windows 10 ou 11",
+    "arquitetura": "x64 (64 bits)",
+    "bytes": 70824110,
+    "sha256": "743e40a4...",
+    "data": "2026-10-21",
+    "assinado": false
+  }
+  </script>
+
+O JavaScript da pagina le esse bloco e preenche a versao, o tamanho, a data, o
+SHA-256 e o nome do arquivo em todo o site. Nao repita esses valores em
+outros lugares.
+
+ATENCAO: o bloco JSON-LD (application/ld+json), um pouco mais abaixo, tem
+os mesmos dados para os buscadores. Atualize os dois no mesmo momento.
+
+Para trocar a URL do instalador (por exemplo, se o arquivo passar a ficar em
+outro endereco do servidor):
+  - "url" no bloco dados-download;
+  - os tres links de download do index.html (o do menu, o da primeira tela e
+    o da secao de download): href="downloads/FHZIPA_INJECT_Setup.exe";
+  - "downloadUrl" e "fileSize" no bloco JSON-LD.
+
+O atributo download funciona porque o arquivo esta no mesmo dominio. Se o
+arquivo passar a ficar em outro dominio, o atributo download e ignorado
+pelos navegadores e o arquivo abrira numa aba nova em vez de baixar.
+
+
+===============================================================================
+12. COMO ATUALIZAR O TAMANHO E O SHA-256
+===============================================================================
+
+Rode o script de preparacao. Ele copia o instalador aprovado, compara o
+SHA-256 com o valor esperado e so prossegue se bater:
+
+  powershell -ExecutionPolicy Bypass -File scripts\preparar-distribuicao.ps1
+
+Se o artefato novo for legitimo, atualize o valor esperado no proprio script
+(parametro -EsperadoSha256) e rode de novo. Depois atualize no index.html:
+
+  "bytes"  -> o numero exato de bytes (o script imprime);
+  "sha256" -> o resumo que o script imprime;
+  "data"   -> a data da versao, no formato AAAA-MM-DD.
+
+O script tambem grava downloads\SHA256SUMS.txt, que e o arquivo de
+referencia para quem for conferir o download.
+
+Se o SHA-256 nao bater, o script sai com codigo 2 e NAO publica. Nao copie o
+arquivo para a pasta downloads/ na mao nesse caso.
+
+
+===============================================================================
+13. COMO VERIFICAR O DOWNLOAD
+===============================================================================
+
+Antes de publicar:
+
+  1) Suba o site com o servidor local e baixe pelo botao.
+  2) Confira o arquivo baixado:
+
+       Get-FileHash .\FHZIPA_INJECT_Setup.exe -Algorithm SHA256
+
+     O valor tem de ser igual ao do bloco dados-download e ao do
+     SHA256SUMS.txt.
+
+  3) Confira os cabecalhos HTTP do servidor (o navegador precisa receber
+     o arquivo como binario, nunca uma pagina de login ou de erro):
+
+       curl.exe -sI http://127.0.0.1:8899/downloads/FHZIPA_INJECT_Setup.exe
+
+     O esperado e:
+       HTTP/1.1 200 OK
+       Content-Type: application/octet-stream   (ou application/x-msdownload)
+       Content-Length: 70824110
+
+  4) Teste sem sessao autenticada (janela anonima do navegador) para
+     garantir que nao existe dependencia do login do GitHub.
+
+  5) Confirme que nenhum token aparece na pagina:
+
+       curl.exe -s http://127.0.0.1:8899/ | findstr /I "ghp_ gho_ ghs_ Authorization"
+
+     Nao deve aparecer nada.
+
+
+===============================================================================
+14. COMO PUBLICAR
+===============================================================================
+
+O repositorio do codigo-fonte e privado e NAO deve virar publico. O site e
+publicado em uma hospedagem de arquivos estaticos, separada do repositorio.
+
+Sequencia sugerida:
+
+  1) Decidir e contratar (ou nao) a hospedagem. Verifique se ela aceita
+     um arquivo de 67 MB e qual o limite de armazenamento.
+  2) Esvaziar downloads\ antes do upload se a hospedagem tiver limite de
+     tamanho, e enviar o .exe por um canal proprio (por exemplo, um
+     bucket de objeto com link publico de leitura).
+  3) Enviar o restante do site.
+  4) Configurar HTTPS (a hospedagem normalmente oferece certificado
+     automatico). Um site de download sem HTTPS derruba a confianca do
+     visitante e o navegador avisa.
+  5) Trocar o robots.txt de "Disallow: /" para "Allow: /".
+  6) Trocar SEU-DOMINIO pelo dominio real em sitemap.xml.
+  7) Acrescentar no index.html a URL canonica e transformar a URL da imagem
+     social em absoluto:
+       <link rel="canonical" href="https://SEU-DOMINIO/">
+       <meta property="og:image" content="https://SEU-DOMINIO/img/social-compartilhamento.png">
+     (as redes sociais nao leem URLs relativas para imagem de
+     compartilhamento)
+  8) Registrar o dominio em Google Search Console e enviar o sitemap.xml.
+  9) Testar tudo de novo no endereco publico, com o endereco real.
+
+O checklist completo esta em CHECKLIST-DE-PUBLICACAO-DO-SITE.txt.
+
+
+===============================================================================
+15. COMO VOLTAR UMA ATUALIZACAO DO SITE
+===============================================================================
+
+Antes de publicar, versione o site no git. O site esta dentro do
+repositorio privado do aplicativo, entao use o git de la:
+
+  cd "C:\Users\fheiz\Downloads\projetos codes\fhzipa-inject-app"
+  git add "site divulga"
+  git commit -m "site: atualiza versao 1.0.1 do instalador"
+  git push privado main
+
+Para desfazer uma mudanca local ainda nao publicada:
+
+  git status                      # o que mudou
+  git diff                        # o que mudou, linha a linha
+  git restore "site divulga"      # volta tudo ao ultimo commit
+  git restore "site divulga/css/estilo.css"   # volta so um arquivo
+
+Se a mudanca ja foi publicada e voce quer reverter:
+
+  git log --oneline -5
+  git revert <hash-do-commit>     # cria um commit que desfaz
+  git push privado main
+  e reenvie os arquivos ao servidor de hospedagem.
+
+Se a hosting usa FTP ou upload manual, guarde uma copia da versao publicada
+antes de enviar a nova (por exemplo, em Backups-FHZIPA-INJECT).
+
+
+===============================================================================
+16. PROBLEMAS COMUNS
+===============================================================================
+
+"Na pagina aparece 'Verificando a disponibilidade do instalador' e nunca
+  troca."  Voce abriu o arquivo direto (file://). O navegador bloqueia a
+  consulta HEAD. Use o servidor local.
+
+"O botao de download baixa um arquivo de 0 byte ou uma pagina de login."
+  O arquivo nao foi enviado para downloads\ no servidor. Confira o
+  Content-Length com o curl.
+
+"A imagem de compartilhamento nao aparece no Facebook/LinkedIn."
+  A URL do og:image precisa ser absoluta (https://SEU-DOMINIO/...), e o
+  arquivo precisa estar acessivel sem sessao.
+
+"O Google nao indexa o site."
+  O robots.txt ainda esta com "Disallow: /" e o sitemap.xml ainda tem
+  SEU-DOMINIO. Troque os dois.
+
+"A galeria ficou com as imagens cortadas."
+  Nao use object-fit: cover nas capturas. O css atual mostra as imagens
+  inteiras, sem corte.
+
+"O site ficou largo demais no celular (rolagem na horizontal)."
+  Nao use minmax com valor fixo nas grades. O padrao do projeto e
+  minmax(min(300px, 100%), 1fr).
+
+
+===============================================================================
+17. RESUMO RAPIDO
+===============================================================================
+
+  Editar textos ......... index.html
+  Editar cores .......... css\estilo.css, bloco :root
+  Trocar logo ........... img\logo.svg (+ img\favicon.svg + favicon.ico)
+  Trocar capturas ....... img\captura-*.png
+  Trocar links .......... index.html (rodape e secao Como comecar)
+  Trocar dados do pacote  index.html, bloco #dados-download (+ bloco JSON-LD)
+  Conferir instalador ... scripts\preparar-distribuicao.ps1
+  Regerar imagem social . node scripts\gerar-imagem-social.mjs
+  Rodar localmente ...... python -m http.server 8899
+  Publicar .............. ver CHECKLIST-DE-PUBLICACAO-DO-SITE.txt

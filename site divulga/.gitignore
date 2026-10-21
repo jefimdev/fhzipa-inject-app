@@ -1,0 +1,7 @@
+# O instalador e um artefato de 67 MB: ele fica no servidor, nao no
+# repositorio. O scripts/preparar-distribuicao.ps1 copia o arquivo
+# aprovado para a pasta downloads/ antes da publicacao.
+downloads/
+
+# Capturas de tela do desenvolvimento
+.playwright-mcp/

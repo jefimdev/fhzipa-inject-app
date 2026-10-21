@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FHZIPA INJECT — instale aplicativos .ipa no iPhone e no iPad pelo Windows</title>
+<meta name="description" content="Aplicativo desktop para Windows que assina e instala aplicativos .ipa no iPhone e no iPad, usando a sua própria conta Apple ID. Loja de IPAs integrada, pareamento, certificados e diagnóstico.">
+<meta name="theme-color" content="#080b12">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/estilo.css">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FHZIPA INJECT">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="FHZIPA INJECT — instale aplicativos .ipa no iPhone e no iPad pelo Windows">
+<meta property="og:description" content="Aplicativo desktop para Windows que assina e instala aplicativos .ipa no iPhone e no iPad, usando a sua própria conta Apple ID.">
+<meta property="og:image" content="img/social-compartilhamento.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FHZIPA INJECT — aplicativo desktop para instalar aplicativos .ipa no iPhone e no iPad">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- A URL canonica depende do dominio de publicacao: acrescentar
+     <link rel="canonical" href="https://SEU-DOMINIO/"> antes de publicar. -->
+
+<!-- Fonte unica de verdade dos dados do pacote. O script da pagina le este
+     bloco; o JSON-LD abaixo precisa ser atualizado junto. -->
+<script type="application/json" id="dados-download">
+{
+  "arquivo": "FHZIPA_INJECT_Setup.exe",
+  "url": "downloads/FHZIPA_INJECT_Setup.exe",
+  "versao": "1.0.0",
+  "plataforma": "Windows 10 ou 11",
+  "arquitetura": "x64 (64 bits)",
+  "bytes": 70824110,
+  "sha256": "743e40a4a176962e62e50a564661e83d80af6406872dbfefe1bfb7bf6572aef5",
+  "data": "2026-10-21",
+  "assinado": false
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "FHZIPA INJECT",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Windows 10, Windows 11",
+  "softwareVersion": "1.0.0",
+  "inLanguage": "pt-BR",
+  "description": "Aplicativo desktop para Windows que assina e instala aplicativos .ipa no iPhone e no iPad usando a conta Apple ID do próprio usuário.",
+  "downloadUrl": "downloads/FHZIPA_INJECT_Setup.exe",
+  "fileSize": "70824110",
+  "license": "https://github.com/nab138/iloader/blob/main/LICENSE",
+  "author": { "@type": "Person", "name": "jefimdev" },
+  "screenshot": "img/captura-visao-geral.png"
+}
+</script>
+</head>
+
+<body>
+<a class="pular-para-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="cabecalho" id="topo">
+  <div class="container cabecalho-conteudo">
+    <a class="marca" href="#topo">
+      <img class="marca-simbolo" src="img/logo.svg" width="36" height="36" alt="">
+      <span class="marca-nome">FHZIPA<em>INJECT</em></span>
+    </a>
+
+    <button class="botao-menu" type="button" aria-expanded="false" aria-controls="navegacao-principal">
+      <span class="visualmente-oculto">Abrir o menu</span>
+      <span class="botao-menu-icones" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+
+    <nav class="navegacao" id="navegacao-principal" aria-label="Seções do site">
+      <ul>
+        <li><a href="#recursos">Recursos</a></li>
+        <li><a href="#capturas">Capturas</a></li>
+        <li><a href="#como-comecar">Como começar</a></li>
+        <li><a href="#requisitos">Requisitos</a></li>
+        <li><a href="#download">Download</a></li>
+        <li><a href="#duvidas">Dúvidas</a></li>
+      </ul>
+      <a class="botao botao-primario botao-menu-download" href="downloads/FHZIPA_INJECT_Setup.exe" download>
+        Baixar para Windows
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="conteudo" tabindex="-1">
+
+  <!-- ================= APRESENTACAO ================= -->
+  <section class="apresentacao">
+    <div class="container apresentacao-grade">
+      <div class="apresentacao-texto">
+        <p class="apresentacao-selo">Aplicativo para Windows</p>
+        <h1>Instale aplicativos <span class="destaque">.ipa</span> no seu iPhone ou iPad, direto do computador.</h1>
+        <p class="apresentacao-resumo">
+          O FHZIPA INJECT assina e instala aplicativos no seu aparelho usando a
+          sua própria conta Apple ID. Tem loja de IPAs integrada, pareamento,
+          certificados de desenvolvimento e um registro de diagnóstico que
+          mostra o que deu errado.
+        </p>
+
+        <div class="apresentacao-acoes">
+          <a class="botao botao-primario botao-grande" href="downloads/FHZIPA_INJECT_Setup.exe" download data-botao-download>
+            <span class="botao-icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>
+            </span>
+            Baixar o FHZIPA INJECT
+          </a>
+          <a class="botao botao-secundario" href="#como-comecar">Como funciona</a>
+        </div>
+
+        <ul class="apresentacao-meta" aria-label="Resumo do pacote">
+          <li><span class="meta-rotulo">Sistema</span><span class="meta-valor" data-meta="plataforma">Windows 10 ou 11</span></li>
+          <li><span class="meta-rotulo">Arquitetura</span><span class="meta-valor" data-meta="arquitetura">x64 (64 bits)</span></li>
+          <li><span class="meta-rotulo">Versão</span><span class="meta-valor" data-meta="versao">1.0.0</span></li>
+          <li><span class="meta-rotulo">Tamanho</span><span class="meta-valor" data-meta="tamanho">67,5 MB</span></li>
+        </ul>
+
+        <p class="apresentacao-observacao" data-observacao-download role="status">
+          <span class="ponto-status" aria-hidden="true"></span>
+          <span data-observacao-texto>O download começa quando você clica no botão.</span>
+        </p>
+      </div>
+
+      <div class="apresentacao-visual">
+        <figure class="janela-aplicativo">
+          <img src="img/captura-visao-geral.png" width="1320" height="820"
+               alt="Janela do FHZIPA INJECT: menu lateral à esquerda com as seções Visão geral, Baixar apps, Dispositivos, Certificados, IDs de App e Ajustes; à direita, o painel do dispositivo conectado, o painel de conta Apple ID, a área de importação de .ipa e as preferências.">
+          <figcaption>A interface real do aplicativo, em Visão geral.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RECURSOS ================= -->
+  <section id="recursos" class="secao">
+    <div class="container">
+      <header class="secao-cabecalho">
+        <p class="secao-selo">O que ele faz</p>
+        <h2>Recursos que já estão prontos</h2>
+        <p class="secao-texto">
+          Tudo abaixo é funcionalidade entregue e verificada nesta build. Não
+          há item experimental em produção.
+        </p>
+      </header>
+
+      <ul class="recursos-grade">
+        <li class="recurso">
+          <h3>Login com Apple ID e 2FA</h3>
+          <p>
+            A autenticação é feita diretamente com os servidores da Apple,
+            incluindo o código de dois fatores. O aplicativo não tem servidor
+            próprio de credenciais.
+          </p>
+        </li>
+        <li class="recurso">
+          <h3>Detecção de aparelho por USB</h3>
+          <p>
+            O iPhone ou iPad conectado aparece na lista de dispositivos e
+            pode ser selecionado com um clique. Usa o serviço Apple Mobile
+            Device Support, que vem com o iTunes ou o Apple Devices.
+          </p>
+        </li>
+        <li class="recurso">
+          <h3>Loja de IPAs integrada</h3>
+          <p>
+            Cinco catálogos públicos — IPAOMTK, iAppStores, GitHub, iPA
+            Library e IPAJB — com busca, categorias e download. Quando o
+            mesmo aplicativo existe em mais de um lugar, o FHZIPA INJECT
+            mede a velocidade de cada servidor e usa o mais rápido.
+          </p>
+        </li>
+        <li class="recurso">
+          <h3>Instalação com o seu certificado</h3>
+          <p>
+            Assina e instala um arquivo .ipa usando os certificados de
+            desenvolvimento da sua conta. Também dá para importar um .ipa
+            que você já tenha em mãos.
+          </p>
+        </li>
+        <li class="recurso">
+          <h3>Pareamento e App IDs</h3>
+          <p>
+            Exporte, importe e reenvie o arquivo de pareamento, e acompanhe
+            os App IDs registrados na conta, com o limite de criação da Apple
+            em mente.
+          </p>
+        </li>
+        <li class="recurso">
+          <h3>Diagnóstico com histórico</h3>
+          <p>
+            Cada etapa aparece na tela enquanto acontece, e o registro
+            completo fica gravado em arquivo para você conferir o motivo de
+            uma falha.
+          </p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= CAPTURAS ================= -->
+  <section id="capturas" class="secao secao-alternada">
+    <div class="container">
+      <header class="secao-cabecalho">
+        <p class="secao-selo">Como é por dentro</p>
+        <h2>Capturas reais da build atual</h2>
+        <p class="secao-texto">
+          Estas telas são da versão 1.0.0 que está sendo distribuída, com o
+          aplicativo em execução no Windows.
+        </p>
+      </header>
+
+      <ul class="galeria" data-galeria>
+        <li>
+          <button type="button" class="galeria-item" data-ampliar="img/captura-loja.png"
+                  data-legenda="Baixar apps: catálogo com busca, filtros por fonte e categoria, e os aplicativos em destaque.">
+            <img src="img/captura-loja.png" width="1320" height="820" loading="lazy" decoding="async"
+                 alt="Tela Baixar apps, com o catálogo de aplicativos, os destaques e as abas das cinco fontes.">
+            <span class="galeria-legenda">Baixar apps</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="galeria-item" data-ampliar="img/captura-dispositivos.png"
+                  data-legenda="Dispositivos: a lista de aparelhos conectados e o atalho para o arquivo de pareamento.">
+            <img src="img/captura-dispositivos.png" width="1320" height="580" loading="lazy" decoding="async"
+                 alt="Tela Dispositivos, com a lista de aparelhos conectados e o botão Gerenciar Arquivo de Pareamento.">
+            <span class="galeria-legenda">Dispositivos</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="galeria-item" data-ampliar="img/captura-ajustes.png"
+                  data-legenda="Ajustes: servidor Anisette, idioma e o chaveiro do sistema.">
+            <img src="img/captura-ajustes.png" width="1320" height="580" loading="lazy" decoding="async"
+                 alt="Tela Ajustes, com o seletor de servidor Anisette, o de idioma e a opção de chaveiro do sistema.">
+            <span class="galeria-legenda">Ajustes</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="galeria-item" data-ampliar="img/captura-instalador.png"
+                  data-legenda="O instalador próprio do FHZIPA INJECT, com a identidade visual do projeto.">
+            <img src="img/captura-instalador.png" width="760" height="520" loading="lazy" decoding="async"
+                 alt="Tela inicial do instalador do FHZIPA INJECT, com o painel lateral de etapas e o botão Instalar.">
+            <span class="galeria-legenda">O instalador</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= COMO COMECAR ================= -->
+  <section id="como-comecar" class="secao">
+    <div class="container">
+      <header class="secao-cabecalho">
+        <p class="secao-selo">Passo a passo</p>
+        <h2>Como começar</h2>
+        <p class="secao-texto">Do download ao aplicativo instalado, contando o que você precisa ter em mãos.</p>
+      </header>
+
+      <ol class="passos">
+        <li>
+          <h3>Baixe o instalador</h3>
+          <p>Um arquivo .exe de 67,5 MB. Ele já traz o runtime necessário: não é preciso instalar nada antes.</p>
+        </li>
+        <li>
+          <h3>Instale</h3>
+          <p>
+            Abra o instalador e escolha a pasta. Se escolher uma pasta do
+            sistema, o Windows pede autorização de administrador. Ao final,
+            a tela confirma que a instalação foi verificada.
+          </p>
+        </li>
+        <li>
+          <h3>Instale o iTunes ou o Apple Devices</h3>
+          <p>
+            É ele que fornece o serviço Apple Mobile Device Support, sem o
+            qual o aplicativo não encontra o iPhone. <a href="https://apple.co/ms" rel="noopener">Baixe na apple.co/ms</a>.
+          </p>
+        </li>
+        <li>
+          <h3>Conecte e desbloqueie o aparelho</h3>
+          <p>
+            Ligue o iPhone ou o iPad por cabo, desbloqueie a tela e toque em
+            <strong>Confiar</strong> quando o aparelho perguntar.
+          </p>
+        </li>
+        <li>
+          <h3>Abra o FHZIPA INJECT e escolha o aparelho</h3>
+          <p>Na tela Visão geral, use <strong>Atualizar dispositivo</strong> e selecione o aparelho que aparecer na lista.</p>
+        </li>
+        <li>
+          <h3>Entre com a sua conta Apple ID</h3>
+          <p>A Apple pede o código de dois fatores. As credenciais ficam guardadas no chaveiro do Windows, ou na sua conta, se você marcar a opção de salvar.</p>
+        </li>
+        <li>
+          <h3>Baixe e instale</h3>
+          <p>
+            Vá em <strong>Baixar apps</strong> e escolha um aplicativo, ou
+            use <strong>Importar IPA</strong> com um .ipa que você já tenha.
+            O progresso e o registro ficam visíveis durante a instalação.
+          </p>
+        </li>
+      </ol>
+
+      <p class="nota">
+        <strong>No iOS 16 ou superior</strong> pode ser necessário ativar
+        <em>Ajustes › Privacidade e Segurança › Modo de Desenvolvedor</em> e
+        reiniciar o aparelho.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= REQUISITOS ================= -->
+  <section id="requisitos" class="secao secao-alternada">
+    <div class="container">
+      <header class="secao-cabecalho">
+        <p class="secao-selo">Antes de baixar</p>
+        <h2>Requisitos</h2>
+      </header>
+
+      <div class="requisitos-grade">
+        <div class="requisito-bloco">
+          <h3>Para instalar o aplicativo</h3>
+          <ul class="lista-checagem">
+            <li>Windows 10 ou 11, de 64 bits (x64)</li>
+            <li>Espaço em disco para cerca de 70 MB do instalador e 24 MB do aplicativo</li>
+            <li>WebView2 Runtime — já vem instalado no Windows 11 e no Windows 10 a partir da atualização 1803</li>
+            <li>Conta do Windows com direito de instalar programas</li>
+          </ul>
+        </div>
+        <div class="requisito-bloco">
+          <h3>Para usar o sideloading</h3>
+          <ul class="lista-checagem">
+            <li>iTunes ou Apple Devices instalado</li>
+            <li>Cabo USB e um iPhone ou iPad desbloqueado</li>
+            <li>Conta Apple ID válida, com o 2FA ativado</li>
+            <li>Conexão com a internet para autenticar e conversar com a Apple</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="limites">
+        <h3>Limites de uma conta Apple ID gratuita</h3>
+        <p>
+          Estes limites vêm da Apple, não do FHZIPA INJECT:
+        </p>
+        <ul>
+          <li>Os aplicativos assinados expiram em <strong>7 dias</strong> e precisam ser reinstalados.</li>
+          <li>Em geral dá para manter <strong>3 aplicativos</strong> assinados por aparelho.</li>
+          <li>A Apple limita a criação de App IDs a cerca de <strong>10 por semana</strong>.</li>
+          <li>Uma conta paga do Apple Developer Program remove o limite de 7 dias.</li>
+        </ul>
+      </div>
+
+      <p class="nota nota-neutra">
+        <strong>Plataformas ainda não suportadas:</strong> macOS e Linux. Não
+        existem pacotes validados para elas, por isso não há botão de
+        download para esses sistemas.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= DOWNLOAD ================= -->
+  <section id="download" class="secao secao-download">
+    <div class="container">
+      <header class="secao-cabecalho">
+        <p class="secao-selo">Baixar</p>
+        <h2>Instalador do FHZIPA INJECT</h2>
+        <p class="secao-texto">
+          Um único instalador para Windows. Ele já contém o aplicativo e
+          o que ele precisa para funcionar.
+        </p>
+      </header>
+
+      <div class="download-grade">
+        <div class="download-principal">
+          <a class="botao botao-primario botao-grande botao-download" href="downloads/FHZIPA_INJECT_Setup.exe" download data-botao-download>
+            <span class="botao-icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>
+            </span>
+            Baixar <span data-nome-arquivo>FHZIPA_INJECT_Setup.exe</span>
+          </a>
+          <p class="download-observacao" data-observacao-download role="status">
+            <span class="ponto-status" aria-hidden="true"></span>
+            <span data-observacao-texto>O download começa quando você clica no botão.</span>
+          </p>
+          <p class="download-nota">
+            O download começa só quando você clica. O arquivo vai para a
+            pasta normal de downloads do navegador, a menos que o navegador
+            pergunte outro destino.
+          </p>
+        </div>
+
+        <dl class="download-detalhes" data-detalhes-download>
+          <div><dt>Arquivo</dt><dd data-nome-arquivo>FHZIPA_INJECT_Setup.exe</dd></div>
+          <div><dt>Versão</dt><dd data-meta="versao">1.0.0</dd></div>
+          <div><dt>Plataforma</dt><dd data-meta="plataforma">Windows 10 ou 11</dd></div>
+          <div><dt>Arquitetura</dt><dd data-meta="arquitetura">x64 (64 bits)</dd></div>
+          <div><dt>Tamanho</dt><dd data-meta="tamanho">67,5 MB</dd></div>
+          <div><dt>Data desta versão</dt><dd data-meta="data">21 de outubro de 2026</dd></div>
+          <div><dt>Assinatura digital</dt><dd data-assinatura>Não assinado digitalmente</dd></div>
+        </dl>
+      </div>
+
+      <div class="download-avisos">
+        <div class="aviso">
+          <h3>Sobre a assinatura digital</h3>
+          <p>
+            Este instalador <strong>não é assinado digitalmente</strong>. O
+            Windows pode mostrar um aviso de "aplicativo desconhecido" ou de
+            proteção do SmartScreen. Isso é o comportamento esperado de um
+            instalador pessoal e não indica arquivo corrompido. Confira
+            sempre o resumo SHA-256 abaixo.
+          </p>
+        </div>
+        <div class="aviso">
+          <h3>Instalação em poucos passos</h3>
+          <p>
+            Abra o arquivo, escolha a pasta e conclua. Se a pasta escolhida
+            ficar dentro de "Program Files", o Windows vai pedir autorização
+            de administrador. Nada mais precisa ser instalado antes.
+          </p>
+        </div>
+      </div>
+
+      <details class="bloco-expansivel">
+        <summary>Resumo SHA-256 do instalador</summary>
+        <div class="hash-linha">
+          <code data-meta="sha256">743e40a4a176962e62e50a564661e83d80af6406872dbfefe1bfb7bf6572aef5</code>
+          <button type="button" class="botao botao-texto" data-copiar-hash>Copiar</button>
+        </div>
+        <p class="hash-ajuda">
+          Para conferir, no Prompt de comando ou no PowerShell:
+          <code>Get-FileHash .\FHZIPA_INJECT_Setup.exe -Algorithm SHA256</code>
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= DUVIDAS ================= -->
+  <section id="duvidas" class="secao secao-alternada">
+    <div class="container">
+      <header class="secao-cabecalho">
+        <p class="secao-selo">Perguntas</p>
+        <h2>Dúvidas frequentes</h2>
+      </header>
+
+      <div class="faq">
+        <details>
+          <summary>Para que serve o FHZIPA INJECT?</summary>
+          <p>
+            Para instalar aplicativos .ipa no seu iPhone ou iPad a partir de
+            um computador Windows, usando a sua própria conta Apple ID. Ele
+            assina o aplicativo com um certificado de desenvolvimento da sua
+            conta e instala no aparelho conectado por cabo.
+          </p>
+        </details>
+        <details>
+          <summary>Quais computadores são compatíveis?</summary>
+          <p>
+            Windows 10 ou 11, de 64 bits. Não há pacote para Windows de
+            32 bits, nem para macOS ou Linux.
+          </p>
+        </details>
+        <details>
+          <summary>Preciso de conta Apple ID?</summary>
+          <p>
+            Sim. A autenticação é feita nos servidores da Apple, com o
+            código de dois fatores. Uma conta gratuita funciona, com os
+            limites de 7 dias descritos acima.
+          </p>
+        </details>
+        <details>
+          <summary>Para onde vão minhas credenciais?</summary>
+          <p>
+            Diretamente para os servidores da Apple, durante a
+            autenticação. O FHZIPA INJECT não tem servidor próprio de
+            coleta. Se você marcar a opção de guardar, a credencial fica no
+            chaveiro do Windows, sob o seu usuário.
+          </p>
+        </details>
+        <details>
+          <summary>Preciso de cabo?</summary>
+          <p>
+            Sim. A detecção do aparelho e a instalação são feitas por USB,
+            usando o serviço Apple Mobile Device Support.
+          </p>
+        </details>
+        <details>
+          <summary>Preciso instalar drivers ou ferramentas extras?</summary>
+          <p>
+            Só o iTunes ou o Apple Devices, que já traz o Apple Mobile
+            Device Support. Não é preciso instalar driver de iPhone
+            separado nem Visual Studio, Node ou Rust.
+          </p>
+        </details>
+        <details>
+          <summary>O que acontece se o Windows mostrar um aviso?</summary>
+          <p>
+            Como o instalador não é assinado digitalmente, o Windows pode
+            avisar que o editor é desconhecido ou abrir a proteção do
+            SmartScreen. Confira o resumo SHA-256 da seção de download: se
+            bater, o arquivo está íntegro. O aplicativo em si também não é
+            assinado, então o Windows pode avisar na primeira execução.
+          </p>
+        </details>
+        <details>
+          <summary>Como atualizo?</summary>
+          <p>
+            Baixe a versão nova e instale por cima da anterior. Os seus
+            dados, logs e certificados continuam onde estão, e o
+            desinstalador continua registrado em Aplicativos instalados.
+          </p>
+        </details>
+        <details>
+          <summary>Como desinstalo?</summary>
+          <p>
+            Em Configurações › Aplicativos instalados, procure por FHZIPA
+            INJECT e escolha Desinstalar. A pasta do programa, os atalhos e
+            o registro são removidos. Os seus dados e as credenciais
+            guardadas no chaveiro não são apagados.
+          </p>
+        </details>
+        <details>
+          <summary>Os aplicativos assinados expiram?</summary>
+          <p>
+            Sim, em 7 dias, quando você usa uma conta Apple ID gratuita.
+            Depois disso é preciso instalar de novo. Uma conta paga do
+            Apple Developer Program remove esse limite.
+          </p>
+        </details>
+        <details>
+          <summary>É um aplicativo oficial da Apple?</summary>
+          <p>
+            Não. O FHZIPA INJECT é um projeto independente, sem vínculo
+            com a Apple, e usa o sideloading, que pode contrariar os termos
+            de serviço da Apple. Use apenas com a sua própria conta e com
+            aplicativos que você tenha o direito de instalar.
+          </p>
+        </details>
+        <details>
+          <summary>Este projeto é o original ou tem licença aberta?</summary>
+          <p>
+            É uma modificação do iloader, de nab138, sob a licença MIT. O
+            código-fonte deste projeto é privado e não está publicado. A
+            atribuição completa está no arquivo <em>NOTICE</em> que acompanha
+            a distribuição.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TRANSPARENCIA ================= -->
+  <section id="privacidade" class="secao">
+    <div class="container">
+      <header class="secao-cabecalho">
+        <p class="secao-selo">Transparência</p>
+        <h2>Privacidade e transparência</h2>
+      </header>
+
+      <div class="transparencia-grade">
+        <div class="transparencia-bloco">
+          <h3>Este site</h3>
+          <ul>
+            <li>Não usa analytics, rastreadores, pixel de publicidade ou cookies não essenciais.</li>
+            <li>Não tem formulário de contato nem recolhe dados de quem visita.</li>
+            <li>Não pede cadastro para baixar. O instalador é um link direto.</li>
+            <li>Todo o conteúdo é estático; nada é enviado a um servidor.</li>
+          </ul>
+        </div>
+        <div class="transparencia-bloco">
+          <h3>O aplicativo, que é uma coisa separada</h3>
+          <ul>
+            <li>Guarda preferências e logs em <code>%APPDATA%\app.fhzipa.inject\logs</code> do seu computador.</li>
+            <li>As credenciais ficam no chaveiro do Windows, se você pedir para guardar.</li>
+            <li>Durante a autenticação, as credenciais vão direto para os servidores da Apple.</li>
+            <li>O servidor Anisette padrão é o <code>ani2.stikstore.app</code>, e pode ser trocado nas configurações do aplicativo. Use apenas servidores em que você confia.</li>
+          </ul>
+        </div>
+        <div class="transparencia-bloco">
+          <h3>Laços com terceiros</h3>
+          <ul>
+            <li>Este projeto não tem vínculo oficial com a Apple, com a nab138 ou com os catálogos de aplicativos citados.</li>
+            <li>Os nomes dos catálogos e dos aplicativos citados pertencem aos seus respectivos donos.</li>
+            <li>O instalador não é assinado digitalmente e a verificação de integridade depende do SHA-256 publicado aqui.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="rodape">
+  <div class="container">
+    <div class="rodape-grade">
+      <div class="rodape-bloco">
+        <img class="rodape-simbolo" src="img/logo.svg" width="32" height="32" alt="">
+        <p class="rodape-nome">FHZIPA INJECT</p>
+        <p class="rodape-texto">Aplicativo desktop para Windows para instalar aplicativos .ipa no iPhone e no iPad.</p>
+      </div>
+
+      <nav class="rodape-links" aria-label="Links do rodapé">
+        <div>
+          <h2>Site</h2>
+          <ul>
+            <li><a href="#recursos">Recursos</a></li>
+            <li><a href="#requisitos">Requisitos</a></li>
+            <li><a href="#download">Download</a></li>
+            <li><a href="#duvidas">Dúvidas</a></li>
+            <li><a href="#privacidade">Privacidade</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Contato</h2>
+          <ul>
+            <li><a href="https://discord.gg/EA6yVgydBz" rel="noopener">Discord do projeto</a></li>
+            <li><a href="https://github.com/jefimdev" rel="noopener">Perfil no GitHub</a></li>
+            <li><a href="https://github.com/sponsors/jefimdev" rel="noopener">Apoiar o projeto</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Projeto</h2>
+          <ul>
+            <li><a href="https://github.com/nab138/iloader" rel="noopener">Projeto original (iloader)</a></li>
+            <li><span>Versão distribuída: <span data-meta="versao">1.0.0</span></span></li>
+            <li><span>Licença MIT — ver o <em>NOTICE</em> da distribuição</span></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <p class="rodape-legal">
+      Projeto independente, sem vínculo com a Apple Inc. O sideloading pode
+      contrariar os Termos de Serviço da Apple. Use apenas com a sua conta e
+      com aplicativos que você possa instalar legalmente.
+    </p>
+  </div>
+</footer>
+
+<!-- ================= AMPLIAR CAPTURA ================= -->
+<div class="ampliador" id="ampliador" hidden>
+  <div class="ampliador-fundo" data-ampliador-fechar></div>
+  <figure class="ampliador-conteudo" role="dialog" aria-modal="true" aria-labelledby="ampliador-titulo">
+    <img id="ampliador-imagem" alt="">
+    <figcaption id="ampliador-titulo"></figcaption>
+    <button type="button" class="ampliador-fechar" data-ampliador-fechar>
+      <span class="visualmente-oculto">Fechar a imagem ampliada</span>
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </figure>
+</div>
+
+<script src="js/site.js" defer></script>
+</body>
+</html>
