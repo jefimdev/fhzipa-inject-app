@@ -1266,5 +1266,81 @@ PARTE 4 - INSTALADOR PROPRIO COM A IDENTIDADE VISUAL (21/10/2026, 09:20-11:00)
     o UAC foi recusado nas tentativas automatizadas.
 
 ================================================================================
+PARTE 5 - PUBLICACAO NO GITHUB (21/10/2026, 11:00-11:15)
+================================================================================
+
+  PARA ONDE
+    https://github.com/jefimdev/fhzipa-inject-app
+    Dono: jefimdev (a conta autenticada no GitHub CLI nesta maquina)
+    Visibilidade: PRIVATE (verificada pela API depois do push)
+    Branch publicada: main
+    Commit publicado: 5b3e87f5e5b8b20aea774bd81f62472c5eda551c
+      "FHZIPA INJECT: identidade propria, organizacao interna e
+       infraestrutura consistente"
+    Autor do commit: jefimdev <100502601+jefimdev@users.noreply.github.com>
+      (identidade local do repositorio; a global do Git nao foi tocada)
+    304 arquivos publicados, 2,18 MB no total.
+
+  O QUE NAO FOI MEXIDO
+    - O remote "origin" continua apontando para o upstream
+      (https://github.com/nab138/iloader.git). O destino novo entrou como
+      remote "privado". Nada foi substituido.
+    - A branch main foi preservada, sem renomear.
+    - Só a branch main foi enviada. Sem push --mirror, sem tags, sem
+      force, sem reescrita de historico.
+    - Nenhum commit foi criado antes de revisar o conteudo.
+
+  REVISAO DO QUE FOI ENVIADO
+    - Varredura de segredos na arvore atual: 0 token, 0 chave, 0 .env.
+    - Varredura de segredos em TODO o historico (3217 blobs, 475 commits):
+      0 token, 0 chave privada, 0 arquivo com nome sensivel.
+    - O repositorio local era um clone shallow. Para poder enviar, o
+      historico legitimo do upstream foi completado (git fetch --unshallow
+      origin) - nenhum commit foi alterado, nenhum foi reescrito.
+    - Historico publicado: 475 commits do upstream mais o commit do
+      FHZIPA INJECT. O upstream e publico, sob a MIT, e e a ancestraia
+      legitima deste codigo (veja NOTICE.md).
+    - Fora do envio: node_modules/, dist/, src-tauri/target/,
+      src-tauri/gen/schemas/, o payload do instalador (25 MB, artefato
+      gerado por build.ps1), a pasta de distribuicao "FHZIPA INJECT/" e as
+      capturas de tela de validacao. Verificado no remoto: 0 arquivos
+      proibidos.
+    - Preservados no repositorio: codigo-fonte, recursos visuais, scripts,
+      package-lock.json e Cargo.lock, o codigo do instalador proprio em
+      instalador/, os tres documentos do instalador, os dois documentos
+      deste projeto, LICENSE e NOTICE.md.
+
+  AJUSTES FEITOS NESTA ETAPA
+    - .gitignore: acrescentada a regra da pasta de distribuicao
+      "FHZIPA INJECT/" (saida do instalador, nao e codigo).
+    - README.md: tecnologias, o caminho do guia de edicao e da documentacao
+      do instalador, o comando npm ci e a secao "Limitacoes conhecidas".
+    - instalador/scripts/build.ps1: passou a procurar o executavel do
+      aplicativo nos dois lugares (ao lado do instalador ou na raiz do
+      mesmo repositorio) e a nao criar a pasta de distribuicao dentro do
+      repositorio. O build foi testado nas duas disposicoes.
+    - O instalador/.gitignore passou a ignorar o payload e as capturas.
+
+  GITHUB ACTIONS
+    Os workflows estao no codigo (.github/workflows/), mas o GitHub
+    Actions foi DESABILITADO no repositorio novo ANTES do primeiro push
+    (permissoes: enabled=false). Motivo: download-notifier.yml dispara de
+    hora em hora e envia mensagens para Discord, Telegram e ntfy;
+    download-count.yml atualiza um gist; build.yml roda uma matriz de oito
+    alvos. Nenhum secret foi configurado, entao eles nao teriam efeito
+    externo, mas desabilitar garante que nada dispara sozinho.
+    Verificado depois do push: 0 execucoes, 0 releases, 0 tags, 0
+    convites, 0 secrets, 0 hooks, Pages nao habilitado e apenas o
+    proprietario com acesso.
+
+  ANTES DE TORNAR PUBLICO (quando voce pedir)
+    Revisar de novo: segredos no historico, licenca e NOTICE (redistribuicao
+    de um fork MIT com identidade visual propria), documentacao e o
+    caminho de atualizacao automatica, que ainda aponta para o instalador
+    NSIS. O caminho de atualizacao e o ponto mais sensivel: hoje o
+    latest.json aponta para o NSIS, e o instalador proprio nao esta
+    assinado.
+
+================================================================================
 FIM DO RELATORIO
 ================================================================================
