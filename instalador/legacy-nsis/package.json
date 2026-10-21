@@ -1,0 +1,14 @@
+{
+  "name": "instalador-fhzipa",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Instalador do FHZIPA INJECT, com a identidade do aplicativo",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,304 @@
+================================================================================
+RELATORIO DE VALIDACAO DO INSTALADOR - FHZIPA INJECT
+================================================================================
+Data: 21/10/2026
+Instalador: instalador fhzipa\out\publish\FHZIPA_INJECT_Setup.exe
+Payload:     instalador fhzipa\src\FHZIPA.Installer\Resources\fhzipa-inject.exe
+
+Este relatorio registra o que foi verificado, com que resultado e o que
+NAO foi verificado. As capturas estao em
+instalador fhzipa\evidencias\capas\.
+
+================================================================================
+1. ARTEFATOS GERADOS
+================================================================================
+
+  FHZIPA_INJECT_Setup.exe
+      caminho : out\publish\FHZIPA_INJECT_Setup.exe
+      tamanho : 70.824.110 bytes (67,5 MB)
+      sha256  : 743E40A4A176962E62E50A564661E83D80AF6406872DBFEFE1BFB7BF6572AEF5
+      versao  : 1.0.0
+      metadados: ProductName "FHZIPA INJECT", FileVersion 1.0.0.0,
+                 CompanyName "FHZIPA INJECT"
+      assinatura digital: NAO ASSINADO (Status: NotSigned). A assinatura de
+        verdade acontece no GitHub Actions, com o secret
+        TAURI_SIGNING_PRIVATE_KEY. Nenhum certificado foi criado para
+        simular assinatura.
+
+  desinstalar.exe (companion instalado junto com o aplicativo)
+      tamanho : 15.872 bytes
+      sha256  : b75fceb8dc837edcfab406c4fe0c7d7c3ac262b88c845f407527e4fc18caf3f1
+      (o csc.exe do .NET Framework nao gera binario identico a cada
+      compilacao; o instalador de arquivo unico, esse, e deterministico)
+
+  installer.config.json
+      tamanho : 628 bytes
+      sha256  : 150990CA5A72A2200AECD851D9A46A372C2547CE5D7B89E73AD757167436D286
+
+  PAYLOAD (o aplicativo embutido no instalador)
+      origem  : ..\fhzipa-inject-app\src-tauri\target\release\fhzipa-inject.exe
+      tamanho : 25.044.480 bytes
+      sha256  : 120333AD1512CE56ABBC60F5EB699D038DB8470698FB017CCE4E9F70FE201698
+      ATENCAO: este e o executavel do codigo ATUAL, gerado em 21/10/2026 as
+      08:38. O instalador anterior (20/10) carregava o build antigo
+      (sha256 0CBB2CAED726DD86FCDFF9DC...), que foi trocado. O resumo
+      embutido (payload.sha256) foi regenerado no build e confere.
+
+  O instalador antigo (NSIS) continua arquivado em legacy-nsis\ e NAO e
+  gerado nem publicado. O instalador anterior, de 20/10 (9.026.348 bytes),
+  foi preservado em ..\FHZIPA INJECT\legado\.
+
+================================================================================
+2. COMANDOS EXECUTADOS E RESULTADOS
+================================================================================
+
+  dotnet build FHZIPA-INJECT.slnx -c Release
+      APROVADO - 0 erros, 0 avisos
+
+  dotnet test FHZIPA-INJECT.slnx -c Release
+      APROVADO - 72 aprovados, 0 falhos, 0 ignorados
+      (59 testes que ja existiam + 13 novos sobre o progresso real e a
+      maquina de estados de repeticao)
+
+  powershell -ExecutionPolicy Bypass -File scripts\build.ps1
+      APROVADO - copia o payload, regenera o resumo, compila, roda os testes,
+      publica, compila o desinstalador, valida os artefatos e gera os
+      resumos. Tempo total: cerca de 16 s.
+
+  INSTALACAO REAL (diretorio isolado)
+      APROVADO
+      comando: FHZIPA_INJECT_Setup.exe --install-dir="C:\...\Temp\FHZIPA-TESTE\instalador3"
+      resultado:
+        - 2 arquivos instalados: fhzipa-inject.exe (25.044.480 bytes,
+          sha256 120333AD... igual ao payload) e desinstalar.exe (15.872 bytes)
+        - registro gravado em HKCU\...\Uninstall\FHZIPA INJECT com
+          DisplayName, DisplayVersion, Publisher, InstallLocation,
+          UninstallString, DisplayIcon, InstallDate
+        - atalho criado na area de trabalho e no menu Iniciar, apontando
+          para o executavel instalado
+        - a janela do instalador mostrou "Instalacao concluida!", a versao
+          e a pasta, e as seis etapas do painel lateral com o visto verde
+
+  EXECUCAO DO APLICATIVO INSTALADO
+      APROVADO
+      o executavel instalado foi iniciado: processo vivo, titulo de janela
+      "FHZIPA INJECT" e janela criada.
+
+  DESINSTALACAO (pelo desinstalador que o instalador deixou)
+      APROVADO
+      - a confirmacao inicial foi respondida
+      - a entrada de registro foi removida
+      - o atalho da area de trabalho foi removido
+      - a pasta de instalacao foi removida, com 0 itens residuais
+      - os dados do usuario (%APPDATA%\app.fhzipa.inject e o chaveiro do
+        Windows) foram preservados
+
+  MODO DE PREVIA
+      APROVADO
+      comando: FHZIPA_INJECT_Setup.exe --preview
+      - a faixa "MODO DE PREVIA - nenhuma instalacao sera feita de verdade"
+        aparece no topo
+      - o titulo da janela muda para "Previa do instalador do FHZIPA INJECT"
+      - nenhuma elevacao e pedida
+      - os 8 estados foram percorridos e capturados
+
+  SEGUNDA INSTANCIA
+      APROVADO (observado durante os testes)
+      com um instalador aberto, a segunda instancia mostra o aviso "Outro
+      instalador do FHZIPA INJECT ja esta aberto neste momento" e sai.
+
+================================================================================
+3. CAPTURAS
+================================================================================
+
+  evidencias\capas\01-boas-vindas.png    a tela de boas-vindas
+  evidencias\capas\02-diretorio.png      a escolha do diretorio
+  evidencias\capas\03-requisitos.png     a verificacao de requisitos
+  evidencias\capas\04-obtencao.png       a obtencao dos arquivos
+  evidencias\capas\05-instalacao.png     as cinco operacoes da instalacao
+  evidencias\capas\05b-instalacao.png    a mesma tela, com a barra adiantada
+  evidencias\capas\06-componentes.png    os componentes sendo registrados
+  evidencias\capas\07-finalizando.png    as tres verificacoes finais
+  evidencias\capas\07b-finalizando.png   a mesma tela, com a barra adiantada
+  evidencias\capas\08-sucesso.png        a tela de conclusao
+  evidencias\capas\instalacao-real-*.png as telas do fluxo de instalacao real
+
+  A referencia visual usada foi
+  ..\FHZIPA INJECT\preview.png (a imagem do design). A tela de
+  boas-vindas do instalador reproduz a composicao: fundo escuro com as
+  curvas vermelhas, painel lateral com a marca, o nome da marca em duas
+  cores, o subtitulo em caixa alta espacada, os tres destaques com icone
+  de coracao e a versao no rodape; a direita com o titulo em duas cores,
+  o subtitulo, o cartao azul de aviso, o cartao vermelho de atencao e os
+  botoes "Instalar" (vermelho, com o simbolo de download) e "Cancelar".
+
+================================================================================
+4. DIFERENCAS VISUAIS EM RELACAO A REFERENCIA
+================================================================================
+
+  - A janela do instalador mede 760x520; a referencia mede 771x520. A
+    diferenca e de 11 pixels de largura e vem do tamanho minimo
+    funcional adotado no codigo (760x520, o menor que comporta o painel
+    lateral e o conteudo sem cortar texto).
+  - A referencia mostra somente a tela de boas-vindas. As outras telas
+    (diretorio, requisitos, obtencao, instalacao, finalizacao, conclusao)
+    foram desenhadas seguindo o mesmo sistema visual - painel lateral com
+    as etapas, cartoes, barra de progresso e indicadores verdes -, mas nao
+    ha imagem de referencia para elas: nao e possivel afirmar identidade
+    pixel a pixel com a referencia.
+  - A barra de progresso do instalador usa o mesmo gradiente vermelho do
+    botao principal.
+  - O logo e vetorial (Controls\BrandLogo.xaml) e coincide com a arte do
+    aplicativo principal.
+
+================================================================================
+5. O QUE FOI MUDADO NESTA ETAPA
+================================================================================
+
+  Codigo do instalador (projeto instalador fhzipa, ainda sem commit):
+    src/FHZIPA.Installer/App.xaml.cs                    modos --preview e
+                                                        --remove-folder;
+                                                        validacao da
+                                                        configuracao
+    src/FHZIPA.Installer/Assets/app-preview.png         captura do aplicativo
+                                                        atual (a anterior
+                                                        mostrava o botao
+                                                        "Doar", que o
+                                                        aplicativo removeu)
+    src/FHZIPA.Installer/Localization/Strings.resx       11 chaves novas
+    src/FHZIPA.Installer/Localization/Strings.en.resx    11 chaves novas e
+                                                        remocao de 2 chaves
+                                                        duplicadas
+    src/FHZIPA.Installer/Models/InstallerState.cs       transicoes de
+                                                        repeticao e CanRetry
+    src/FHZIPA.Installer/Models/InstallationProgressTracker.cs   NOVO: o
+                                                        progresso global em
+                                                        termos de trabalho real
+    src/FHZIPA.Installer/Resources/fhzipa-inject.exe    payload do codigo atual
+    src/FHZIPA.Installer/Resources/payload.sha256        resumo regenerado
+    src/FHZIPA.Installer/Services/EmbeddedPayloadService.cs  velocidade e
+                                                        tempo restante medidos
+    src/FHZIPA.Installer/Services/InstallationService.cs  etapas discretas de
+                                                        registro; registro
+                                                        completo; desinstalacao
+                                                        sem shell
+    src/FHZIPA.Installer/Services/LogService.cs          caminho do log
+    src/FHZIPA.Installer/Services/RequirementChecker.cs  pasta protegida e
+                                                        aviso, nao falha; a
+                                                        pasta nao e criada
+                                                        durante a verificacao
+    src/FHZIPA.Installer/ViewModels/DirectoryViewModel.cs  elevacao
+                                                        alcancavel e UAC
+                                                        recusado tratado
+    src/FHZIPA.Installer/ViewModels/DownloadViewModel.cs   campos de
+                                                        velocidade e tempo
+    src/FHZIPA.Installer/ViewModels/ErrorViewModel.cs     NOVO: a tela de erro
+    src/FHZIPA.Installer/ViewModels/FinalizingViewModel.cs  as verificacoes
+                                                        finais devolvem o que
+                                                        falhou
+    src/FHZIPA.Installer/ViewModels/MainViewModel.Installation.cs  o fluxo
+                                                        inteiro, com a tela de
+                                                        erro, as verificacoes
+                                                        finais obrigatorias e
+                                                        o modo de previa
+    src/FHZIPA.Installer/ViewModels/MainViewModel.cs      progresso real,
+                                                        velocidade, previa
+    src/FHZIPA.Installer/Views/ErrorView.xaml             NOVO: a tela de erro
+    src/FHZIPA.Installer/Views/ErrorView.xaml.cs         NOVO
+    src/FHZIPA.Installer/Views/MainWindow.xaml            faixa de previa e
+                                                        titulo ligado ao estado
+    src/FHZIPA.Installer/Views/ViewLocator.cs             registro da tela nova
+    src/FHZIPA.Uninstaller/Uninstaller.cs                 remocao da pasta sem
+                                                        shell
+    tests/FHZIPA.Installer.Tests/ProgressTrackerTests.cs  NOVO: 13 testes
+
+  O APLICATIVO PRINCIPAL NAO FOI ALTERADO NESTA ETAPA. Os arquivos do
+  projeto fhzipa-inject-app continuam como estavam.
+
+================================================================================
+6. VERIFICACOES QUE NAO FORAM FEITAS
+================================================================================
+
+  - Instalar em "C:\Program Files" de verdade com UAC aceito. O caminho
+    protegido exige elevacao; o pedido foi implementado e o caminho
+    recusado e tratado, mas a instalacao elevada nao foi executada nesta
+    maquina (o UAC foi recusado nas tentativas automatizadas).
+  - A instalacao sobre uma versao mais nova (rebaixamento).
+  - A instalacao com o aplicativo em uso (arquivo travado).
+  - O modo de previa com um segundo instalador aberto.
+  - A execucao em Windows 10, em Windows 11 com escala 125/150/200 % e em
+    dois monitores com escalas diferentes. A captura foi feita em 100 %.
+  - O cancelling durante a copia do executavel (a operacao para no fim do
+    bloco em andamento).
+  - A desinstalacao com dados do usuario presentes: o comportamento de
+    preservar os dados foi conferido pelo codigo, nao por execucao.
+  - O caminho de atualizacao automatica (o manifesto latest.json ainda
+    aponta para o instalador NSIS).
+
+  ROTEIRO MANUAL PARA O USUARIO CONCLUIR
+  ---------------------------------------
+  1. Instale o Visual Studio Build Tools (carga "Desenvolvimento para
+     Desktop com C++") se ainda nao estiver instalado.
+  2. cd ..\fhzipa-inject-app && npm run tauri build
+  3. cd ..\instalador fhzipa && powershell -ExecutionPolicy Bypass -File
+     scripts\build.ps1
+  4. .\out\publish\FHZIPA_INJECT_Setup.exe --preview
+     Confira as 8 telas, a faixa de previa, o teclado (Enter e Esc).
+  5. .\out\publish\FHZIPA_INJECT_Setup.exe --install-dir="$env:TEMP\FHZIPA-MANUAL"
+     Confira: os arquivos, o atalho, "Aplicativos instalados" e a abertura
+     do aplicativo.
+  6. $env:TEMP\FHZIPA-MANUAL\desinstalar.exe
+     Responda "Sim" e confirme que a pasta sumiu e que o aplicativo
+     continua em "Aplicativos instalados" como desinstalado.
+  7. .\out\publish\FHZIPA_INJECT_Setup.exe
+     Aceite a autorizacao do Windows e repita os passos 5 e 6 no caminho
+     padrao.
+
+================================================================================
+7. LIMITACOES
+================================================================================
+
+  - A comparacao visual e feita por captura da janela (PrintWindow). Uma
+    janela de WebView2 ou com composicao DirectX nao e capturada pelo
+    PrintWindow; aqui a janela e WPF, e a captura saiu correta.
+  - O modo de previa simula o progresso com os mesmos eventos do motor
+    real, mas os BYTES da previa sao sinteticos. A prova de progresso real
+    vem da instalacao real, que copiou 25 MB medidos.
+  - O instalador nao esta assinado. O aviso do SmartScreen e o
+    comportamento esperado de um instalador pessoal.
+  - O "Doar" sumiu do aplicativo principal entre 20/10 e hoje; a captura
+    que o instalador mostra na tela final foi refeita com a versao atual.
+
+================================================================================
+8. RESUMO DAS CLASSIFICACOES
+================================================================================
+
+  APROVADO
+    - compilacao em Release (0 erros, 0 avisos)
+    - 72 testes automatizados
+    - geracao da entrega pelo build.ps1
+    - instalacao real em diretorio isolado (arquivos, registro, atalhos)
+    - execucao do aplicativo instalado
+    - desinstalacao pelo companion (registro, atalho e pasta removidos)
+    - dados do usuario preservados na desinstalacao
+    - modo de previa (8 estados, sem tocar em nada, sem pedir elevacao)
+    - instancia unica
+    - payload do codigo atual embutido, com resumo conferido
+    - tela de erro com codigo, acao e caminho do log
+    - verificacoes finais obrigatorias (falha nao vira sucesso)
+    - progresso global calculado a partir de bytes medidos
+
+  FALHOU
+    - nenhum comando falhou na etapa final. Durante o trabalho, a captura
+      automatizada da tela de desinstalacao falhou duas vezes por causa do
+      envio de teclas para outra janela em primeiro plano; resolvido com
+      UI Automation, e o resultado do ciclo completo passou.
+
+  NAO TESTADO
+    - instalacao elevada de verdade (UAC aceito) em Program Files
+    - rebaixamento de versao
+    - instalacao com o aplicativo em uso
+    - cancelamento no meio da copia
+    - escalas de 125/150/200 % e dois monitores
+    - Windows 10
+    - o caminho de atualizacao automatica

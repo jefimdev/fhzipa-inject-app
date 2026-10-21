@@ -1,4 +1,4 @@
-name: "Build iloader"
+name: "Build FHZIPA INJECT"
 
 on:
   push:
@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Cache Rust and bun dependencies
+      - name: Cache Rust and npm dependencies
         uses: actions/cache@v5
         with:
           path: |
@@ -51,9 +51,9 @@ jobs:
             ~/.cargo/git
             src-tauri/target
             node_modules
-          key: ${{ matrix.platform }}-iloader-${{ hashFiles('**/Cargo.lock', 'package-lock.json') }}
+          key: ${{ matrix.platform }}-fhzipa-inject-${{ hashFiles('**/Cargo.lock', 'package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-iloader-
+            ${{ runner.os }}-fhzipa-inject-
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -75,23 +75,26 @@ jobs:
         run: |
           choco install strawberryperl make --no-progress
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: 20
+          cache: npm
 
       - name: Install frontend dependencies
-        run: bun i --frozen-lockfile
+        run: npm ci
 
       - name: Clean old bundles
         if: matrix.platform != 'macos-latest'
-        run: bunx rimraf src-tauri/target/release/bundle
+        shell: bash
+        run: rm -rf src-tauri/target/release/bundle
 
       - name: Clean old bundles
         if: matrix.platform == 'macos-latest'
+        shell: bash
         run: |
-          bunx rimraf src-tauri/target/aarch64-apple-darwin/release/bundle
-          bunx rimraf src-tauri/target/x86_64-apple-darwin/release/bundle
-          bunx rimraf src-tauri/target/universal-apple-darwin/release/bundle
+          rm -rf src-tauri/target/aarch64-apple-darwin/release/bundle
+          rm -rf src-tauri/target/x86_64-apple-darwin/release/bundle
+          rm -rf src-tauri/target/universal-apple-darwin/release/bundle
 
       - name: Export Apple signing secrets (release only)
         if: matrix.platform == 'macos-latest' && env.HAVE_SIGNING_SECRETS == 'true' && github.event_name == 'release'

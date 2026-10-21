@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FHZIPA.Installer/FHZIPA.Installer.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FHZIPA.Installer.Tests/FHZIPA.Installer.Tests.csproj" />
+  </Folder>
+</Solution>

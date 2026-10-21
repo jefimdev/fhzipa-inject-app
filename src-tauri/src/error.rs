@@ -21,8 +21,6 @@ pub enum AppError {
     Developer(String),
     #[error("{0}")]
     Auth(String),
-    #[error("{0}")]
-    Download(String),
     #[error("{0}: {1}")]
     HouseArrest(String, String),
     #[error("{0}")]

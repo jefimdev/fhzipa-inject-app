@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+
+  <data name="App_Title" xml:space="preserve">
+    <value>FHZIPA INJECT Setup</value>
+  </data>
+  <data name="App_Subtitle" xml:space="preserve">
+    <value>iPhone app installer</value>
+  </data>
+  <data name="Footer_Version" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="Footer_Rights" xml:space="preserve">
+    <value>© {0} FHZIPA INJECT</value>
+  </data>
+  <data name="Footer_Local" xml:space="preserve">
+    <value>Local installation. No data leaves this computer.</value>
+  </data>
+
+  <data name="Welcome_Heading" xml:space="preserve">
+    <value>iPhone app installer</value>
+  </data>
+  <data name="Welcome_Description" xml:space="preserve">
+    <value>This installer puts FHZIPA INJECT on your computer, creates the shortcuts and registers the uninstaller. It does not touch the iPhone: installing apps on the device is done by the application itself, with your Apple account.</value>
+  </data>
+    <data name="Welcome_Info_Body" xml:space="preserve">
+    <value>Installing apps on the iPhone is done by FHZIPA INJECT with your Apple ID, and the apps signed that way behave like the ones from the store: the signature expires in 7 days and the app has to be reinstalled; an iPhone usually accepts 3 signed apps per account; Apple can revoke the signature at any time; and installing modified apps violates the App Store Terms of Service.</value>
+  </data>
+    <data name="Welcome_Warning_Body" xml:space="preserve">
+    <value>Use this installer at your own risk. Make sure you have read and understood all the information above.</value>
+  </data>
+  <data name="Welcome_Feature1_Title" xml:space="preserve">
+    <value>Private</value>
+  </data>
+  <data name="Welcome_Feature1_Body" xml:space="preserve">
+    <value>Your Apple account credentials stay on this computer.</value>
+  </data>
+  <data name="Welcome_Feature2_Title" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Welcome_Feature2_Body" xml:space="preserve">
+    <value>The installer downloads no third-party drivers and does not change Windows.</value>
+  </data>
+  <data name="Welcome_Feature3_Title" xml:space="preserve">
+    <value>Reversible</value>
+  </data>
+  <data name="Welcome_Feature3_Body" xml:space="preserve">
+    <value>Uninstaller, shortcuts and entry in Installed apps.</value>
+  </data>
+  <data name="Welcome_Badge" xml:space="preserve">
+    <value>OFFICIAL INSTALLER</value>
+  </data>
+
+  <data name="Directory_Title" xml:space="preserve">
+    <value>Select the installation folder</value>
+  </data>
+  <data name="Directory_Description" xml:space="preserve">
+    <value>Choose where FHZIPA INJECT will be installed. The default path is inside the Windows programs folder.</value>
+  </data>
+  <data name="Directory_Label" xml:space="preserve">
+    <value>Destination folder</value>
+  </data>
+  <data name="Directory_Browse" xml:space="preserve">
+    <value>Browse…</value>
+  </data>
+  <data name="Directory_Needed" xml:space="preserve">
+    <value>Space needed: {0}</value>
+  </data>
+  <data name="Directory_Available" xml:space="preserve">
+    <value>Space available: {0}</value>
+  </data>
+  <data name="Directory_DesktopShortcut" xml:space="preserve">
+    <value>Create a desktop shortcut</value>
+  </data>
+  <data name="Directory_StartMenuShortcut" xml:space="preserve">
+    <value>Create a Start menu shortcut</value>
+  </data>
+  <data name="Directory_Existing" xml:space="preserve">
+    <value>FHZIPA INJECT is already installed in this folder. Installing over it repairs the current installation without deleting your data.</value>
+  </data>
+  <data name="Directory_Invalid" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+
+    <data name="Requirements_Title" xml:space="preserve">
+    <value>Checking requirements</value>
+  </data>
+  <data name="Requirements_Description" xml:space="preserve">
+    <value>Before installing, the installer checks Windows, disk space, write permissions, WebView2 and the internet connection.</value>
+  </data>
+  <data name="Requirements_Passed" xml:space="preserve">
+    <value>Everything is ready to install.</value>
+  </data>
+  <data name="Requirements_Failed" xml:space="preserve">
+    <value>There are {0} issues that need attention before you continue.</value>
+  </data>
+  <data name="Requirements_FailedOne" xml:space="preserve">
+    <value>There is 1 issue that needs attention before you continue.</value>
+  </data>
+  <data name="Requirements_Retry" xml:space="preserve">
+    <value>Check again</value>
+  </data>
+  <data name="Requirements_Critical" xml:space="preserve">
+    <value>Blocks the installation</value>
+  </data>
+  <data name="Requirements_Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Requirements_Info" xml:space="preserve">
+    <value>Information</value>
+  </data>
+
+  <data name="Download_Title" xml:space="preserve">
+    <value>Downloading files</value>
+  </data>
+  <data name="Download_Description" xml:space="preserve">
+    <value>The application files come inside the installer. When the installation uses a remote manifest, packages are downloaded over HTTPS and checked against their SHA-256 digest.</value>
+  </data>
+  <data name="Download_Local" xml:space="preserve">
+    <value>Local package: {0}</value>
+  </data>
+  <data name="Download_Bytes" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="Download_Speed" xml:space="preserve">
+    <value>{0}/s</value>
+  </data>
+  <data name="Download_Remaining" xml:space="preserve">
+    <value>About {0} left</value>
+  </data>
+  <data name="Download_Verifying" xml:space="preserve">
+    <value>Checking the file digest</value>
+  </data>
+
+  <data name="Install_Title" xml:space="preserve">
+    <value>Installing FHZIPA INJECT</value>
+  </data>
+  <data name="Install_Description" xml:space="preserve">
+    <value>Copy the files, create the shortcuts and register the uninstaller. If any step fails, the installer undoes what it already did.</value>
+  </data>
+  <data name="Install_Copying" xml:space="preserve">
+    <value>Copying the application files</value>
+  </data>
+  <data name="Install_Validating" xml:space="preserve">
+    <value>Checking the application digest</value>
+  </data>
+  <data name="Install_Shortcuts" xml:space="preserve">
+    <value>Creating the shortcuts</value>
+  </data>
+  <data name="Install_Registering" xml:space="preserve">
+    <value>Registering the uninstaller</value>
+  </data>
+  <data name="Install_Done" xml:space="preserve">
+    <value>Files installed</value>
+  </data>
+
+    <data name="Components_Title" xml:space="preserve">
+    <value>Installing components</value>
+  </data>
+  <data name="Components_Description" xml:space="preserve">
+    <value>Each item shows the real state of the operation. Required components are never silently skipped.</value>
+  </data>
+  <data name="Component_App" xml:space="preserve">
+    <value>FHZIPA INJECT application</value>
+  </data>
+  <data name="Component_App_Detail" xml:space="preserve">
+    <value>Main executable and icons</value>
+  </data>
+  <data name="Component_Shortcuts" xml:space="preserve">
+    <value>Shortcuts</value>
+  </data>
+  <data name="Component_Shortcuts_Detail" xml:space="preserve">
+    <value>Desktop and Start menu</value>
+  </data>
+  <data name="Component_Registry" xml:space="preserve">
+    <value>Uninstaller registration</value>
+  </data>
+  <data name="Component_Registry_Detail" xml:space="preserve">
+    <value>In Installed apps</value>
+  </data>
+  <data name="Component_Optional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+
+  <data name="Finalizing_Title" xml:space="preserve">
+    <value>Finalizing</value>
+  </data>
+  <data name="Finalizing_Description" xml:space="preserve">
+    <value>Last checks: executable present, shortcuts created, uninstaller registered.</value>
+  </data>
+  <data name="Finalizing_Check1" xml:space="preserve">
+    <value>Main executable present</value>
+  </data>
+  <data name="Finalizing_Check2" xml:space="preserve">
+    <value>Shortcuts created</value>
+  </data>
+  <data name="Finalizing_Check3" xml:space="preserve">
+    <value>Uninstaller registered</value>
+  </data>
+
+  <data name="Success_Title" xml:space="preserve">
+    <value>Installation complete!</value>
+  </data>
+  <data name="Success_Body" xml:space="preserve">
+    <value>FHZIPA INJECT was installed successfully on your computer.</value>
+  </data>
+  <data name="Success_Version" xml:space="preserve">
+    <value>Installed version: {0}</value>
+  </data>
+  <data name="Success_Installed" xml:space="preserve">
+    <value>Installed in {0}</value>
+  </data>
+  <data name="Success_Open" xml:space="preserve">
+    <value>Open FHZIPA INJECT</value>
+  </data>
+  <data name="Success_Finish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="Success_Shortcut" xml:space="preserve">
+    <value>Create a desktop shortcut</value>
+  </data>
+  <data name="Success_LaunchFailed" xml:space="preserve">
+    <value>The application could not be opened right now. Try it from the Start menu.</value>
+  </data>
+
+  <data name="OpenNow_Title" xml:space="preserve">
+    <value>Open it now?</value>
+  </data>
+  <data name="OpenNow_Body" xml:space="preserve">
+    <value>FHZIPA INJECT is ready. The first launch creates the local profile and checks the connected iPhone.</value>
+  </data>
+
+  <data name="Btn_Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Btn_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Btn_Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Btn_Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Btn_Retry" xml:space="preserve">
+    <value>Try again</value>
+  </data>
+  <data name="Btn_Open" xml:space="preserve">
+    <value>Open FHZIPA INJECT</value>
+  </data>
+  <data name="Btn_Finish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="Btn_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Btn_Minimize" xml:space="preserve">
+    <value>Minimize</value>
+  </data>
+  <data name="Btn_Maximize" xml:space="preserve">
+    <value>Maximize</value>
+  </data>
+
+  <data name="Step_Preparing" xml:space="preserve">
+    <value>Preparing</value>
+  </data>
+  <data name="Step_Verifying" xml:space="preserve">
+    <value>Checking the system</value>
+  </data>
+  <data name="Step_Downloading" xml:space="preserve">
+    <value>Downloading files</value>
+  </data>
+  <data name="Step_Installing" xml:space="preserve">
+    <value>Installing</value>
+  </data>
+  <data name="Step_Configuring" xml:space="preserve">
+    <value>Configuring</value>
+  </data>
+  <data name="Step_Finalizing" xml:space="preserve">
+    <value>Finalizing</value>
+  </data>
+
+  <data name="Status_Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Status_Running" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="Status_Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Status_Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="Status_Skipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
+  <data name="Status_Verifying" xml:space="preserve">
+    <value>Verifying</value>
+  </data>
+  <data name="Status_Downloading" xml:space="preserve">
+    <value>Downloading</value>
+  </data>
+  <data name="Status_Validating" xml:space="preserve">
+    <value>Validating</value>
+  </data>
+  <data name="Status_Installing" xml:space="preserve">
+    <value>Installing</value>
+  </data>
+
+  <data name="Error_Title" xml:space="preserve">
+    <value>Could not continue</value>
+  </data>
+  <data name="Error_Action" xml:space="preserve">
+    <value>What to do</value>
+  </data>
+  <data name="Error_Code" xml:space="preserve">
+    <value>Code {0}</value>
+  </data>
+  <data name="Cancel_Confirm_Title" xml:space="preserve">
+    <value>Cancel the installation?</value>
+  </data>
+  <data name="Cancel_Confirm_Body" xml:space="preserve">
+    <value>The installation will be interrupted and everything already done will be undone. Do you want to cancel?</value>
+  </data>
+  <data name="Cancel_Confirm_Yes" xml:space="preserve">
+    <value>Cancel installation</value>
+  </data>
+  <data name="Cancel_Confirm_No" xml:space="preserve">
+    <value>Keep installing</value>
+  </data>
+  <data name="Cancel_Done" xml:space="preserve">
+    <value>Installation cancelled. Nothing was left half-done.</value>
+  </data>
+  <data name="Rollback_Done" xml:space="preserve">
+    <value>The installation was undone.</value>
+  </data>
+
+  <data name="Uninstall_Title" xml:space="preserve">
+    <value>Uninstall FHZIPA INJECT</value>
+  </data>
+  <data name="Uninstall_Body" xml:space="preserve">
+    <value>The application files, the shortcuts and the uninstaller entry will be removed. Your data and settings are preserved.</value>
+  </data>
+  <data name="Uninstall_Confirm" xml:space="preserve">
+    <value>Remove FHZIPA INJECT from this computer?</value>
+  </data>
+  <data name="Uninstall_Running" xml:space="preserve">
+    <value>Removing the files</value>
+  </data>
+  <data name="Uninstall_Done" xml:space="preserve">
+    <value>FHZIPA INJECT was removed.</value>
+  </data>
+
+  <data name="Elevation_Confirm_Title" xml:space="preserve">
+    <value>Install as administrator</value>
+  </data>
+  <data name="Elevation_Confirm_Body" xml:space="preserve">
+    <value>The folder you chose is inside the Windows programs folder and needs administrator permission. Windows will ask for it. The installer keeps the same path.</value>
+  </data>
+
+  <data name="Common_Ok" xml:space="preserve">
+    <value>Got it</value>
+  </data>
+  <data name="Common_Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+
+<data name="Brand_Subtitle" xml:space="preserve"><value>WINDOWS INSTALLER</value></data>
+  <data name="StepState_Running" xml:space="preserve"><value>In progress</value></data>
+  <data name="StepState_Done" xml:space="preserve"><value>Done</value></data>
+  <data name="StepState_Failed" xml:space="preserve"><value>Failed</value></data>
+  <data name="OperationState_Running" xml:space="preserve"><value>In progress</value></data>
+  <data name="OperationState_Done" xml:space="preserve"><value>Done</value></data>
+  <data name="OperationState_Failed" xml:space="preserve"><value>Failed</value></data>
+  <data name="OperationState_Pending" xml:space="preserve"><value>Pending</value></data>
+  <data name="Operation_Prepare" xml:space="preserve"><value>Preparing the installation folder</value></data>
+  <data name="Operation_Extract" xml:space="preserve"><value>Extracting the application</value></data>
+  <data name="Operation_Copy" xml:space="preserve"><value>Copying the files</value></data>
+  <data name="Operation_Shortcuts" xml:space="preserve"><value>Creating the shortcuts</value></data>
+  <data name="Operation_Register" xml:space="preserve"><value>Registering the uninstaller</value></data>
+  <data name="Component_Uninstaller" xml:space="preserve"><value>Uninstaller</value></data>
+  <data name="Component_Uninstaller_Detail" xml:space="preserve"><value>To remove the program later</value></data>
+  <data name="OpenNow_Open" xml:space="preserve"><value>Open now</value></data>
+  <data name="OpenNow_Not" xml:space="preserve"><value>Not now</value></data>
+  <data name="OpenNow_Shortcut" xml:space="preserve"><value>Create a desktop shortcut</value></data>
+  <data name="OpenNow_ShortcutFailed" xml:space="preserve"><value>The shortcut could not be created. The application is installed normally.</value></data>
+  <data name="Success_Confirm" xml:space="preserve"><value>Installation completed successfully and verified.</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>FHZIPA INJECT</value></data>
+  <data name="Welcome_Subtitle" xml:space="preserve"><value>iPhone app installer.</value></data>
+  <data name="Welcome_Info_Title" xml:space="preserve"><value>Important notice</value></data>
+  <data name="Welcome_Warning_Title" xml:space="preserve"><value>Heads up</value></data>
+
+<data name="Btn_Advance" xml:space="preserve"><value>Next</value></data>
+  <data name="Directory_ExistingTitle" xml:space="preserve"><value>Previous installation found</value></data>
+  <data name="Download_FileLabel" xml:space="preserve"><value>Downloading:</value></data>
+  <data name="Error_Description" xml:space="preserve"><value>The installation cannot be completed. What happened is described below.</value></data>
+  <data name="Error_CodeLabel" xml:space="preserve"><value>Code</value></data>
+  <data name="Error_ActionLabel" xml:space="preserve"><value>What to do</value></data>
+  <data name="Error_LogLabel" xml:space="preserve"><value>Technical detail in the log file</value></data>
+  <data name="Preview_Banner" xml:space="preserve"><value>PREVIEW MODE - nothing will really be installed.</value></data>
+  <data name="Preview_WindowTitle" xml:space="preserve"><value>Preview of the FHZIPA INJECT installer</value></data>
+  <data name="Preview_Simulated" xml:space="preserve"><value>Preview: simulated progress, nothing is written to the computer.</value></data>
+  <data name="Preview_Operation" xml:space="preserve"><value>Preview</value></data>
+  <data name="Window_Title" xml:space="preserve"><value>FHZIPA INJECT Setup</value></data>
+  <data name="Directory_ElevationNotice" xml:space="preserve"><value>This folder belongs to the system: Windows will ask for administrator permission to write to it.</value></data>
+  <data name="Elevation_Declined" xml:space="preserve"><value>The Windows authorization was declined.</value></data>
+</root>

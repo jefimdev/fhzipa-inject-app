@@ -1,0 +1,1270 @@
+================================================================================
+RELATORIO DE ORGANIZACAO - FHZIPA INJECT
+================================================================================
+Escopo: organizacao interna dos arquivos do aplicativo principal (repositorio
+"fhzipa-inject-app") + documentacao.
+Regra aplicada: o aplicativo nao foi alterado. Nenhuma funcionalidade, texto,
+cor, layout, animacao, URL, integracao ou dado de usuario foi modificado.
+
+Este arquivo tem DUAS partes:
+  PARTE 1 (secoes 1 a 9)  -> o registro da organizacao, revisado e corrigido
+                             depois da conferenca de 21/10/2026.
+  PARTE 2 (secoes 10 e 11) -> a REVISAO feita depois da organizacao:
+                             backups permanentes, validacao do aplicativo
+                             nativo, conferencia das telas e correcoes no
+                             guia.
+
+================================================================================
+PARTE 1 - A ORGANIZACAO
+================================================================================
+
+1. RESUMO DO ESCOPO EXECUTADO
+================================================================================
+
+O QUE FOI FEITO
+  - Reorganizada toda a pasta src/ por responsabilidade, com nomes de
+    pasta e arquivo em portugues, minusculos e com hifen.
+  - Movido o script auxiliar do CI (count_downloads.ts) da raiz para a pasta
+    .github/scripts/, junto do outro script de CI.
+  - Atualizadas SOMENTE as referencias de caminho quebradas pela movimentacao
+    (imports de TypeScript/TSX, um @import de CSS, um padrao de
+    import.meta.glob, duas referencias em README.md e uma referencia em
+    .github/workflows/download-count.yml).
+  - Escritos dois documentos novos na raiz:
+    GUIA-DE-EDICAO-DO-APP.txt  e  RELATORIO-DE-ORGANIZACAO.txt (este arquivo).
+
+O QUE NAO FOI FEITO (de proposito)
+  - Nenhum arquivo de codigo, estilo, texto, recurso ou configuracao foi
+    excluido.
+  - Nenhum nome de funcao, variavel, componente, propriedade, interface ou
+    tipo foi renomeado. (Ex.: o componente continua se chamando AppHeader,
+    o contexto continua sendo ErrorContext, a variavel continua sendo
+    view.) Apenas NOME DE ARQUIVO e NOME DE PASTA foram mudados.
+  - Nenhuma logica, regra de negocio, calculo, validacao ou fluxo de
+    navegacao foi alterado.
+  - Nenhuma dependencia, versao de biblioteca ou framework foi tocada.
+  - Nada foi formatado em massa; encoding (UTF-8 sem BOM) e fim de linha
+    (CRLF, com dois arquivos em LF que ja eram assim) foram preservados.
+  - Nenhum commit, push, publicacao, deploy ou envio para servico externo
+    foi feito.
+  - Nenhum arquivo de configuracao do computador foi alterado.
+
+NUMEROS (contagem conferida contra a copia de seguranca em 21/10/2026)
+--------------------------------------------------------------------
+  ARQUIVOS DE src/ ANTES          : 87
+  ARQUIVOS DE src/ DEPOIS         : 87        (nenhum perdido, nenhum criado)
+  ARQUIVOS MOVIDOS DE LUGAR       : 86        (85 de dentro de src/ + o
+                                               count_downloads.ts da raiz)
+  ARQUIVOS QUE FICARAM NO LUGAR   : 2         (src/main.tsx e
+                                               src/vite-env.d.ts)
+  RENOMEADO DEPOIS DA MOVIMENTACAO : 1        (src/App.tsx ->
+                                               src/app-principal.tsx, ver
+                                               o item 5 da secao 8)
+  COMPARADOS (src/ + o script da raiz) : 88
+      byte a byte identicos             : 60
+      so com linhas de import alteradas : 28
+  DOCUMENTOS DE TEXTO AJUSTADOS    : 3         (README.md, em 2 linhas, e
+                                               .github/workflows/download-count.yml,
+                                               em 1 linha)
+  DOCUMENTOS NOVOS CRIADOS         : 2         (os dois .txt desta tarefa)
+  ARQUIVOS DO PROJETO REMOVIDOS    : 0
+
+================================================================================
+2. MAPEAMENTO DE CAMINHOS ANTIGOS PARA NOVOS
+================================================================================
+
+RAIZ DO REPOSITORIO
+  count_downloads.ts                     ->  .github/scripts/count-downloads.ts
+
+PASTA src/ - RAIZ
+  src/main.tsx                            ->  src/main.tsx        (sem mudanca)
+  src/vite-env.d.ts                       ->  src/vite-env.d.ts   (sem mudanca)
+  src/App.tsx                             ->  src/app-principal.tsx
+  src/App.css                             ->  src/estilos/app.css
+  src/theme.css                           ->  src/estilos/tema.css
+
+PASTA src/ - RECURSOS E IDIOMAS
+  src/fhzipa-inject.svg                   ->  src/recursos/imagens/fhzipa-inject.svg
+  src/assets/devices/ipad.svg             ->  src/recursos/imagens/dispositivos/ipad.svg
+  src/assets/devices/iphone-diagonal.svg  ->  src/recursos/imagens/dispositivos/iphone-diagonal.svg
+  src/assets/devices/iphone-island.svg    ->  src/recursos/imagens/dispositivos/iphone-island.svg
+  src/assets/devices/iphone-se.svg        ->  src/recursos/imagens/dispositivos/iphone-se.svg
+  src/assets/devices/iphone-single.svg    ->  src/recursos/imagens/dispositivos/iphone-single.svg
+  src/assets/devices/iphone-square.svg    ->  src/recursos/imagens/dispositivos/iphone-square.svg
+  src/assets/devices/iphone-vertical.svg  ->  src/recursos/imagens/dispositivos/iphone-vertical.svg
+  src/locales/*.json  (28 arquivos)        ->  src/idiomas/*.json
+
+PASTA src/ - CONFIGURACOES E UTILITARIOS
+  src/config.ts                           ->  src/configuracoes/links.ts
+  src/anisette.ts                         ->  src/configuracoes/servidores-anisette.ts
+  src/i18next.ts                          ->  src/configuracoes/i18n.ts
+  src/errors.tsx                          ->  src/utilitarios/erros.tsx
+  src/format.ts                           ->  src/utilitarios/formato.ts
+  src/deviceModels.ts                     ->  src/utilitarios/modelos-dispositivo.ts
+  src/storeTypes.ts                       ->  src/utilitarios/tipos-loja.ts
+
+PASTA src/ - CONTEXTOS
+  src/ErrorContext.tsx                    ->  src/contextos/erro.tsx
+  src/ErrorContext.css                    ->  src/contextos/erro.css
+  src/DialogContext.tsx                   ->  src/contextos/dialogo.tsx
+  src/DialogContext.css                   ->  src/contextos/dialogo.css
+  src/LogContext.tsx                      ->  src/contextos/log.tsx
+  src/PlatformContext.tsx                 ->  src/contextos/plataforma.tsx
+  src/StoreContext.tsx                    ->  src/contextos/loja.tsx
+
+PASTA src/ - MODULOS
+  src/AppleID.tsx                         ->  src/modulos/apple-id.tsx
+  src/AppleID.css                         ->  src/modulos/apple-id.css
+  src/Device.tsx                          ->  src/modulos/dispositivo.tsx
+  src/Device.css                          ->  src/modulos/dispositivo.css
+
+PASTA src/ - COMPONENTES
+  src/components/AppHeader.tsx            ->  src/componentes/app-header.tsx
+  src/components/Sidebar.tsx              ->  src/componentes/barra-lateral.tsx
+  src/components/Sidebar.css              ->  src/componentes/barra-lateral.css
+  src/components/DevicePanel.tsx          ->  src/componentes/painel-dispositivo.tsx
+  src/components/ImportPanel.tsx          ->  src/componentes/painel-importacao.tsx
+  src/components/StatusPanel.tsx          ->  src/componentes/painel-status.tsx
+  src/components/StepsStrip.tsx           ->  src/componentes/faixa-passos.tsx
+  src/components/Panel.tsx                ->  src/componentes/painel.tsx
+  src/components/PhoneRender.tsx          ->  src/componentes/render-aparelho.tsx
+  src/components/Dropdown.tsx             ->  src/componentes/dropdown.tsx
+  src/components/Dropdown.css             ->  src/componentes/dropdown.css
+  src/components/FilterMenu.tsx           ->  src/componentes/menu-filtro.tsx
+  src/components/Modal.tsx                ->  src/componentes/modal.tsx
+  src/components/Modal.css                ->  src/componentes/modal.css
+  src/components/operations.ts            ->  src/componentes/operacoes.ts
+  src/components/OperationView.tsx        ->  src/componentes/vista-operacao.tsx
+  src/components/OperationView.css        ->  src/componentes/vista-operacao.css
+  src/components/StoreCard.tsx            ->  src/componentes/cartao-loja.tsx
+  src/components/StoreDetail.tsx          ->  src/componentes/detalhe-loja.tsx
+  src/components/StoreFeatured.tsx        ->  src/componentes/destaque-loja.tsx
+
+PASTA src/ - PAGINAS
+  src/pages/AppIds.tsx                    ->  src/paginas/app-ids.tsx
+  src/pages/Certificates.tsx              ->  src/paginas/certificados.tsx
+  src/pages/Certificates.css              ->  src/paginas/certificados.css
+  src/pages/Pairing.tsx                   ->  src/paginas/pareamento.tsx
+  src/pages/Settings.tsx                  ->  src/paginas/configuracoes.tsx
+  src/pages/Settings.css                  ->  src/paginas/configuracoes.css
+  src/pages/Store.tsx                     ->  src/paginas/loja.tsx
+  src/pages/Store.css                     ->  src/paginas/loja.css
+
+ESTRUTURA RESULTANTE DE src/ (87 arquivos)
+  src/
+    main.tsx, app-principal.tsx, vite-env.d.ts      (3)
+    componentes/    20 arquivos (15 .tsx, 1 .ts, 4 .css)
+    paginas/         8 arquivos (5 .tsx, 3 .css)
+    modulos/         4 arquivos (2 .tsx, 2 .css)
+    contextos/       7 arquivos (5 .tsx, 2 .css)
+    configuracoes/   3 arquivos (.ts)
+    utilitarios/     4 arquivos (1 .tsx, 3 .ts)
+    estilos/         2 arquivos (.css)
+    recursos/imagens/           1 .svg + dispositivos/ com 7 .svg   (8)
+    idiomas/        28 arquivos (.json)
+
+================================================================================
+3. ARQUIVOS REMOVIDOS E JUSTIFICATIVAS
+================================================================================
+
+ARQUIVOS DO PROJETO REMOVIDOS: NENHUM.
+  Nenhum arquivo .ts, .tsx, .css, .json, .svg, .rs, .md, .yml ou .toml do
+  projeto foi apagado. Todas as remocoes de "D" que aparecem no `git status`
+  sao a representacao das MOVIMENTACOES (o arquivo antigo saiu do lugar e
+  o novo foi criado em outro).
+
+PASTAS REMOVIDAS (porem, todas vazias depois da movimentacao):
+  src/components/   - esvaziada pelos 20 arquivos movidos para src/componentes/
+  src/pages/        - esvaziada pelos 8 arquivos movidos para src/paginas/
+  src/locales/      - esvaziada pelos 28 .json movidos para src/idiomas/
+  src/assets/       - esvaziada (e depois removida) pelos 7 .svg movidos para
+                      src/recursos/imagens/dispositivos/
+  Justificativa: uma pasta que ficou vazia nao tem utilidade e geraria
+  confusao no VS Code (duas pastas parecidas com nomes parecidos).
+
+ARQUIVOS TEMPORARIOS CRIADOS PARA VERIFICACAO E JA REMOVIDOS
+  (nunca pertenceram ao aplicativo):
+    stub-tauri.js, verificacao-visual.html  - arquivos auxiliares para rodar
+      a interface no navegador durante a comparacao visual
+    arquivos .log de build e de execucao
+    capturas de tela (baseline-*.png, loop-*.png, tmp-*.png, cmp-*.png,
+    final-*.png, diff-overview.png)
+    pasta .playwright-mcp/ (criada pela ferramenta de navegador)
+  As capturas que interessam a esta revisao estao guardadas fora do
+  repositorio (secao 10).
+
+ARQUIVOS QUE O USUARIO JA TINHA APAGADO ANTES DESTA TAREFA
+  (preservados como estavam, nao foram restaurados nem mexidos):
+    LICENSE-BRANDING, iloader.svg, iloader-dark.svg, public/iloader.svg,
+    src/iloader.svg, src/update.ts, src/components/GlassCard.tsx,
+    src-tauri/capabilities/desktop.json, bun.lock
+
+================================================================================
+4. ARQUIVOS MANTIDOS POR DUVIDA (nao mexidos, para revisao futura)
+================================================================================
+
+  src-tauri/icons/64x64.png
+      Nao aparece na lista bundle.icon do tauri.conf.json. Mas faz parte do
+      conjunto padrao de icones que o Tauri gera e usa em outros alvos
+      (Windows Store / MSIX). Mantido por duvida.
+
+  src-tauri/icons/Square*Logo.png  (Windows Store)
+      Fora do alvo atual (NSIS), mas padrao do Tauri e usado se um dia for
+      publicado na Microsoft Store. Mantido.
+
+  src-tauri/gen/schemas/*.json
+      Gerado pelo Tauri (acl-manifests, capabilities, desktop-schema,
+      windows-schema). Nao se edita a mao. Mantido.
+
+  download-state.json (raiz)
+      Usado pelo workflow download-notifier.yml. O proprio workflow faz
+      `git add download-state.json` com caminho da raiz, entao ele PRECISA
+      continuar na raiz. Mantido.
+
+  default.nix, shell.nix, flake.nix, flake.lock
+      Ambiente de desenvolvimento Nix. Continua util. OBSERVACAO: o flake usa
+      bun2nix, que le o bun.lock, arquivo removido pelo usuario (veja secao 7).
+
+  src/configuracoes/links.ts -> export const SPONSOR_URL
+      A constante existe e e exportada, mas nenhum componente a importa
+      hoje (conferido em 21/10/2026). Nao removi nem usei: e parte de uma
+      API publica do modulo de links. Registrado aqui como duvida.
+
+  src-tauri/src/store.rs (86 KB)
+      Arquivo grande, mas com UMA responsabilidade (o catalogo de IPAs).
+      Dividi-lo seria uma mudanca de arquitetura, com risco de alterar
+      comportamento. Mantido intacto.
+
+================================================================================
+5. PASTAS COM NOMES ORIGINAIS PRESERVADOS E MOTIVOS
+================================================================================
+
+  public/                     - nome padrao do Vite para a pasta de arquivos
+                                 estaticos. Renomear exigiria mexer no
+                                 vite.config.ts (publicDir) e no index.html.
+  index.html                  - o Vite procura esse nome na raiz do projeto.
+  src/                        - a pasta "src" e o padrao do Vite e do
+                                 TypeScript; o tsconfig.json faz
+                                 "include": ["src"]. Manter evita mexer no
+                                 tsconfig.
+  src/main.tsx                - o index.html aponta para "/src/main.tsx".
+                                 Trocar o caminho exigiria editar o index.html
+                                 e nao traria ganho.
+  src/vite-env.d.ts           - arquivo de tipos do Vite, colocado por
+                                 convencao na raiz de src/.
+  src-tauri/                  - nome padrao do Tauri. O tauri.conf.json, o
+                                 Cargo.toml, o GitHub Actions e o guia de
+                                 contribuicao dependem desse caminho.
+  src-tauri/src/main.rs       - ponto de entrada exigido pelo Cargo.
+  src-tauri/src/lib.rs        - crate da biblioteca do Tauri; o Cargo.toml
+                                 aponta para ela.
+  src-tauri/src/build.rs      - build script exigido pelo Cargo.
+  src-tauri/tauri.conf.json   - nome exigido pelo Tauri.
+  src-tauri/Cargo.toml        - nome exigido pelo Cargo.
+  src-tauri/Cargo.lock        - arquivo de bloqueio (nao se mexe a mao).
+  src-tauri/capabilities/     - nome exigido pelo Tauri.
+  src-tauri/icons/            - nome exigido pelo Tauri.
+  src-tauri/ci.conf.json      - ja era exigido pelo comando do CI
+                                 (--config src-tauri/ci.conf.json).
+  src/idiomas/*.json          - o NOME do arquivo e o codigo do idioma e e
+                                 lido em tempo de execucao pelo i18next
+                                 (src/configuracoes/i18n.ts extrai o codigo
+                                 do nome do arquivo com expressao regular).
+                                 Renomear os arquivos mudaria os idiomas.
+  public/fhzipa-inject.svg    - referenciado por URL absoluta
+                                 ("/fhzipa-inject.svg") no index.html.
+  package.json / package-lock.json / tsconfig.json / tsconfig.node.json /
+  vite.config.ts / .gitignore - nomes convencionais das ferramentas.
+  .github/ , .github/workflows/ , .github/scripts/ , .github/ISSUE_TEMPLATE/
+                              - estrutura exigida pelo GitHub.
+
+  src-tauri/src/*.rs          - os modulos Rust (account, device, error, ipa,
+                                 logging, operation, pairing, secure_storage,
+                                 sideload, store) NAO foram renomeados. Ja
+                                 estavam organizados por responsabilidade,
+                                 com nomes curtos, minusculos e sem espaco, e
+                                 seguem a convencao do Cargo (o nome do
+                                 arquivo e o nome do modulo declarado em
+                                 `mod` dentro de lib.rs). Traduzi-los
+                                 quebraria a convencao da linguagem sem
+                                 ganho de clareza e exigiria mexer nas
+                                 declaracoes `mod` e em todos os `use`.
+
+  DECISAO ESPECIFICA: src/App.tsx -> src/app-principal.tsx
+  O primeiro nome escolhido era "src/app.tsx". Isso foi descartado porque
+  "App.tsx" e "app.tsx" so diferem em maiusculas/minusculas: no Git do
+  Windows (core.ignorecase ligado) o arquivo continuaria registrado como
+  "src/App.tsx" e, num checkout em Linux (que diferencia maiusculas), o
+  import "./app" de src/main.tsx deixaria de resolver, quebrando o build do
+  GitHub Actions. "app-principal.tsx" evita a colisao. Nenhuma outra
+  movimentacao do projeto so muda de caixa.
+
+================================================================================
+6. VERIFICACOES REALIZADAS ANTES E DEPOIS
+================================================================================
+
+ATENCAO AO QUE ESTA PROVADO E O QUE NAO ESTA
+  O "CSS compilado identico" (item 2 abaixo) e uma EVIDENCIA LIMITADA. Ele
+  mostra que as regras de estilo compiladas sao as mesmas, mas sozinho nao
+  prova a aparencia nem o comportamento. A mesma ressalva vale para a
+  comparacao de telas: ela foi feita no navegador com chamadas do Tauri
+  substituidas, e nao no aplicativo nativo. A secao 10 traz a validacao no
+  aplicativo nativo, que e mais forte e tem limites proprios.
+
+ANTES DAS MUDANCAS (linha de base)
+  [OK] `npm run build` (que e "tsc && vite build") - passou, exit code 0
+  [OK] `cargo check` em src-tauri - passou, exit code 0
+  [OK] Build de producao gerado em dist/ e guardado como referencia
+       (SHA-256 do CSS e do JS anotados)
+  [OK] `git status` - estado inicial registrado. Havia MUITAS alteracoes
+       locais do usuario (src-tauri/**, index.html, package.json, README.md,
+       CONTRIBUTING.md, .github/**, icones, e varios arquivos novos ainda
+       nao versionados). Todas foram preservadas.
+  [OK] `git log` - o unico commit e 9f5bddb "Use main profile"
+  [OK] Inventario de todos os imports/export, @import de CSS, url() de CSS,
+       import.meta.glob, aliases e referencias em documentacao
+  [OK] Copia de seguranca de src/, .github/ e dos arquivos de raiz
+       (secao 10)
+  [ ] `npm run tauri dev` - NAO PUDER RODAR (veja secao 10, limitacoes)
+
+DEPOIS DAS MUDANCAS
+  [OK] `npm run build` - passou, exit code 0 (tsc sem erro de tipo +
+       vite build sem erro)
+  [OK] `cargo check` em src-tauri - passou, exit code 0
+  [OK] ARQUIVO CSS GERADO IDENTICO: dist/assets/index-286JWyrr.css tem o
+       MESMO nome com hash e o MESMO SHA-256 do arquivo gerado antes da
+       reorganizacao (CB4EE298C63C9FFAB9DF115012907E0863905DB6871F55AAD
+       41FD5D40C254BEB). Prova, no nivel do CSS compilado, que as regras de
+       estilo nao mudaram. NAO prova, sozinho, a aparencia final nem o
+       comportamento (ver a ressalva no inicio desta secao).
+  [OK] ARQUIVO JS GERADO IDENTICO A MENOS DOS CAMINHOS INTERNOS: o bundle
+       antigo e o novo sao byte a byte iguais depois de trocar, no bundle
+       antigo, as 28 chaves "./locales/<idioma>.json" por
+       "../idiomas/<idioma>.json". Essas chaves sao o nome interno dos
+       modulos de idioma que o i18next usa para montar o mapa de traducoes
+       (nao aparecem na tela). Nada mais no bundle mudou.
+  [OK] ARQUIVOS SVG GERADOS IDENTICOS: os 7 desenhos de aparelho sairam com
+       o mesmo nome com hash e o mesmo SHA-256.
+  [OK] index.html gerado: igual ao anterior, so muda o nome do bundle JS
+       (que muda porque o hash do conteudo mudou).
+  [OK] COMPARACAO VISUAL NO NAVEGADOR (com chamadas do Tauri substituidas
+       por respostas vazias), telas do menu, resolucao 1600x960, mesmo
+       procedimento e mesma posicao do mouse antes e depois:
+         Visao geral ....... 3.908 pixels diferentes, TODOS na mesma regiao
+                            (um aviso temporario "Nenhum dispositivo
+                            encontrado" que aparece por alguns segundos
+                            em uma das capturas e cobre o formulario de
+                            login). Fora dessa regiao: 0 pixels diferentes.
+         Baixar apps ....... 0 pixels diferentes (identico byte a byte)
+         Dispositivos ...... 0 pixels diferentes (identico byte a byte)
+         Certificados ...... 0 pixels diferentes (identico byte a byte)
+         IDs de App ........ 0 pixels diferentes (identico byte a byte)
+         Ajustes ........... 0 pixels diferentes (identico byte a byte)
+         Visao geral 760px . 0 pixels diferentes (identico byte a byte)
+  [OK] Duas execucoes seguidas do MESMO codigo novo produziram imagens
+       byte a byte iguais, o que mostra que a diferenca da tela "Visao
+       geral" e o aviso temporario (timing), e nao uma mudanca de codigo.
+  [OK] `npm run preview` - a versao de producao foi servida e conferida:
+       titulo "FHZIPA INJECT", favicon /fhzipa-inject.svg carregando, CSS
+       index-286JWyrr.css e JS index-*.js carregando, NENHUMA requisicao
+       404. Os unicos erros de console sao as chamadas `invoke` do Tauri,
+       que NAO funcionam fora do aplicativo (comportamento identico ao de
+       antes da reorganizacao).
+  [OK] Revisao linha a linha do diff de todos os 28 arquivos alterados:
+       TODA linha +/- do diff e uma linha de import (ou o @import do CSS).
+       Nenhuma linha de logica, estilo, texto ou dado foi tocada.
+  [OK] Busca por referencias a caminhos antigos em TODO o repositorio
+       (src, src-tauri, .github, README, CONTRIBUTING, *.nix, *.json, *.yml):
+       nenhuma sobrou.
+  [OK] Encoding e fim de linha conferidos arquivo por arquivo em src/:
+       todos UTF-8 sem BOM; CRLF preservado (exceto
+       render-aparelho.tsx e modelos-dispositivo.ts, que ja eram LF-only
+       antes e continuam LF-only).
+  [OK] Git: o indice (staging area) foi restaurado ao estado original
+       (vazio). Nada foi commitado, nada foi descartado, nenhuma
+       alteracao do usuario foi perdida.
+
+================================================================================
+7. ERROS PREEXISTENTES ENCONTRADOS (NAO CORRIGIDOS)
+================================================================================
+
+Estes pontos ja estavam no repositorio antes desta tarefa e NAO foram
+alterados, porque corrigi-los mudaria o processo de instalacao/publicacao
+(que esta fora do escopo desta tarefa). Estao registrados para revisao:
+
+  1. CI com bun, projeto com npm.
+     .github/workflows/build.yml roda "bun i --frozen-lockfile", mas o
+     repositorio passou a usar npm (package-lock.json presente,
+     bun.lock removido pelo usuario, e o proprio tauri.conf.json chama
+     "npm run dev" e "npm run build").
+     Impacto provável: o "--frozen-lockfile" falha sem o bun.lock, entao o
+     workflow do build deve quebrar no proximo push, a nao ser que o bun
+     gere um bun.lock novo durante o proprio job (o que tornaria a
+     instalacao nao reproduzivel).
+  2. Build Nix tambem depende do bun.lock.
+     flake.nix usa bun2nix (bun2nix -o bun.nix a partir do bun.lock).
+     Sem o bun.lock, o "nix build" quebra.
+  3. Scripts bump-* usam bunx.
+     package.json: "bump-patch": "bunx tauri-version --no-git --no-lock patch".
+     Precisam de bun instalado, ou trocar por npx.
+  4. A interface nao roda em navegador comum.
+     Nao e um bug do projeto: e o desenho do Tauri. As chamadas invoke()
+     falham fora do aplicativo. Registrado no guia para nao confundir
+     ninguem.
+  5. Chaveiro do Windows como dependencia do ambiente.
+     Sem o Visual Studio Build Tools (C++) e o WebView2 Runtime, o
+     aplicativo nativo nao compila nem roda nesta maquina (veja secao 10).
+
+================================================================================
+8. O QUE FOI REMOVIDO, MANTIDO OU DUVIDADO (RESUMO)
+================================================================================
+
+  REMOVIDO DO PROJETO .................. nada
+  PASTAS REMOVIDAS (vazias) ........... src/components, src/pages,
+                                         src/locales, src/assets
+  MANTIDO POR DUVIDA .................. src-tauri/icons/64x64.png,
+                                         src-tauri/icons/Square*Logo.png,
+                                         src-tauri/gen/schemas/,
+                                         download-state.json, *.nix,
+                                         SPONSOR_URL, src-tauri/src/store.rs
+  NAMES PRESERVADOS POR CONVENCAO ..... public/, index.html, src/,
+                                         src/main.tsx, src/vite-env.d.ts,
+                                         src-tauri/**, src/idiomas/*.json,
+                                         public/fhzipa-inject.svg
+
+================================================================================
+9. ONDE ESTAO OS BACKUPS
+================================================================================
+
+  (Os detalhes completos, os manifestos e o resultado da verificacao de
+  integridade estao na secao 10.4, que descreve a revisao de 21/10/2026.)
+
+================================================================================
+PARTE 2 - REVISAO DE 21/10/2026
+================================================================================
+
+10. REVISAO APOS A ORGANIZACAO
+================================================================================
+
+  Data e hora da revisao : 21/10/2026, das 02:13 as 03:30
+  Quem fez               : organizacao interna + conferencia, sem mudanca
+                            de codigo do aplicativo
+
+10.1 ESTADO CONFERIDO NO INICIO
+-------------------------------
+  - Raiz do aplicativo: C:\Users\fheiz\Downloads\projetos codes\fhzipa-inject-app
+    (a pasta que contem package.json, index.html, src/ e src-tauri/).
+  - Git: branch main, 1 commit (9f5bddb "Use main profile"), indice
+    (staging) VAZIO, 161 entradas em `git status` (porem, todas as
+    alteracoes do usuario foram preservadas: nenhuma reset, nenhuma
+    limpeza, nenhuma restauracao).
+  - Comandos reais disponiveis (package.json): dev, build, preview, tauri,
+    bump-patch, bump-minor, bump-major. Nao ha script de teste nem de
+    lint.
+  - Testes existentes: 13 funcoes `#[test]` em Rust (src-tauri/src/store.rs
+    e src-tauri/src/ipa.rs). Nao existe nenhum teste no frontend.
+  - O que do relatório anterior pode ser conferido com as evidencias
+    disponiveis: as contagens de arquivos, o mapeamento de caminhos, a
+    comparacao byte a byte dos arquivos, o CSS/JS gerados e as capturas de
+    tela (todas conferidas de novo). O que NAO pode ser reconferido: a
+    execucao do aplicativo nativo na maquina original (ver 10.3).
+
+10.2 BACKUPS PERMANENTES CRIADOS
+-------------------------------
+  Local: C:\Users\fheiz\Downloads\projetos codes\Backups-FHZIPA-INJECT\
+  (ao lado do repositorio, fora dele, fora da pasta temporaria)
+
+  Pasta 1 (a mais recente, USE ESTA): estado-atual-2026-10-21-031913
+    - Copia do ESTADO ATUAL do projeto, tirada DEPOIS desta revisao (com o
+      guia e o relatorio ja revisados).
+    - 191 arquivos + 2 artefatos pre-compilados + 42 arquivos de evidencia
+      (capturas de tela e logs da validacao) + manifesto + hashes.
+    - Inclui o historico Git completo (.git copiado integralmente, com
+      branches, index e reflog). `git log` e `git fsck` funcionam na copia.
+    - Excluidas (e por que):
+        node_modules/       186 MB, reinstalavel com "npm install"
+        dist/               1 MB, saida regeneravel com "npm run build"
+        src-tauri/target/   13,9 GB, cache de compilacao do Cargo
+    - EXCECAO dentro de src-tauri/target: a subpasta
+      "_artefatos-pre-compilados/" guarda o executavel
+      (fhzipa-inject.exe, 25 MB) e o instalador NSIS
+      ("FHZIPA INJECT_1.0.0_x64-setup.exe", 6,3 MB), ambos de 20/10/2026.
+      Eles foram preservados porque, NESTA MAQUINA, nao podem ser
+      reconstruidos (falta o Visual Studio Build Tools com C++). Sao a
+      unica parte do target/ que e insubstituivel aqui.
+    - A pasta "_evidencias/" guarda as capturas do aplicativo nativo
+      (incluindo as telas do codigo atual) e os logs dos comandos
+      executados.
+    - Nao ha neste projeto .env, senhas nem credenciais: as credenciais do
+      app ficam no Windows Credential Manager, fora do repositorio.
+      Nenhum valor sensivel foi impresso.
+
+  Pasta 1b: estado-atual-2026-10-21-022110
+    - Mesma coisa, mas tirada ANTES da revisao deste guia e relatorio.
+      Serve para ver o que a revisao mudou. Verificada: 191/191 OK.
+
+  Pasta 2: anterior-a-reorganizacao-2026-10-21-022132
+    - COPIA do backup ANTERIOR a reorganizacao.
+    - IMPORTANTE: esse backup e PARCIAL. Ele NAO e o projeto inteiro.
+      Conteudo real (121 arquivos):
+        src/                 -> o codigo da interface ANTES da organizacao
+                                 (App.tsx, components/, pages/, locales/,
+                                 assets/ e os nomes antigos)
+        .github/             -> workflows, scripts e modelos de issue
+        count_downloads.ts, index.html, package.json, tsconfig.json,
+        tsconfig.node.json, vite.config.ts
+        comparacao-visual/   -> as capturas de tela da comparacao visual
+    - O QUE NAO ESTA NELE: src-tauri/, public/, .vscode/, .git/,
+      README.md, CONTRIBUTING.md, NOTICE.md, LICENSE, default.nix,
+      shell.nix, flake.nix, flake.lock, download-state.json,
+      package-lock.json, dist/, node_modules/.
+      Como a reorganizacao NAO tocou em nenhum desses itens, a ausencia
+      deles nao afeta a comparacao antes/depois. Mas este backup NAO
+      substitui um backup completo do projeto anterior.
+    - A origem (C:\Users\fheiz\AppData\Local\Temp\opencode\
+      backup-antes-organizacao\) foi COPIADA, nao movida: continua intacta.
+      A pasta temporaria do Windows pode ser limpa a qualquer momento;
+      por isso a copia permanente e a que deve ser usada.
+    - Este backup NAO substitui a referencia ao estado anterior obtida
+      pelo Git (branch main, commit 9f5bddb).
+
+  Pasta 3: README-BACKUPS.txt e verificar-backup.ps1 na raiz de
+  Backups-FHZIPA-INJECT (explicacao do layout e script de conferencia).
+
+  Como a integridade foi verificada
+  ---------------------------------
+  Cada copia tem um arquivo HASHES.sha256 com o SHA-256 de cada arquivo
+  copiado, calculado sobre a copia apos a copia. O script
+  verificar-backup.ps1 recalcula e compara. Resultado:
+      estado-atual-2026-10-21-031913 ....... 191 conferidos, 0 divergentes,
+                                              0 faltando
+      estado-atual-2026-10-21-022110 ....... 191 conferidos, 0 divergentes,
+                                              0 faltando
+      anterior-a-reorganizacao-...022132 .... 121 conferidos, 0 divergentes,
+                                              0 faltando
+  Alem disso: o conjunto de arquivos de src/ na copia "estado-atual" foi
+  comparado com o repositorio vivo (87 arquivos, conjuntos e hashes
+  identicos: 0 divergentes), e o .git copiado foi aberto com git log /
+  git fsck (sem erros; apenas "dangling blobs", normais em um repositorio
+  com trabalho nao commitado).
+  Durante a copia, o hash de cada arquivo foi medido antes e depois: se
+  algum tivesse mudado, seria recopiado. Nenhum precisou ser recopiado
+  (0 reprocessados, 0 falhas).
+  Nenhum link simbolico/reparse point foi encontrado no projeto, entao nao
+  houve risco de copiar arquivos de fora dele.
+
+10.3 VALIDACAO DO APLICATIVO NATIVO
+------------------------------------
+  REQUISITOS DO PROJETO E O QUE EXISTE NESTA MAQUINA
+  ---------------------------------------------------
+   Item                                        Situacao          Evidencia
+   Node.js 20+                                 PRESENTE          v24.20.0
+   npm (gerenciador adotado)                   PRESENTE          11.19.0
+   package-lock.json (trava do npm)            PRESENTE          44.336 bytes
+   Rust estavel                                PRESENTE          1.99.1
+   Alvo x86_64-pc-windows-msvc                 PRESENTE          rustup: unico
+                                                                  alvo instalado
+   Visual Studio Build Tools (C++)             AUSENTE           vswhere devolve
+                                                                  so o SSMS;
+                                                                  nao ha cl.exe
+                                                                  em lugar nenhum
+   Windows SDK (import libs)                   AUSENTE           C:\...\Windows
+                                                                  Kits\10 so tem
+                                                                  UnionMetadata
+                                                                  (sem bin/Lib)
+   Linker link.exe (MSVC)                      AUSENTE           o unico link.exe
+                                                                  do sistema e o
+                                                                  do Git
+                                                                  (coreutils),
+                                                                  que NAO e o
+                                                                  linker da MSVC
+   WebView2 Runtime                            PRESENTE          155.0.4283.62
+   Ferramenta alternativa (gcc/clang/mingw)    AUSENTE           nao esta no PATH
+                                                                  e o alvo GNU
+                                                                  nao esta instalado
+
+  IMPORTANTE - requisito ausente x ferramenta fora do PATH:
+  Nao e o caso de "esta instalado mas nao esta no terminal". O Visual
+  Studio Build Tools e o Windows SDK NAO ESTAO INSTALADOS nesta maquina.
+  Por isso o Visual Studio Build Tools precisa ser instalado antes de
+  qualquer `npm run tauri dev` / `npm run tauri build` funcionar aqui.
+  Como a tarefa proibe instalar ferramentas globais automaticamente,
+  isso nao foi feito. Como preparar:
+    - Baixe "Build Tools for Visual Studio" e instale com a carga
+      "Desenvolvimento para Desktop com C++" (inclui o Windows SDK 10).
+    - Depois de instalado, abra um terminal NOVO (o caminho so e lido na
+      partida) e rode de novo. Se o erro persistir, o problema e outro.
+    - Alternativa via Nix: o flake.nix do projeto, MAS ele depende do
+      bun.lock removido (pendencia da secao 7).
+
+  COMANDOS EXECUTADOS E RESULTADOS REAIS
+  ---------------------------------------
+   npm run build                    APROVADO  exit 0
+                                    (tsc sem erro + vite build, 1,17 s)
+   cargo check --all-targets        APROVADO  exit 0  (22,60 s)
+                                    (--all-targets tambem verifica os
+                                    alvos de teste, ou seja, o codigo dos
+                                    13 testes Rust)
+   cargo test                      BLOQUEADO exit 101
+                                    error: linker `link.exe` not found
+                                    (os testes existem mas nao podem ser
+                                    compilados sem o linker)
+   npm run tauri dev                BLOQUEADO exit 1
+                                    o Vite subiu em 1420, o cargo compilou
+                                    667/669 crates e falhou na ligacao:
+                                    error: linker `link.exe` not found
+   npm run tauri build              NAO EXECUTADO
+                                    (falha no mesmo ponto do tauri dev;
+                                    o instalador nao pode ser gerado aqui)
+
+  O APLICATIVO NATIVO ABRIU? PARCIALMENTE - LEIA COM ATENCAO
+  -----------------------------------------------------------
+  O executavel pre-compilado que existia em src-tauri/target/release/
+  (fhzipa-inject.exe, de 20/10/2026) ABRIU normalmente nesta maquina:
+    - janela criada, titulo "FHZIPA INJECT", 1600x960, icone do
+      executavel correto na barra de titulo;
+    - WebView2 renderizou; as fontes resolveram para
+      "SF Pro Display", Inter, -apple-system...;
+    - a IPC nativa respondeu:
+        plugin:app|version   -> "1.0.0"
+        keyring_available    -> true
+        list_devices         -> []
+  POREM esse binario e ANTIGO: ele foi compilado em 20/10 com uma versao
+  do codigo que ainda tinha um botao "Doar" no cabecalho, que hoje nao
+  existe mais. Portanto ele NAO valida o codigo atual.
+
+  O QUE FEZ PARA CONFERIR O CODIGO ATUAL NA JANELA NATIVA
+  -------------------------------------------------------
+  Como nao da para recompilar o binario (falta o linker), o frontend
+  ATUAL foi servido dentro da MESMA janela nativa, na MESMA origem de
+  onde a IPC do Tauri funciona (http://tauri.localhost/), por interceptacao
+  de requisicao (as requisicoes do webview foram respondidas com os
+  arquivos de dist/ gerados do codigo atual). Consequencia: e o frontend
+  ATUAL dentro de uma janela nativa real, mas com o BACKEND RUST de
+  20/10 (antigo). Isso esta sinalizado em cada resultado abaixo.
+
+  Telas conferidas dentro da janela nativa (frontend atual, 1600x960):
+    1. Visao geral ......... OK   titulo "Seu iPhone. Novas possibilidades."
+                                logo e desenho do aparelho carregaram
+                                (naturalWidth > 0)
+    2. Baixar apps ......... OK   titulo "Baixar apps"; catalogo REAL da
+                                fonte IPAOMTK com icones da internet;
+                                as 5 abas de fonte apareceram
+    3. Dispositivos ....... OK   titulo "Seus dispositivos"
+    4. Certificados ....... OK   titulo "Gerenciar certificados"; mostra o
+                                modal de erro "Not logged in" (esperado:
+                                nao ha Apple ID logado nesta maquina)
+    5. IDs de App ......... OK   titulo "Gerenciar IDs de Aplicativos";
+                                mesmo modal "Not logged in" (esperado)
+    6. Ajustes ............ OK   titulo "Preferencias"; servidor Anisette
+                                "StikStore (Windows)", idioma "Portugues
+                                (Brasileiro)", chaveiro ligado
+    7. Janela 1024x700 .... OK   layout correto no tamanho minimo
+    8. Modal de pareamento  OK   Ctrl+P abre a janela de pareamento
+    9. Janela de registros OK   Ajustes > "Verificar registros" abre
+    Erros de pagina ........ 0
+  Comparacao entre a janela nativa (frontend atual) e a captura no
+  navegador (mesmo codigo):
+    Dispositivos ........... 0 pixels diferentes (identico byte a byte)
+    Visao geral ............ 2,2% - aviso temporario (toast) e o desenho
+                             do aparelho renderizado com um filtro de
+                             borrão um pouco diferente entre as duas
+                             versoes do Chromium
+    Ajustes ............... 2,8% - apenas a regiao onde o navegador
+                             mostrava avisos temporarios
+    Baixar apps ........... 22,0% - esperado: no navegador o catalogo
+                             estava vazio (substituto), no nativo veio o
+                             catalogo real
+
+  O QUE FICOU DE FORA (nao testado)
+  --------------------------------
+  - Instalar um .ipa de verdade, parear um aparelho, criar ou revogar
+    certificado, criar App ID, login com Apple ID e 2FA, download de um
+    .ipa do catalogo: NAO TESTADOS. Exigem conta Apple, codigo 2FA e/ou
+    aparelho fisico. Nenhuma conta foi acessada, nenhum certificado foi
+    criado ou revogado, nenhum arquivo foi assinado, nada foi apagado.
+  - O instalador (npm run tauri build) NAO foi gerado: o mesmo bloqueio do
+    linker.
+  - O backend Rust ATUAL nao foi executado: o binario nativo que abriu e
+    de 20/10. O codigo Rust nao foi alterado pela reorganizacao e o
+    cargo check passou, mas isso nao substitui rodar o backend atual.
+  - macOS e Linux: nao compilados nem testados.
+
+  INSTRUCOES PARA O USUARIO COMPLETAR A CONFERENCIA
+  --------------------------------------------------
+  1. Instale o Visual Studio Build Tools (carga "Desenvolvimento para
+     Desktop com C++"). Abra um terminal novo.
+  2. Na raiz do projeto: `npm install` (se ja installou, pule) e
+     `npm run tauri dev`. A janela "FHZIPA INJECT" deve abrir.
+  3. Percorra as 6 telas do menu e confira textos, icones e imagens.
+  4. Aperte Ctrl+P (pareamento), Ctrl+Shift+C (certificados),
+     Ctrl+Shift+A (IDs de App), Ctrl+R (atualizar dispositivos) e
+     Ctrl+L (registros) dentro da janela.
+  5. Redimensione a janela ate o minimo (1024x700) e depois maximize.
+  6. Conecte um iPhone/iPad e repita: detectar o aparelho, parear, entrar
+     com a conta Apple (2FA), "Atualizar dispositivos", listar
+     certificados e App IDs, e instalar um .ipa de teste. ESTES fluxos
+     NAO foram verificados aqui.
+  7. Para gerar o instalador: `npm run tauri build`. O .exe sai em
+     src-tauri/target/release/bundle/nsis/.
+
+10.4 CORRECOES FEITAS NO GUIA DE EDICAO
+--------------------------------------
+  O GUIA-DE-EDICAO-DO-APP.txt foi conferido contra os arquivos atuais:
+    - 93 caminhos citados: todos existem (os 2 unicos que nao existem sao
+      "nova-tela.tsx"/"nova-tela.css", que sao EXEMPLOS de uma pagina nova
+      e agora estao marcados como tale).
+    - 7 comandos "npm run ..." citados: todos existem no package.json.
+    - todos os nomes de componente, variavel, tipo e chave citados foram
+      conferidos no codigo e batem.
+  Correcoes e complementos:
+    1. Secao C: ficou claro que `npm run tauri dev` abre uma JANELA do
+       Windows (titulo "FHZIPA INJECT", 1600x960, minimo 1024x700) e
+       qual e a diferenca entre rodar so a interface e rodar o aplicativo
+       completo. Acrescentado o caminho alternativo para quem nao tem o
+       Build Tools instalado.
+    2. Secao E: criado o bloco "RESUMO: LOGO, FAVICON, ICONE E
+       IDENTIFICADORES", separando 5 coisas que antes se misturavam:
+       logo dentro do app, favicon da interface web, icone do executavel e
+       do instalador, nome exibido no instalador e identificadores
+       tecnicos (identifier, version, pasta de dados e nome do log),
+       com o aviso de que mexer no identifier faz o usuario perder
+       preferencias, logs e chaveiro.
+    3. Secao E: o "Doar"/SPONSOR_URL foi corrigido - a constante existe
+       mas nenhum componente a usa hoje.
+    4. Secao E: adicionados os dois arquivos de preferencias
+       ("preferences.json" em src/contextos/loja.tsx e "data.json" em
+       src/modulos/apple-id.tsx) e o caminho real delas
+       (%APPDATA%\app.fhzipa.inject\).
+    5. Secao F: explicado que o logo, por ter menos de 4 KB, e embutido
+       pelo Vite como "data:image/svg+xml,..." (sem arquivo separado em
+       dist/assets), enquanto os desenhos dos aparelhos viram arquivos
+       com hash. Incluidos os caminhos completos do logo e do favicon no
+       quadro de formatos, e separado "icone do instalador" de "logo
+       dentro do app".
+    6. Secao G: os nomes de arquivo do exemplo de pagina nova foram
+       marcados explicitamente como EXEMPLOS.
+    7. Secao I: quais valores podem ser públicos e quais nao, e o aviso
+       de que VITE_ embute o valor no JavaScript.
+    8. Secao M: a ultima coluna da tabela passou a se chamar "CUIDADO" e
+       ganhou linhas para o nome do instalador, o icone do executavel, a
+       pasta de dados do usuario, o formulario de login e a mensagem de
+       erro - e a linha "WhatsApp / telefone / e-mail / redes" deixando
+       claro que NAO EXISTEM neste projeto.
+    9. Cabecalho: nota de que o guia foi conferido contra os arquivos.
+
+10.5 CORRECOES FEITAS NO CODIGO
+--------------------------------
+  NENHUMA. Nenhum arquivo do aplicativo foi alterado nesta revisao.
+  Nenhuma referencia quebrada pela reorganizacao foi encontrada.
+  O que foi verificado:
+    - busca por referencias a caminhos antigos em TODO o repositorio:
+      nenhuma sobrou;
+    - npm run build: exit 0;
+    - cargo check --all-targets: exit 0;
+    - git status sem alteracoes novas minhas (o indice continua vazio).
+
+10.6 PENDENCIAS (mantidas como pendencia separada, sem mexer)
+--------------------------------------------------------------
+  ATUALIZADO NA PARTE 3: esta pendencia foi CORRIGIDA em 21/10/2026.
+  A divergencia entre npm, Bun e Nix nao existe mais. O texto abaixo
+  preserva o registro do estado daquela poca.
+  Detalhes da correcao: secao 12.4 (itens a a g) e 12.5.
+  O que continua pendente: o flake.nix so pode ser EXECUTADO em Linux
+  (secao 12.9, item 2).
+
+  --- registro do estado em 21/10/2026, antes da correcao ---
+  A divergencia entre npm, Bun e Nix NAO foi alterada. Detalhes e
+  impacto provavel estao na secao 7, itens 1 a 3. Resumo:
+    - o projeto usa npm (package-lock.json) e o tauri.conf.json chama
+      "npm run dev"/"npm run build";
+    - mas o CI (build.yml) ainda instala com "bun i --frozen-lockfile" e o
+      flake.nix ainda usa bun2nix, que le o bun.lock removido;
+    - impacto provavel: o job de build do GitHub Actions falha no
+      --frozen-lockfile (ou instala versoes nao fixadas, se o bun
+      regenerar o lock durante o job), e o "nix build" falha por falta do
+      bun.lock;
+    - os scripts bump-* tambem dependem do bun estar instalado.
+  Isso deve ser resolvido em uma tarefa propria, escolhendo npm ou Bun
+  de forma consciente, e nao agora.
+================================================================================
+PARTE 3 - PREPARACAO DO AMBIENTE E CORRECAO DA INFRAESTRUTURA
+               (21/10/2026, das 04:55 as 09:20)
+================================================================================
+
+Esta parte registra a terceira etapa: preparar o ambiente de compilacao
+nativa, corrigir a infraestrutura npm/Bun/Nix, gerar um executavel do
+codigo atual e testa-lo. O historico das partes 1 e 2 foi preservado acima,
+com as correcoes ja aplicadas.
+
+12.1 O QUE JA ESTAVA CONCLUIDO E FOI PRESERVADO
+-------------------------------------------------
+  - A organizacao interna dos arquivos (parte 1) foi mantida como estava.
+    Nenhum arquivo de src/, src-tauri/ ou public/ foi movido, renomeado
+    ou alterado nesta etapa. A unica alteracao no codigo do aplicativo foi
+    a INFRAESTRUTURA (package.json, package-lock.json, workflows, scripts
+    de CI e arquivos Nix), descrita na secao 12.4.
+  - O GUIA-DE-EDICAO-DO-APP.txt e o RELATORIO-DE-ORGANIZACAO.txt foram
+    atualizados, nao reescritos: o conteudo anterior permanece.
+  - Os backups permanentes ao lado do repositorio NAO foram sobrescritos.
+    Havia 3 (estado-atual x2 + anterior-a-reorganizacao). Esta etapa
+    criou mais 2 pastas novas.
+  - Todo o trabalho nao commitado do usuario foi preservado: nenhuma
+    operacao de reset, restore, checkout ou clean foi executada. O indice
+    do Git (staging) continua vazio, como estava.
+  - A estrutura da raiz do projeto NAO foi mexida. Os nomes reais no
+    sistema de arquivos (com extensoes) sao: .github/, .vscode/, dist/,
+    node_modules/, public/, src/, src-tauri/, .gitignore, CONTRIBUTING.md,
+    default.nix, download-state.json, flake.lock, flake.nix,
+    GUIA-DE-EDICAO-DO-APP.txt, index.html, LICENSE, NOTICE.md,
+    package.json, package-lock.json, README.md,
+    RELATORIO-DE-ORGANIZACAO.txt, shell.nix, tsconfig.json,
+    tsconfig.node.json, vite.config.ts. Nada foi excluido.
+  - .gitignore continua cobrindo node_modules e dist; src-tauri/.gitignore
+    continua cobrindo /target/ e /gen/schemas. Nada rastreado foi removido.
+
+12.2 COMPONENTES DO AMBIENTE: INSTALADOS OU APROVEITADOS
+----------------------------------------------------------
+  INSTALADO NESTA ETAPA (autorizado pela tarefa)
+    Visual Studio Build Tools 2022 (Microsoft.VisualStudio.Product.BuildTools)
+      versao   : 17.14.37806.7
+      carga    : Microsoft.VisualStudio.Workload.VCTools
+                 ("Desenvolvimento para Desktop com C++") + recommended
+      componentes relevantes: MSVC v14.44.35207 (cl.exe e link.exe x64),
+                 Windows SDK 10.0.26100.0
+      instalador oficial: https://aka.ms/vs/17/release/vs_BuildTools.exe
+        sha256 do instalador: 2A6AA7D94E38D457A4EB3930FC60056ECAB06865B2EB925E5275B8473A017583
+      ATENCAO - o local de instalacao ficou em C:\Program em vez do padrao
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools. Isso
+      aconteceu por um erro meu: o caminho do --installPath tem espacos e
+      foi repassado ao instalador sem aspas, entao ele leu "C:\Program" como
+      destino e o resto foi argumento solto. O resultado e FUNCIONAL: o
+      rustc localiza o compilador e o linker pelo registro do Windows e
+      todos os comandos passaram sem configuracao de PATH. O
+      redistribuidor Visual C++ tambem foi instalado. Deixei a maquina
+      como esta porque reinstalar exigiria desinstalar um programa
+      (acao destrutiva). Para mover para o local padrao, o procedimento
+      esta na secao 12.9.
+  APROVEITADOS (ja estavam na maquina, nao foram reinstalados nem
+  atualizados)
+    Node.js 24.20.0  |  npm 11.19.0
+    Rust 1.99.1 (stable, alvo unico x86_64-pc-windows-msvc)
+    WebView2 Runtime 155.0.4283.62
+    Git for Windows  (o "link.exe" dele NAO e o linker da MSVC)
+  NAO INSTALADO
+    Nix (nao havia nesta maquina). O suporte Nix do repositorio foi
+    REVISADO ESTATICAMENTE (secao 12.4) e nao executado.
+    WSL / outro sistema operacional (proibido nesta tarefa).
+
+  COMO O LINKER FOI ENCONTRADO
+  -----------------------------
+ (link.exe nao esta no PATH e nao precisa estar. O rustc consulta o
+  registro do Windows e acha o MSVC instalado. Para conferir:
+      "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" ^
+        -products * -format value -property installationPath
+  O "link.exe" do Git (C:\Program Files\Git\usr\bin) e um utilitario Unix
+  com o mesmo nome e NAO e o linker da Microsoft.
+
+12.3 REFERENCIA INICIAL REGISTRADA ANTES DAS CORRECOES
+------------------------------------------------------
+  Comandos e resultados de ANTES de mexer em qualquer arquivo de
+  infraestrutura (21/10/2026, ~05:00):
+    npm ci --dry-run .............. APROVADO (exit 0) "up to date"
+                                  (package.json e package-lock.json
+                                  estavam em sintonia)
+    npm run build ................. APROVADO (exit 0)
+    cargo check --all-targets .... APROVADO (exit 0, 22,59 s)
+    cargo test ................... FALHOU (exit 101)
+                                  "linker `link.exe` not found"
+    npm run tauri dev ............ FALHOU (exit 1) - mesmo erro de linker
+    npm run tauri build .......... FALHOU (exit 1) - mesmo erro de linker
+  Hashes dos arquivos de infraestrutura ANTES das correcoes (para
+  conferencia), guardados em
+  Backups-FHZIPA-INJECT/evidencias-2026-10-21/infra-antes-das-correcoes:
+    package.json                6339A6303CD65855ADA88D2961BDF9F05C7C54263407D48A7356D48920B7D5DF
+    package-lock.json           7DD9B1C2F338E63AF68BC54858708DF532893BC837F9300471C4AE929A52AD57
+    flake.nix                   07861F6700F424396C2CD2BCAA0E690CD26358B07AD82EF7D37BF638A6748F3A
+    flake.lock                  B1A6BBE72EB5EAC24DCC0C4D124647E3A33A1574FF5097F343A062703F04E6E9
+    .github/workflows/build.yml 198A46E81962A0CDC3A419328E30F5D0FC4A7679CD31BD7E68CFC099030E3BD0
+    .github/workflows/download-count.yml
+                                56D726062B9A97AB823F6C0D7E1E2C77DCF5810E6E6DB51CA3819A307C533ECD
+    .github/workflows/download-notifier.yml
+                                99110655E1F9AD92CDF626D7FBB27300B75DE0ED57EDC1B6C9F651F470E4B69F
+    .github/scripts/count-downloads.ts
+                                EF176E3BB757F59860D982E4F8586D75058BA3C3B4AA1E920F55A33C9DCD3BE4
+    .github/scripts/check-downloads.mjs
+                                BA631911D82D552E9C7319A96E613EF741C1E7F2B415BB94CF015C8125C2B710
+
+12.4 ARQUIVOS DE INFRAESTRUTURA ALTERADOS E OS MOTIVOS
+------------------------------------------------------
+  Confirmação de que npm + package-lock.json sao a referencia: SIM. O
+  package-lock.json tem lockfileVersion 3, 74 pacotes, todos com campo
+  "resolved", e o `npm ci --dry-run` passou. O proprio
+  src-tauri/tauri.conf.json chama "npm run dev" e "npm run build".
+
+  a) package.json
+     - scripts.bump-patch / bump-minor / bump-major:
+         "bunx tauri-version ..."  ->  "tauri-version ..."
+       Motivo: bunx baixava a ferramenta na hora, em versao nao
+       controlada. Agora o executavel vem de node_modules/.bin (o npm
+       coloca node_modules/.bin no PATH dos scripts - verificado com
+       `npm run env`). As opcoes (--no-git --no-lock e patch/minor/major)
+       foram preservadas. OS SCRIPTS NAO FORAM EXECUTADOS (a tarefa proibe
+       rodar scripts de incremento de versao).
+     - devDependencies: acrescido "tauri-version": "1.0.0" (versao
+       exata, do registry npm). E a unica dependencia nova. O
+       package-lock.json foi atualizado com `npm install --package-lock-only`
+       e a mudanca foi conferida: 4 pacotes acrescentados (tauri-version,
+       cac, consola, pathe), 0 removidos, 1 alterado (a entrada da raiz do
+       lock, que e a lista de devDependencies), lockfileVersion inalterado,
+       0 vulnerabilidades. Nenhuma outra dependencia foi atualizada.
+
+  b) package-lock.json
+     - Gerado pelo npm a partir do item (a). Diff conferido item a item.
+
+  c) .github/workflows/build.yml
+     - "Cache Rust and bun dependencies" -> "Cache Rust and npm dependencies"
+       (so o nome do passo; o caminho do cache e a chave, que ja usavam
+       package-lock.json, ficaram iguais).
+     - oven-sh/setup-bun@v2 com "bun-version: latest"
+       -> actions/setup-node@v4 com "node-version: 20" e "cache: npm"
+       (versao fixada, em vez de "latest"; o mesmo par usado no workflow
+       download-notifier.yml).
+     - "bun i --frozen-lockfile" -> "npm ci"
+       (instalacao reprodutivel a partir do package-lock.json).
+     - "bunx rimraf <pasta>" -> "rm -rf <pasta>" com "shell: bash"
+       (o rimraf era outra ferramenta baixada sem versao; rm -rf e o
+       equivalente nativo e funciona nos runners Linux, macOS e Windows
+       - o runner Windows usa Git Bash quando shell: bash).
+     - Preservados e conferidos por comparacao estrutural do YAML:
+       gatilhos (push, pull_request, workflow_dispatch, release published),
+       permissoes (contents: write), a matriz completa de 8 alvos
+       (ubuntu-22.04 x3, ubuntu-22.04-arm x3, windows-latest,
+       macos-latest) com os mesmos args, o bloco env de secrets, o passo
+       "Add MSVC to PATH", "Install Perl and Make for Windows",
+       "Install Linux dependencies", "Export Apple signing secrets",
+       "Build" (tauri-action), "Notarize & Staple DMG", os 8 passos de
+       upload de artefatos e o job "mark-latest". Os tres workflows do
+       repositorio continuam fazendo parse como YAML valido.
+
+  d) .github/workflows/download-count.yml
+     - oven-sh/setup-bun@v2 -> actions/setup-node@v4 com node-version 20
+     - "bun .github/scripts/count-downloads.ts"
+       -> "node .github/scripts/count-downloads.mjs"
+     Gatilhos (schedule diario + workflow_dispatch), secrets e o passo do
+     Gist ficaram iguais.
+
+  e) .github/scripts/count-downloads.ts -> count-downloads.mjs
+     - O script foi convertido para JavaScript puro: foram removidas SO
+       as anotacoes de tipo. A comparacao linha a linha do texto normalizado
+       deu "identicos: True" - a logica nao mudou em nada.
+     - Motivo: o Node 20 (versao fixada no CI) nao executa TypeScript. O
+       Node 24 executaria, mas isso dependeria de um recurso de
+       estabilidade experimental. O outro script do mesmo diretorio
+       (check-downloads.mjs) ja e .mjs e roda com node no Node 20: o
+       repositorio passa a ter um padrao unico.
+     - O script foi EXECUTADO de verdade (consulta publica, somente
+       leitura, sem token): devolveu 0 para um repositorio publico sem
+       assets e o mesmo codigo de erro da API do GitHub para um
+       repositorio com mais de 1000 releases. O caminho feliz esta
+       comprovado.
+     - O arquivo .ts original foi guardado na copia de seguranca
+       (secao 12.9).
+
+  f) flake.nix e flake.lock
+     - Confirmação da falha pelo codigo: o flake usava bun2nix, que le o
+       bun.lock - arquivo que nao existe no repositorio (foi removido
+       antes desta etapa). Logo, "nix build" nao tinha como funcionar.
+     - Correcao: o frontend passa a ser compilado com buildNpmPackage do
+       nixpkgs, que consome o package-lock.json (a abordagem documentada
+       para projetos npm), e o backend continua em buildRustCrate com o
+       cargo-tauri.hook. A entrada "bun2nix" foi removida do flake.nix e
+       do flake.lock (nenhum hash foi inventado: os 5 nodes restantes
+       continuam com o rev e o narHash originais, e o node "flake-parts",
+       que so existia por causa do bun2nix, foi removido). O flake.lock
+       continua sendo JSON valido, com "version": 7.
+     - CLASSIFICACAO: REVISADO ESTATICAMENTE. Nao ha Nix nesta maquina
+       (nem WSL com distro) e o Nix precisa de Linux para construir, entao
+       a execucao nao foi possivel. Comandos para validar de verdade:
+           nix flake check
+           nix build
+           nix develop
+       numa maquina Linux (ou WSL) com flakes habilitado. Se o `nix build`
+       reclamar de alguma opcao da derivacao, o ajuste e local e pequeno.
+
+  g) Nenhum outro arquivo foi tocado. Nenhum arquivo de src/, src-tauri/,
+     public/ ou .vscode/ foi alterado. Nenhum workflow remoto foi
+     executado e nenhum artefato foi publicado.
+
+12.5 RESULTADO DE CADA VERIFICACAO
+----------------------------------
+  (todas executadas em 21/10/2026, apos as correcoes)
+    npm ci ............................. APROVADO (exit 0) 42 pacotes,
+                                       0 vulnerabilidades
+    npm run build ..................... APROVADO (exit 0)
+                                       O CSS gerado continua com o
+                                       MESMO SHA-256 da linha de base
+                                       (CB4EE298...254BEB) e o JS com o
+                                       mesmo hash de arquivo: a correcao
+                                       de infraestrutura nao alterou
+                                       NADA do que vai para o aplicativo.
+    cargo check --all-targets ......... APROVADO (exit 0)
+    cargo test ........................ APROVADO (exit 0)
+                                       13 testes passaram, 0 falharam,
+                                       4 ignorados (os que precisam
+                                       alcançar os fornecedores do
+                                       catalogo pela internet)
+    node .github/scripts/count-downloads.mjs ... APROVADO
+    npm run tauri dev ................. APROVADO (exit 0)
+                                       compilou 668/669 crates em 12,01 s
+                                       e abriu a janela "FHZIPA INJECT"
+    npm run tauri build ............... APROVADO (exit 0)
+                                       gerou o executavel e o instalador
+                                       NSIS
+    Build do frontend dentro do Vite . APROVADO (o Vite subiu em 1420)
+    Workflows como YAML ............... APROVADO (3/3 com parse valido)
+    flake.lock como JSON .............. APROVADO
+    Diferenca entre package.json e package-lock.json ......... NENHUMA
+    Recuperacao do indice do Git .... APROVADO (vazio, como no inicio)
+    Referencias a caminhos antigos no repositorio ... NENHUMA
+
+12.6 O EXECUTAVEL E O INSTALADOR DO CODIGO ATUAL
+-------------------------------------------------
+  IMPORTANTE: a versao declarada NAO diz qual codigo foi compilado. Estes
+  artefatos sao do codigo ATUAL (a reorganizacao + as correcoes de
+  infraestrutura de 21/10). Os artefatos antigos, de 20/10, tem hashes
+  diferentes e estao guardados separadamente.
+
+  EXECUTAVEL
+    caminho : src-tauri\target\release\fhzipa-inject.exe
+    tamanho : 25.044.480 bytes
+    data    : 21/10/2026 08:38:10 (UTC-3)
+    sha256  : 120333AD1512CE56ABBC60F5EB699D038DB8470698FB017CCE4E9F70FE201698
+    versao declarada : 1.0.0 (package.json e tauri.conf.json, ambas 1.0.0)
+    metadados: ProductName "FHZIPA INJECT", FileDescription "FHZIPA INJECT",
+               FileVersion 1.0.0, ProductVersion 1.0.0,
+               CompanyName "FHZIPA INJECT"
+
+  INSTALADOR (NSIS)
+    caminho : src-tauri\target\release\bundle\nsis\FHZIPA INJECT_1.0.0_x64-setup.exe
+    tamanho : 6.340.440 bytes
+    data    : 21/10/2026 08:38:10 (UTC-3)
+    sha256  : 48C81EC06FDD9CB9DDEF2B9FEE0C90DE85230D0620D13796D036349D040C3F6A
+    metadados: ProductName "FHZIPA INJECT", FileVersion 1.0.0
+    PE valido (assinatura MZ), sem assinatura digital
+      (Status: NotSigned - a assinatura de verdade acontece no CI, com o
+      secret TAURI_SIGNING_PRIVATE_KEY; nao foi alterado nada aqui)
+    idiomas do instalador: PortugueseBR e English
+      (bundle.nsis.languages, displayLanguageSelector: false)
+
+  ARTEFATOS ANTIGOS (preservados separadamente)
+    O build sobrescreveu o instalador de 20/10 (mesmo nome de arquivo).
+    O antigo esta guardado em
+    Backups-FHZIPA-INJECT\estado-atual-2026-10-21-031913\_artefatos-pre-compilados\
+      fhzipa-inject.exe            25.032.192 bytes  20/10 16:57
+                                  sha256 0CBB2CAED726DD86FCDFF9DC...
+      FHZIPA INJECT_1.0.0_x64-setup.exe
+                                  6.337.502 bytes  20/10 16:57
+                                  sha256 79B7A8FA45CD5CD0250824EC...
+    Os hashes diferentes provam que sao compilacoes diferentes.
+
+  INSTALACAO EFETIVA DO INSTALADOR: NAO TESTADA
+    O instalador foi GERADO e CONFERIDO (hash, tamanho, metadados, PE
+    valido, idiomas). Ele NAO foi instalado: nao ha ambiente isolado
+    nesta maquina, o aplicativo do usuario nao pode ser desinstalado nem
+    substituido, e o roteiro para isso esta na secao 12.8.
+
+12.7 TELAS E FLUXOS VERIFICADOS NO APLICATIVO NATIVO
+-----------------------------------------------------
+  As telas foram conferidas NO APLICATIVO NATIVO DE VERDADE, com o backend
+  Rust atual, de duas formas:
+    (a) no executavel de release gerado nesta etapa (frontend embutido no
+        binario, origem http://tauri.localhost/), e
+    (b) no modo de desenvolvimento (npm run tauri dev).
+  Em ambos os casos o WebView2 foi dirigido por CDP, e as capturas ficaram
+  em Backups-FHZIPA-INJECT/evidencias-2026-10-21/capturas-nativo/.
+
+  TELAS (APROVADO, nas duas builds)
+    1. Visao geral ..... titulo "Seu iPhone. Novas possibilidades."
+                          2 imagens carregadas (logo + desenho do aparelho)
+                          Servidor Anisette "StikStore (Windows)" lido do
+                          armazenamento real; idioma "Portugues (Brasileiro)";
+                          chaveiro do sistema ligado
+    2. Baixar apps ..... titulo "Baixar apps"; as 5 abas de fonte
+                          (IPAOMTK, iAppStores, GitHub, iPA Library, IPAJB);
+                          no build de release: 24 cartoes reais do catalogo,
+                          27 imagens carregadas, contador "24 de 11.633 apps",
+                          nenhum erro
+    3. Dispositivos .... titulo "Seus dispositivos"
+    4. Certificados .... titulo "Gerenciar certificados"; mostra o modal de
+                          erro "Not logged in" - ESPERADO, porque nao ha
+                          conta Apple autenticada nesta maquina
+    5. IDs de App ...... titulo "Gerenciar IDs de Aplicativos"; mesmo
+                          modal "Not logged in" - ESPERADO
+    6. Ajustes ......... titulo "Preferencias"
+    Atalhos ............ Ctrl+Shift+C levou para "Gerenciar certificados"
+    Janela de registros  "Registros" abre em Ajustes ("Sem logs
+                          atualmente" - nenhum log de operacao)
+    Tamanho de janela . 1024x700 (o minimo declarado) renderizou certo
+    Comunicacao UI<->backend  confirmada: o catalogo veio do Rust, o
+                          Anisette veio do armazenamento real, o chaveiro
+                          respondeu "keyring_available = true"
+    Erros de pagina ... 0
+
+  FLUXOS NAO TESTADOS (exigem conta, hardware ou efeito permanente)
+    - login com Apple ID e envio de codigo 2FA
+    - pareamento de um aparelho real
+    - instalacao de um .ipa e assinatura
+    - criacao ou revogacao de certificados
+    - criacao de App IDs
+    - download de um .ipa do catalogo ate o fim
+    - exclusao de dados
+  Nenhuma conta foi acessada, nenhum codigo 2FA foi pedido, nada foi
+  assinado, criado, revogado ou apagado, e nada foi lido do Windows
+  Credential Manager.
+
+  ROTEIRO MANUAL PARA O USUARIO CONCLUIR (com o que ja esta instalado)
+  --------------------------------------------------------------------
+    1. Instale o iTunes/Apple Devices e conecte um iPhone/iPad.
+    2. `npm run tauri dev` - a janela "FHZIPA INJECT" abre.
+    3. Clique em "Atualizar dispositivo": o aparelho deve aparecer na tela
+       "Dispositivos".
+    4. Entre com a conta Apple (o codigo 2FA chega da Apple). A tela
+       "Certificados" e a de "IDs de App" devem carregar sem o modal de
+       erro.
+    5. "Atualizar estado Anisette" e "Apagar pareamento armazenado" em
+       Ajustes.
+    6. "Baixar apps": escolha um app, clique em "Baixar" (o progresso
+       aparece) e depois em "Instalar". Um .ipa assinado com o seu
+       certificado sera instalado no aparelho.
+    7. Em "Ajustes > Verificar registros", veja o log da operacao.
+    8. `npm run tauri build` e instale o
+       src-tauri\target\release\bundle\nsis\FHZIPA INJECT_1.0.0_x64-setup.exe
+       em um computador de teste (nao sobre a instalacao atual).
+  Efeitos: os passos 3 a 7 alteram o estado do aparelho e da conta Apple
+  (criar certificado, parear, instalar). Nenhum deles foi executado aqui.
+
+12.8 BACKUPS E EVIDENCIAS DESTA ETAPA
+--------------------------------------
+  Novas pastas em C:\Users\fheiz\Downloads\projetos codes\Backups-FHZIPA-INJECT\:
+    - evidencias-2026-10-21/         (logs, capturas, hashes, ambiente)
+    - estado-final-2026-10-21-<hhmm>/ (backup do estado do projeto ao fim
+                                       desta etapa, com as configuracoes e
+                                       os documentos ja corrigidos)
+  Nada foi sobrescrito: as 3 pastas anteriores continuam intactas.
+  O backup final e verificado por SHA-256 (HASHES.sha256 + o script
+  verificar-backup.ps1), como os anteriores.
+
+12.9 PENDENCIAS
+---------------
+  1. Build Tools fora do local padrao. As ferramentas estao em C:\Program
+     (erro meu de aspas no comando de instalacao). Funciona, mas se
+     preferir o local padrao:
+       a) desinstalar a instancia atual:
+            "C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe" ^
+              uninstall --installPath "C:\Program" --quiet --norestart
+       b) reinstalar com o caminho CITADO:
+            vs_BuildTools.exe --quiet --wait --norestart ^
+              --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools" ^
+              --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended
+     (Nao fiz a): desinstalar e reinstalar sao acoes destrutivas, e o
+     ambiente ja esta funcional e validado.
+  2. O flake.nix continua REVISADO ESTATICAMENTE. Falta rodar "nix build"
+     numa maquina Linux.
+  3. O script count-downloads.ts tem um padrao de repositorio fixo
+     ("fhzipa/fhzipa-inject") que hoje responde 404 na API publica, e
+     uma limitacao de 1000 paginas na API. No CI isso nao atrapalha
+     (o GITHUB_REPO do workflow aponta para o repositorio real), mas o
+     padrao do script poderia ser corrigido. NAO foi alterado: e uma
+     decisao de produto (qual repositorio contar), nao de infraestrutura.
+  4. O "Doar"/SPONSOR_URL continua exportado e sem uso (ja registrado na
+     parte 1).
+  5. A politica de IA do CONTRIBUTING.md proibe PRs gerados por LLM. Nada
+     foi commitado, publicado nem aberto como PR nesta tarefa, e o
+     mantenedor precisa decidir o que fazer com as alteracoes locais.
+
+12.10 CONTAGENS HISTORICAS (conferidas de novo)
+-------------------------------------------------
+  Os numeros da parte 1 continuam valendo e foram reconferidos contra a
+  copia de seguranca do estado anterior a reorganizacao:
+    - 86 arquivos movidos de lugar (85 de dentro de src/ + o
+      count_downloads.ts da raiz) + 1 renomeado depois
+      (src/App.tsx -> src/app-principal.tsx)
+    - 60 arquivos byte a byte identicos e 28 com SOMENTE linhas de import
+      alteradas (88 comparados = os 87 de src/ + o script da raiz)
+  A composicao dos conjuntos:
+    os 87 arquivos de src/ antes da reorganizacao eram
+      24 na raiz de src/ + 7 em src/assets/devices/ + 20 em
+      src/components/ + 28 em src/locales/ + 8 em src/pages/ = 87
+    e ficaram, depois,
+      3 na raiz de src/ + 20 + 8 + 4 + 7 + 3 + 4 + 2 + 8 + 28 = 87
+    (main.tsx e vite-env.d.ts ficaram no lugar; o resto foi movido)
+  O total de arquivos de src/ depois e o mesmo: 87. Nenhum arquivo foi
+  perdido e nenhum foi criado.
+  Pode-se reconstruir essa contagem com seguranca porque a copia de
+  seguranca "anterior-a-reorganizacao" preserva exatamente a arvore
+  antiga de src/. Se essa pasta nao existisse, a contagem seria uma
+  reconstrucao por suposicao - e seria registrada como tal.
+
+================================================================================
+PARTE 4 - INSTALADOR PROPRIO COM A IDENTIDADE VISUAL (21/10/2026, 09:20-11:00)
+================================================================================
+
+  O QUE ESTA NESTA PARTE
+  A preparacao do ambiente de compilacao nativa ja estava feita na Parte 3.
+  Aqui foi entregue o instalador proprio, com a identidade visual da
+  marca, e a instalacao real foi validada.
+
+  ONDE O INSTALADOR VIVE
+  Projeto separado, ao lado deste repositorio:
+      ..\instalador fhzipa\
+  Ele tem o proprio git (branch main, HEAD a04f2d9). As alteracoes desta
+  etapa NAO foram commitadas, por instrucao. Documentacao:
+      GUIA-DO-INSTALADOR.txt
+      DOCUMENTACAO-TECNICA-DO-INSTALADOR.md
+      RELATORIO-DE-VALIDACAO-DO-INSTALADOR.txt
+      evidencias\capas\   (capturas de cada estado)
+
+  ARQUITETURA ESCOLHIDA
+  Interface WPF propria (.NET 10) sobre um motor de instalacao real, no
+  mesmo executavel. O NSIS nao foi personalizado (a interface MUI nao
+  reproduz o desenho de referencia) e o instalador nao e um bootstrapper
+  que chamaria o NSIS em silencio (o modo silencioso nao reporta progresso
+  real, que e o que a tarefa exige). O modo de previa usa os mesmos
+  eventos do motor, com faixa e titulo proprios. O porque de cada decisao
+  esta na documentacao tecnica do instalador.
+
+  O QUE FOI ENTREGUE E VERIFICADO
+    - o executavel do aplicativo ATUAL embutido no instalador
+      (sha256 120333AD... igual ao de 21/10 08:38), com o resumo
+      conferido antes de qualquer escrita;
+    - instalacao real em diretorio isolado: arquivos, registro em HKCU,
+      atalhos e abertura do aplicativo (APROVADO);
+    - desinstalacao pelo companion: registro, atalho e pasta removidos,
+      dados do usuario preservados (APROVADO);
+    - modo de previa com os 8 estados (APROVADO);
+    - 72 testes do instalador, todos passando (13 novos);
+    - tela de erro propria, com codigo, acao e caminho do log;
+    - progresso global calculado a partir de bytes medidos, com pesos
+      documentados (30/45/15/10), sem temporizador;
+    - verificacoes finais obrigatorias: uma falha nao vira sucesso;
+    - elevacao alcancavel e recusa do UAC tratada;
+    - remocao da pasta na desinstalacao sem shell.
+
+  O QUE NAO MUDOU NESTE REPOITORIO
+    Nenhum arquivo do aplicativo. Comparados por hash contra o backup
+    "estado-final-2026-10-21-084607", os 100 arquivos de src/,
+    src-tauri/src/ e public/ estao identicos.
+
+  PENDENCIA QUE DEPENDE DE DECISAO DO MANTENEDOR
+    O atualizador automatico do Tauri usa o manifesto latest.json, que o
+    GitHub Actions publica apontando para o instalador NSIS. Se a
+    distribuicao passar a usar somente o instalador proprio, esse caminho
+    precisa ser revisto. As chaves de assinatura e a identidade
+    (app.fhzipa.inject) NAO foram tocadas. A instalacao elevada de
+    verdade (UAC aceito, destino em Program Files) continua NAO TESTADA:
+    o UAC foi recusado nas tentativas automatizadas.
+
+================================================================================
+FIM DO RELATORIO
+================================================================================

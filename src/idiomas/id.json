@@ -1,0 +1,391 @@
+{
+  "subtitle": "Pendamping Sideloading",
+  "version": "Versi",
+  "common": {
+    "confirm": "Konfirmasi",
+    "cancel": "Batal",
+    "dismiss": "Tutup",
+    "refresh": "Segarkan",
+    "delete": "Hapus",
+    "copy_to_clipboard": "Salin ke clipboard",
+    "more_details": "Detail Lainnya",
+    "no_error": "Tidak ada kesalahan",
+    "copied_success": "Tersalin ke clipboard"
+  },
+  "dropdown": {
+    "custom_value": "Nilai khusus",
+    "custom": "Khusus",
+    "use_custom_value": "Gunakan nilai khusus",
+    "back_preset_options": "Kembali ke opsi preset",
+    "select": "Pilih"
+  },
+  "app": {
+    "language": "Bahasa",
+    "github": "GitHub",
+    "open_github_failed": "Tidak dapat membuka tautan GitHub",
+    "section_account": "Akun",
+    "section_placeholder": "Placeholder",
+    "section_management": "Manajemen",
+    "manage_pairing_file": "Kelola Berkas Pairing",
+    "refresh_devices": "Segarkan Perangkat",
+    "certificates": "Sertifikat",
+    "app_ids": "ID Aplikasi",
+    "devices": "Perangkat",
+    "active_device": "Aktif: {{name}}",
+    "select_device": "Pilih perangkat",
+    "installers": "Pemasang",
+    "import_ipa": "Impor IPA",
+    "settings": "Pengaturan",
+    "must_be_logged_in": "Anda harus masuk terlebih dahulu!",
+    "must_select_device": "Anda harus memilih perangkat!",
+    "ipa_files": "Berkas IPA",
+    "logo_alt": "logo FHZIPA INJECT",
+    "brand_subtitle": "Sideloading Assistant"
+  },
+  "apple_id": {
+    "title": "Apple ID",
+    "logged_in_as": "Masuk sebagai",
+    "sign_out": "Keluar",
+    "signing_out": "Sedang Keluar...",
+    "sign_out_failed": "Keluar gagal",
+    "signed_out_success": "Berhasil keluar!",
+    "saved_logins": "Login Tersimpan",
+    "sign_in": "Masuk",
+    "logging_in": "Sedang Masuk...",
+    "logged_in_success": "Berhasil masuk!",
+    "login_failed": "Masuk gagal",
+    "deleting": "Menghapus...",
+    "deletion_failed": "Penghapusan gagal",
+    "deleted_success": "Berhasil dihapus!",
+    "add_account": "Tambah Akun +",
+    "new_login": "Login Baru",
+    "email_placeholder": "Email Apple ID...",
+    "password_placeholder": "Kata Sandi Apple ID...",
+    "save_credentials": "Simpan Kredensial",
+    "enter_email_password": "Harap masukkan email dan kata sandi.",
+    "valid_email": "Harap masukkan alamat email yang valid.",
+    "login": "Masuk",
+    "two_factor_title": "Autentikasi Dua Faktor",
+    "two_factor_prompt": "Harap masukkan kode verifikasi yang dikirim ke perangkat Anda.",
+    "verification_placeholder": "Kode Verifikasi...",
+    "valid_6digit": "Harap masukkan kode 6 digit yang valid.",
+    "submit": "Kirim",
+    "max_certs_title": "Sertifikat maksimum tercapai",
+    "max_certs_desc": "FHZIPA INJECT akan mencabut sertifikat Anda yang ada dan membuat yang baru.",
+    "hide_certificate_list": "Sembunyikan daftar sertifikat",
+    "choose_what_to_revoke": "Pilih apa yang akan dicabut",
+    "continue": "Lanjutkan",
+    "no_keyring_available": "Tidak dapat menyimpan kredensial di perangkat ini."
+  },
+  "device": {
+    "title": "iDevice",
+    "loading_devices": "Memuat perangkat...",
+    "no_devices_found": "Tidak ada perangkat ditemukan",
+    "found_device": "Perangkat ditemukan",
+    "found_devices": "Perangkat ditemukan",
+    "unable_load_devices_prefix": "Tidak dapat memuat perangkat",
+    "no_devices_found_period": "Tidak ada perangkat ditemukan.",
+    "selected": "Dipilih",
+    "pairing_in_progress_header": "Memasangkan dengan {{device}}...",
+    "pairing_in_progress_hint": "Harap buka kunci perangkat Anda dan klik \"Percaya\", lalu masukkan kode sandi Anda jika diminta.",
+    "pairing_cancel": "Batal",
+    "failed_select": "Gagal memilih perangkat",
+    "active_label": "ACTIVE DEVICE",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "system": "System",
+    "connection": "Connection",
+    "refresh": "Refresh device",
+    "searching": "Searching…",
+    "none_connected": "No device connected",
+    "connect_hint": "Connect an iPhone or iPad over USB, then refresh the device list."
+  },
+  "operation": {
+    "failed": "Operasi gagal.",
+    "completed": "Operasi selesai",
+    "please_wait": "Harap tunggu...",
+    "copy_error_clipboard": "Salin kesalahan ke clipboard"
+  },
+  "operations": {
+    "sideload_title": "Memasang Aplikasi",
+    "sideload_step_prepare": "Prepare bundle",
+    "sideload_step_install": "Tanda Tangan & Pasang Aplikasi"
+  },
+  "certificates": {
+    "manage": "Kelola Sertifikat",
+    "loading": "Memuat sertifikat...",
+    "loaded_success": "Sertifikat berhasil dimuat!",
+    "failed_load": "Gagal memuat sertifikat",
+    "revoking": "Mencabut sertifikat...",
+    "revoked_success": "Sertifikat berhasil dicabut!",
+    "failed_revoke": "Gagal mencabut sertifikat: ",
+    "none_found": "Tidak ada sertifikat ditemukan.",
+    "name": "Nama",
+    "serial_number": "Nomor Seri",
+    "machine_name": "Nama Mesin",
+    "machine_id": "ID Mesin",
+    "revoke": "Cabut",
+    "subtitle": "Signing certificates available for your Apple ID."
+  },
+  "app_ids": {
+    "manage": "Kelola ID Aplikasi",
+    "loading": "Memuat ID Aplikasi...",
+    "loaded_success": "ID Aplikasi berhasil dimuat!",
+    "failed_load": "Gagal memuat ID Aplikasi",
+    "deleted_success": "ID Aplikasi berhasil dihapus!",
+    "failed_delete": "Gagal menghapus ID Aplikasi",
+    "available": "{{available}}/{{max}} ID Tersedia",
+    "none_found": "Tidak ada ID Aplikasi ditemukan.",
+    "name": "Nama",
+    "expiration": "Kedaluwarsa",
+    "id": "ID",
+    "identifier": "Pengenal",
+    "never": "Tidak Pernah",
+    "subtitle": "Identifiers registered on your developer account."
+  },
+  "pairing": {
+    "manage": "Kelola Berkas Pairing",
+    "loading_apps": "Memuat Aplikasi...",
+    "apps_loaded_success": "Aplikasi berhasil dimuat!",
+    "failed_load_apps": "Gagal memuat aplikasi",
+    "placing_pairing_file": "Menempatkan berkas pairing...",
+    "pairing_file_placed_success": "Berkas pairing berhasil ditempatkan!",
+    "failed_place_pairing": "Gagal menempatkan pairing",
+    "loading_app": "Memuat Aplikasi...",
+    "no_supported_apps_found": "Tidak ada aplikasi yang didukung ditemukan.",
+    "name": "Nama",
+    "bundle_id": "ID Bundel",
+    "place_pairing_file": "Tempatkan Berkas Pairing",
+    "place": "Tempatkan",
+    "advanced_export_title": "Lanjutan: Ekspor Berkas Pairing",
+    "advanced_export_message": "Ini tidak disarankan kecuali Anda benar-benar mengerti risikonya. Tekan \"Tempatkan\" di samping aplikasi untuk mentransfernya secara otomatis. Anda yakin masih ingin mengekspor berkas pairing Anda?",
+    "exporting_pairing_file": "Mengekspor berkas pairing...",
+    "pairing_file_exported_success": "Berkas pairing berhasil diekspor!",
+    "failed_export_pairing_file": "Gagal mengekspor berkas pairing",
+    "export_not_recommended": "Ekspor (Tidak Disarankan)",
+    "refresh_installed_apps": "Pindai Ulang Aplikasi Terpasang",
+    "place_all": "Tempatkan Di Semua Aplikasi"
+  },
+  "settings": {
+    "anisette_server": "Server Anisette:",
+    "custom_anisette_placeholder": "Server Anisette Khusus",
+    "custom_anisette": "Khusus",
+    "use_custom_anisette": "Gunakan server Anisette khusus",
+    "back_preset_servers": "Kembali ke server preset",
+    "reset_anisette_title": "Atur Ulang State Anisette",
+    "reset_anisette_message": "Anda yakin ingin mereset state anisette? Anda akan diminta untuk memasukkan kode 2FA Anda lagi.",
+    "resetting_anisette_state": "Meriset state anisette...",
+    "anisette_state_reset_success": "State anisette berhasil direset",
+    "anisette_state_not_found": "Tidak ada state anisette untuk direset",
+    "failed_reset_anisette_state": "Gagal mereset state anisette",
+    "view_logs": "Lihat Log",
+    "logs": "Log",
+    "log_level": "Tingkat Log:",
+    "no_logs_yet": "Belum ada log.",
+    "debug": "Debug",
+    "info": "Info",
+    "warn": "Peringatan",
+    "error": "Kesalahan",
+    "language_hint": "Anda dapat membantu terjemahan <translation>di sini</translation>.",
+    "delete_stored_rppairing": "Hapus Pairing Tersimpan",
+    "delete_stored_rppairing_message": "Anda yakin ingin menghapus berkas pairing yang tersimpan untuk perangkat ini? Ini akan mengharuskan Anda untuk memasangkan kembali.",
+    "deleting_stored_rppairing": "Menghapus pairing tersimpan...",
+    "stored_rppairing_deleted_success": "Pairing tersimpan berhasil dihapus!",
+    "failed_delete_stored_rppairing": "Gagal menghapus pairing tersimpan",
+    "dont_use_keyring": "Jangan gunakan keyring",
+    "dont_use_keyring_message": "Ini membuat FHZIPA INJECT kurang aman dengan menyimpan berkas pairing, state anisette, dan sertifikat di disk. Aktifkan ini hanya jika penyimpanan keyring default tidak berfungsi dan Anda memahami risikonya."
+  },
+  "dialog": {
+    "confirm": "Konfirmasi",
+    "cancel": "Batal"
+  },
+  "error": {
+    "title": "Terjadi Kesalahan: {{msg}}",
+    "unknown": "Tidak diketahui",
+    "suggestions_heading": "Saran",
+    "suggestions": {
+      "underage": [
+        "Apple ID Anda mungkin di bawah usia yang diperlukan untuk menggunakan layanan pengembang."
+      ],
+      "account_locked": [
+        "Jangan panik! Ini biasanya terjadi setelah beberapa kali upaya masuk yang gagal, tetapi ini sama sekali tidak berbahaya.",
+        "Kunjungi ((link:https://iforgot.apple.com/)) untuk membuka kunci akun Anda."
+      ],
+      "auth": [
+        "Pastikan kredensial Anda benar dan coba lagi, meskipun sebelumnya sudah benar.",
+        "Jika masalah masih berlanjut, coba gunakan Apple ID lain.",
+        "Kunci Keamanan 2FA tidak didukung. Jika memungkinkan, gunakan Apple ID tanpa 2FA atau dengan 2FA perangkat tepercaya."
+      ],
+      "house_arrest": [
+        "[ios::26.3]Pastikan perangkat Anda tidak menggunakan beta pengembang iOS 26.3, karena memiliki bug dengan house arrest"
+      ],
+      "pairing": [
+        "Coba sambungkan kembali perangkat dan jalankan tindakan lagi.",
+        "Pastikan perangkat Anda memiliki kode sandi.",
+        "Pastikan perangkat Anda terhubung melalui USB, bukan nirkabel."
+      ],
+      "canceled": [],
+      "operation_update": [],
+      "usbmuxd": [
+        "[platform::windows]Pastikan Anda telah menginstal ((link:https://apple.co/ms:iTunes)) dan periksa apakah iTunes dapat mendeteksi perangkat Anda.",
+        "[platform::windows]Copot pemasangan iTunes dan Apple Mobile Device Support, lalu instal \"Apple Devices\" dari Microsoft Store.",
+        "[platform::linux]Pastikan usbmuxd terinstal dan berjalan."
+      ],
+      "trust": [
+        "Buka kunci perangkat Anda, buka layar beranda, dan terima permintaan kepercayaan yang muncul."
+      ],
+      "device_coms": [
+        "Pastikan perangkat Anda terhubung dengan benar ke komputer.",
+        "Cabut dan sambungkan kembali perangkat. Jika masalah masih berlanjut, coba port USB dan kabel yang berbeda."
+      ],
+      "not_logged_in": [
+        "Masuk ke Apple ID Anda terlebih dahulu."
+      ],
+      "no_device_selected": [
+        "Pilih perangkat sebelum melanjutkan."
+      ],
+      "anisette": [
+        "Pastikan komputer Anda terhubung ke internet.",
+        "Ubah server anisette Anda. Coba beberapa server yang berbeda.",
+        "Pastikan Anda dapat mengakses ((link:{{anisetteServerUrl}})) di peramban."
+      ],
+      "keyring": [
+        "Coba aktifkan \"Jangan gunakan keyring\" di pengaturan untuk melewati masalah ini. Perhatikan bahwa ini kurang aman."
+      ],
+      "misc": [
+        "Coba lagi. Memulai ulang aplikasi, komputer, dan/atau ponsel Anda mungkin juga membantu."
+      ],
+      "admin": [
+        "Coba jalankan aplikasi dengan izin yang ditinggikan (sebagai administrator/root)."
+      ],
+      "filesystem": [
+        "Pastikan FHZIPA INJECT memiliki izin untuk membaca dan menulis berkas di sistem Anda."
+      ],
+      "not_enough_app_ids": [
+        "Anda tidak memiliki cukup ID Aplikasi yang tersedia untuk memasang aplikasi ini.",
+        "Tunggu hingga ID Aplikasi kedaluwarsa setelah 7 hari (tidak dapat dihapus lebih cepat), lalu coba lagi."
+      ],
+      "max_apps": [
+        "Anda hanya dapat memiliki 3 aplikasi sideload yang terpasang sekaligus dengan Apple ID gratis.",
+        "Hapus aplikasi sideload lain untuk mengosongkan ruang bagi aplikasi ini.",
+        "Aplikasi yang kedaluwarsa tetap dihitung dalam batas 3 aplikasi."
+      ]
+    },
+    "support_message": "Jika masalah masih berlanjut, tekan \"Salin ke clipboard\" dan kirimkan kesalahan yang disalin ke <discord>Discord</discord> atau <github>isu GitHub</github> untuk mendapatkan dukungan."
+  },
+  "update": {
+    "new_version_available": "Versi baru tersedia: {{version}}. Apakah Anda ingin memperbarui?",
+    "updating": "Memperbarui...",
+    "downloaded_restarting": "Pembaruan diunduh! Memulai ulang aplikasi...",
+    "failed_download": "Gagal mengunduh pembaruan: {{error}}"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "overview": "Overview",
+    "devices": "Devices",
+    "certificates": "Certificates",
+    "app_ids": "App IDs",
+    "settings": "Settings",
+    "store": "Download apps"
+  },
+  "home": {
+    "eyebrow": "OVERVIEW",
+    "title": "Your iPhone. New possibilities.",
+    "subtitle": "Your apps, the simple way."
+  },
+  "steps": {
+    "device": "Device connected",
+    "account": "Connect Apple ID",
+    "ipa": "Import IPA"
+  },
+  "account": {
+    "title": "Connect your account",
+    "subtitle": "Sign in with your Apple ID to continue.",
+    "email": "Apple ID email",
+    "password": "Password",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "save_credentials": "Save credentials",
+    "submit": "Sign in",
+    "helper": "Your account will be used to sign the apps.",
+    "signed_in_as": "CONNECTED ACCOUNT"
+  },
+  "import": {
+    "title": "Your next app is right here",
+    "subtitle": "Drag an .ipa file into this area.",
+    "button": "Import IPA",
+    "install": "Install app",
+    "remove": "Remove",
+    "invalid": "Select a valid .ipa file.",
+    "drop_active": "Drop the file to import it.",
+    "version": "Version"
+  },
+  "status": {
+    "waiting-device": "Waiting for a device",
+    "waiting-device_detail": "Connect an iPhone or iPad over USB to continue.",
+    "waiting-account": "Waiting for your account",
+    "waiting-account_detail": "Sign in with your Apple ID and import an IPA to start.",
+    "need-ipa": "Import an app",
+    "need-ipa_detail": "Select an .ipa file to install on the device.",
+    "ready": "Ready to install",
+    "ready_detail": "Everything is set, install the app when you want.",
+    "installing": "Installing app",
+    "installing_detail": "Signing and transferring the app, keep the device connected.",
+    "done": "Installation complete",
+    "done_detail": "The app was installed on the device.",
+    "failed": "Could not complete",
+    "failed_detail": "Open the details to see what went wrong."
+  },
+  "prefs": {
+    "title": "Preferences",
+    "subtitle": "Customize the server, the language and other options.",
+    "anisette": "Anisette server",
+    "language": "Language",
+    "keyring": "System keyring",
+    "keyring_hint": "Store credentials in the Windows credential manager."
+  },
+  "devices": {
+    "title": "Your devices",
+    "subtitle": "Pick the iPhone or iPad you want to work with."
+  },
+  "store": {
+    "title": "Download apps",
+    "subtitle": "A catalog of IPAs ready to install on your iPhone.",
+    "search_placeholder": "Search app or game",
+    "all": "All",
+    "download": "Download",
+    "install": "Install",
+    "downloading": "Downloading…",
+    "empty": "No app found. Try another search or category.",
+    "loading": "Loading the catalog…",
+    "count": "{{shown}} of {{total}} apps",
+    "load_more": "Load more",
+    "ready_to_install": "Ready to install.",
+    "view_source": "View at the source",
+    "install_device": "Install on the device",
+    "no_direct": "This source has no direct download.",
+    "open_page": "Open the app page at the source",
+    "preparing": "Preparing…"
+  },
+  "featured": {
+    "title": "Featured",
+    "subtitle": "The most wanted apps in the catalog."
+  },
+  "sort": {
+    "label": "Sort",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "az": "Name (A-Z)",
+    "za": "Name (Z-A)"
+  },
+  "filters": {
+    "label": "Filters",
+    "premium": "Premium unlocked",
+    "noads": "No ads",
+    "emulator": "Emulators",
+    "gameplay": "Gameplay mods",
+    "categories": "Categories",
+    "features": "Features",
+    "clear": "Clear filters"
+  }
+}

@@ -20,6 +20,9 @@ pub struct DeviceInfo {
     pub udid: String,
     pub connection_type: String,
     pub version: String,
+    /// The model of the device, such as "iPhone14,3". The interface uses it
+    /// to show the artwork of the right model.
+    pub product_type: String,
 }
 
 #[derive(Deserialize, Serialize, Clone)]
@@ -55,7 +58,7 @@ pub async fn list_devices() -> Result<Vec<Result<DeviceInfo, AppError>>, AppErro
         .map(|d| {
             let usbmuxd_addr = usbmuxd_addr.clone();
             async move {
-                let provider = d.to_provider(usbmuxd_addr, "iloader");
+                let provider = d.to_provider(usbmuxd_addr, "fhzipa-inject");
                 let device_uid = d.device_id;
                 let connection_type = match d.connection_type {
                     Connection::Usb => "USB",
@@ -105,12 +108,22 @@ pub async fn list_devices() -> Result<Vec<Result<DeviceInfo, AppError>>, AppErro
                     AppError::DeviceComs("Product version was not a string".into())
                 })?;
 
+                // The model, so the interface can show the right artwork.
+                // A device that does not answer keeps the empty value and
+                // the interface falls back to a generic render.
+                let product_type = match lockdown_client.get_value(Some("ProductType"), None).await
+                {
+                    Ok(value) => value.as_string().unwrap_or_default().to_string(),
+                    Err(_) => String::new(),
+                };
+
                 Ok::<DeviceInfo, AppError>(DeviceInfo {
                     name: device_name.to_string(),
                     id: device_uid,
                     udid: d.udid.clone(),
                     connection_type,
                     version: version.to_string(),
+                    product_type,
                 })
             }
         })
@@ -192,6 +205,6 @@ pub async fn get_provider_from_connection(
             AppError::DeviceComsWithMessage("Failed to get device".into(), e.to_string())
         })?;
 
-    let provider = device.to_provider(UsbmuxdAddr::from_env_var().unwrap(), "iloader");
+    let provider = device.to_provider(UsbmuxdAddr::from_env_var().unwrap(), "fhzipa-inject");
     Ok(provider)
 }

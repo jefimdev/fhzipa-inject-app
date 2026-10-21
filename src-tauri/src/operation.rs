@@ -21,11 +21,6 @@ impl<'a> Operation<'a> {
         Operation { id, window }
     }
 
-    pub fn move_on(&self, old_id: &str, new_id: &str) -> Result<(), AppError> {
-        self.complete(old_id)?;
-        self.start(new_id)
-    }
-
     pub fn start(&self, id: &str) -> Result<(), AppError> {
         self.window
             .emit(

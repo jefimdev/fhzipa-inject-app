@@ -1,41 +1,43 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "iloader",
-  "version": "2.4.0",
-  "identifier": "me.nabdev.iloader",
+  "productName": "FHZIPA INJECT",
+  "version": "1.0.0",
+  "identifier": "app.fhzipa.inject",
   "build": {
-    "beforeDevCommand": "bun run dev",
+    "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "bun run build",
+    "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
   "app": {
     "windows": [
       {
-        "title": "iloader",
-        "width": 800,
-        "height": 600,
-        "minHeight": 300,
-        "minWidth": 400
+        "title": "FHZIPA INJECT",
+        "width": 1600,
+        "height": 960,
+        "minHeight": 700,
+        "minWidth": 1024,
+        "center": true
       }
     ],
     "security": {
       "csp": null
     }
   },
-  "plugins": {
-    "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEUwRDc0NjBERkEzN0U1MzYKUldRMjVUZjZEVWJYNFA0eWtoOGRyRFBtc3BnN20zWFpzbmVNaiswVmhlNm9GUzFzTjRPYmxSaHIK",
-      "endpoints": [
-        "https://github.com/nab138/iloader/releases/latest/download/latest.json"
-      ]
-    }
-  },
   "bundle": {
     "active": true,
-    "targets": "all",
-    "createUpdaterArtifacts": true,
+    "targets": ["nsis"],
     "category": "Utility",
+    "publisher": "FHZIPA INJECT",
+    "copyright": "Copyright (C) 2025 nab138. Modified fork distributed under the MIT License.",
+    "shortDescription": "Assistente de sideloading para iPhone e iPad",
+    "longDescription": "FHZIPA INJECT instala arquivos IPA em iPhones e iPads, com autenticação Apple ID, pareamento, certificados e logs de diagnóstico.",
+    "windows": {
+      "nsis": {
+        "languages": ["PortugueseBR", "English"],
+        "displayLanguageSelector": false
+      }
+    },
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

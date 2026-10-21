@@ -9,8 +9,10 @@ mod pairing;
 #[macro_use]
 mod secure_storage;
 mod error;
+mod ipa;
 mod logging;
 mod operation;
+mod store;
 
 use crate::{
     account::{
@@ -25,16 +27,15 @@ use crate::{
         place_pairing_cmd,
     },
     secure_storage::{force_disable_keyring, keyring_available},
-    sideload::{SideloaderMutex, install_sidestore_operation, sideload_operation},
+    sideload::{SideloaderMutex, sideload_operation},
 };
+use crate::ipa::read_ipa_info;
 use tauri::Manager;
 use tracing_subscriber::{Layer, Registry, fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::new().build())
@@ -49,7 +50,7 @@ pub fn run() {
 
             let file_appender = tracing_appender::rolling::RollingFileAppender::builder()
                 .rotation(tracing_appender::rolling::Rotation::DAILY)
-                .filename_prefix("iloader")
+                .filename_prefix("fhzipa-inject")
                 .filename_suffix("log")
                 .max_log_files(2)
                 .build(&log_dir)
@@ -112,7 +113,6 @@ pub fn run() {
             list_devices,
             sideload_operation,
             set_selected_device,
-            install_sidestore_operation,
             get_certificates,
             revoke_certificate,
             list_app_ids,
@@ -126,6 +126,14 @@ pub fn run() {
             force_disable_keyring,
             cancel_pairing,
             has_stored_rppairing,
+            read_ipa_info,
+            store::store_sources,
+            store::store_categories,
+            store::store_page,
+            store::store_featured,
+            store::store_download,
+            store::store_remove_file,
+            store::store_file_info,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,11 +1,6 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    bun2nix = {
-      url = "github:nix-community/bun2nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.treefmt-nix.follows = "treefmt-nix";
-    };
     systems.url = "github:nix-systems/default";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -33,63 +28,65 @@
         { ... }@args:
         import nixpkgs (
           {
-            overlays = [ inputs.bun2nix.overlays.default ];
+            overlays = [ ];
           }
           // args
         );
 
-      importBunLock =
-        { pkgs, src }:
-        pkgs.stdenv.mkDerivation {
-          inherit src;
-
-          name = "bun.nix";
-
-          nativeBuildInputs = with pkgs; [
-            bun2nix
-          ];
-
-          buildPhase = ''
-            bun2nix -o bun.nix
-          '';
-
-          installPhase = ''
-            cp bun.nix $out
-          '';
+      # The frontend is built with npm, the same package manager the project
+      # uses everywhere else. `buildNpmPackage` consumes the committed
+      # package-lock.json, so the dependency tree stays reproducible and the
+      # build no longer depends on a bun.lock.
+      frontend_src =
+        pkgs.lib.cleanSourceWith {
+          src = ./.;
+          filter = path: type:
+            let
+              base = baseNameOf (toString path);
+            in
+            !(
+              base == "src-tauri"
+              || base == ".github"
+              || base == ".git"
+              || base == "node_modules"
+              || base == "dist"
+            );
         };
 
-      iloader_gen =
+      fhzipa_inject_gen =
         {
           pkgs,
           tools ? [ ],
           specialArgs ? { },
         }:
-        pkgs.rustPlatform.buildRustPackage (
+        pkgs.rustPlatform.buildRustCrate (
           let
             src = cleanSource ./.;
             json = fromJSON (readFile (src + "/package.json"));
+
+            frontend = pkgs.buildNpmPackage {
+              pname = json.name + "-frontend";
+              inherit (json) version;
+              src = frontend_src;
+              npmLockFile = frontend_src + "/package-lock.json";
+              npmBuildScript = "build";
+              dontFixup = true;
+            };
           in
-          final:
           {
             pname = json.name;
             inherit (json) version;
 
             inherit src;
-            bunDeps = pkgs.bun2nix.fetchBunDeps {
-              bunNix = importBunLock { inherit pkgs src; };
-            };
             cargoRoot = "src-tauri";
             cargoLock.lockFile = src + "/${final.cargoRoot}/Cargo.lock";
             buildAndTestSubdir = final.cargoRoot;
 
-            dontUseBunBuild = true;
-            dontUseBunCheck = true;
-
             nativeBuildInputs =
-              with pkgs;
-              [
+              with pkgs; [
                 cargo-tauri.hook
-                bun2nix.hook
+                nodejs
+                npm
                 pkg-config
                 jq
                 moreutils
@@ -98,15 +95,22 @@
               ++ tools;
 
             buildInputs = optionals pkgs.stdenv.hostPlatform.isLinux (
-              with pkgs;
-              [
+              with pkgs; [
                 glib-networking
                 openssl
                 webkitgtk_4_1
               ]
             );
 
+            # The node modules come from the npm derivation above, so the
+            # Tauri hook can run "npm run build" without network access.
             postPatch = ''
+              ln -s ${frontend.nodeModules} node_modules
+              mkdir -p dist
+              cp -r ${frontend}/dist/* dist/
+            '';
+
+            postInstall = ''
               jq \
                 '.plugins.updater.endpoints = [ ]
                 | .bundle.createUpdaterArtifacts = false' \
@@ -122,11 +126,11 @@
         system:
         let
           pkgs = pkgs_gen { inherit system; };
-          iloader = iloader_gen { inherit pkgs; };
+          fhzipa_inject = fhzipa_inject_gen { inherit pkgs; };
         in
         {
-          inherit iloader;
-          default = iloader;
+          inherit fhzipa_inject;
+          default = fhzipa_inject;
         }
       );
       formatter = forAllSystems (

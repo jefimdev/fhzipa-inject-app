@@ -1,13 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import App from "./app-principal";
 import { Toaster } from "sonner";
-import { StoreProvider } from "./StoreContext";
-import { LogProvider } from "./LogContext";
-import { ErrorProvider } from "./ErrorContext";
-import { DialogProvider } from "./DialogContext";
-import "./i18next";
-import { PlatformProvider } from "./PlatformContext";
+import { StoreProvider } from "./contextos/loja";
+import { LogProvider } from "./contextos/log";
+import { ErrorProvider } from "./contextos/erro";
+import { DialogProvider } from "./contextos/dialogo";
+import "./configuracoes/i18n";
+import { PlatformProvider } from "./contextos/plataforma";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

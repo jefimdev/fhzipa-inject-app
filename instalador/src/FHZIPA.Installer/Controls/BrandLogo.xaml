@@ -1,0 +1,59 @@
+<UserControl x:Class="FHZIPA.Installer.Controls.BrandLogo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="72"
+             Height="72"
+             Background="Transparent"
+             UseLayoutRounding="True"
+             SnapsToDevicePixels="True">
+
+    <Grid Width="72" Height="72">
+        <!-- O brilho vermelho atras do quadrado. -->
+        <Border Width="64"
+                Height="64"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                CornerRadius="18"
+                Background="{StaticResource LogoGradient}"
+                Effect="{StaticResource LogoGlow}" />
+
+        <!-- O quadrado do logo. -->
+        <Border x:Name="Square"
+                Width="64"
+                Height="64"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                CornerRadius="18"
+                Background="{StaticResource LogoGradient}"
+                BorderBrush="#FF5C7C"
+                BorderThickness="1">
+            <Grid>
+                <!-- O brilho interno, discreto. -->
+                <Ellipse Width="54" Height="34"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         Margin="0,-6,0,0"
+                         Opacity="0.22">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush GradientOrigin="0.5,0" Center="0.5,0" RadiusX="0.7" RadiusY="0.9">
+                            <GradientStop Color="#FFFFFFFF" Offset="0" />
+                            <GradientStop Color="#00FFFFFF" Offset="1" />
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+
+                <!-- O simbolo de download, vetorial. -->
+                <Path Width="34"
+                      Height="34"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Data="M 17,4 L 17,20 M 9,14 L 17,22 L 25,14 M 6,27 L 28,27"
+                      Stroke="#FFFFFFFF"
+                      StrokeThickness="3.4"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      StrokeLineJoin="Round" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

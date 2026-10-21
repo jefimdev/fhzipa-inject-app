@@ -1,0 +1,25 @@
+{
+  "Application": {
+    "Name": "FHZIPA INJECT",
+    "ExecutableName": "fhzipa-inject.exe",
+    "Version": "1.0.0",
+    "Description": "Instalador de aplicativos para iPhone.",
+    "Publisher": "FHZIPA INJECT"
+  },
+  "Installer": {
+    "DefaultDirectory": "%ProgramFiles%\\FHZIPA INJECT",
+    "CreateDesktopShortcut": true,
+    "CreateStartMenuShortcut": true,
+    "LaunchAfterInstall": true
+  },
+  "Downloads": {
+    "ManifestUrl": null,
+    "TimeoutSeconds": 30,
+    "MaxRetries": 3,
+    "UseEmbeddedPayload": true
+  },
+  "Security": {
+    "RequireHashValidation": true,
+    "VerifyDigitalSignatureWhenAvailable": true
+  }
+}

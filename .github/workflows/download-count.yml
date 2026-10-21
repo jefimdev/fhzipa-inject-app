@@ -11,13 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: 20
 
       - name: Run download counter
         id: count
-        run: echo "download_count=$(bun count_downloads.ts)" >> "$GITHUB_OUTPUT"
+        run: echo "download_count=$(node .github/scripts/count-downloads.mjs)" >> "$GITHUB_OUTPUT"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -26,7 +26,7 @@ jobs:
         with:
           auth: ${{ secrets.GIST_SECRET }}
           gistID: 28258aff7e3f1d3a3084a21f4cff2e57
-          filename: iloader_downloads.json
+          filename: fhzipa_inject_downloads.json
           label: downloads
           message: ${{ steps.count.outputs.download_count }}
           color: brightgreen

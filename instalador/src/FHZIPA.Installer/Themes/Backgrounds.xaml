@@ -1,0 +1,57 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+  <!-- ================================================================== -->
+  <!-- Formas e fundos da identidade visual                                -->
+  <!-- Tudo vetorial: nada de imagem esticada.                            -->
+  <!-- ================================================================== -->
+
+  <!-- A curva grande que sobe do canto inferior esquerdo. -->
+  <sys:String x:Key="CurveBottomLeft">M 0,600 L 0,430 C 150,300 250,480 430,385 C 610,290 700,430 1000,250 L 1000,600 Z</sys:String>
+
+  <!-- A curva que desce do canto superior direito. -->
+  <sys:String x:Key="CurveTopRight">M 1000,0 L 1000,190 C 880,265 760,120 620,205 C 500,275 430,180 300,55 L 300,0 Z</sys:String>
+
+  <!-- A curva central, mais discreta. -->
+  <sys:String x:Key="CurveCenter">M 0,520 C 200,430 300,560 520,470 C 700,395 820,480 1000,410 L 1000,600 L 0,600 Z</sys:String>
+
+  <!-- O contorno luminoso que acompanha a curva grande. -->
+  <sys:String x:Key="CurveEdgeBottomLeft">M 0,430 C 150,300 250,480 430,385 C 610,290 700,430 1000,250</sys:String>
+
+  <!-- O contorno luminoso do topo. -->
+  <sys:String x:Key="CurveEdgeTopRight">M 300,55 C 430,180 500,275 620,205 C 760,120 880,265 1000,190</sys:String>
+
+  <!-- O brilho vermelho do logo. -->
+  <DropShadowEffect x:Key="LogoGlow"
+                    BlurRadius="26"
+                    ShadowDepth="0"
+                    Opacity="0.65"
+                    Direction="270"
+                    Color="#FF1744" />
+
+  <!-- O brilho vermelho do botao principal. -->
+  <DropShadowEffect x:Key="ButtonGlow"
+                    BlurRadius="18"
+                    ShadowDepth="0"
+                    Opacity="0.45"
+                    Direction="270"
+                    Color="#FF1744" />
+
+  <!-- O brilho do circulo verde da conclusao. -->
+  <DropShadowEffect x:Key="SuccessGlow"
+                    BlurRadius="24"
+                    ShadowDepth="0"
+                    Opacity="0.55"
+                    Direction="270"
+                    Color="#22C55E" />
+
+  <!-- A sombra discreta dos cards. -->
+  <DropShadowEffect x:Key="CardShadow"
+                    BlurRadius="18"
+                    ShadowDepth="4"
+                    Opacity="0.35"
+                    Direction="270"
+                    Color="#000000" />
+
+</ResourceDictionary>

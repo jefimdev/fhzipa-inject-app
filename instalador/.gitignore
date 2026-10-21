@@ -1,0 +1,39 @@
+# Build
+bin/
+obj/
+out/
+publish/
+
+# O executavel do aplicativo e o resumo dele sao artefatos: o
+# scripts/build.ps1 os copia do build do aplicativo para ca.
+src/FHZIPA.Installer/Resources/fhzipa-inject.exe
+src/FHZIPA.Installer/Resources/payload.sha256
+
+# Capturas de tela da validacao (ficam fora do repositorio)
+evidencias/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+*.user
+*.suo
+
+# Artefatos de teste
+TestResults/
+*.trx
+coverage*.xml
+
+# Temporarios do Windows
+Thumbs.db
+desktop.ini
+*.tmp
+
+# Node (usado apenas pelo instalador antigo em legacy-nsis)
+node_modules/
+
+# Segredos: nunca entram no repositorio
+*.pfx
+*.p12
+*.key
+*.pem
+installer.config.local.json

@@ -1,0 +1,12 @@
+# O que o build gera
+out/
+payload/
+installer.exe
+
+# A arte gerada
+background.bmp
+portrait.bmp
+
+# Capturas de tela do desenvolvimento
+shot-*.png
+crop-*.png

@@ -1,0 +1,353 @@
+================================================================================
+GUIA DO INSTALADOR - FHZIPA INJECT
+================================================================================
+Instalador proprio do FHZIPA INJECT, escrito em WPF (.NET 10), com a
+identidade visual da marca e uma instalacao de verdade por baixo.
+
+Este guia e o manual do dia a dia: como compilar, como ver a previa, onde
+esta cada recurso e o que mexer em cada parte.
+
+Os caminhos sao relativos a raiz do projeto do instalador
+(instalador fhzipa/).
+
+================================================================================
+1. O QUE ESTA AQUI
+================================================================================
+
+  FHZIPA-INJECT.slnx          a solucao com os tres projetos
+  scripts/build.ps1            o script que gera a entrega
+  src/FHZIPA.Installer/        o instalador (WPF)
+  src/FHZIPA.Uninstaller/      o desinstalador companion (.NET Framework 4.8)
+  tests/FHZIPA.Installer.Tests/ os testes
+  docs/                        a documentacao tecnica
+  out/publish/                 a pasta com a entrega gerada
+  legacy-nsis/                 o instalador NSIS antigo, arquivado
+
+  O aplicativo em si (o FHZIPA INJECT) fica no projeto vizinho:
+      ..\fhzipa-inject-app\
+  O instalador nao contem o codigo do aplicativo: ele carrega o executavel
+  ja compilado como recurso, dentro do proprio .exe.
+
+================================================================================
+2. O QUE PRECISA ESTAR INSTALADO
+================================================================================
+
+  - .NET 10 SDK            (dotnet --list-sdks tem que mostrar 10.x)
+  - .NET Framework 4.8     (vem em todo Windows 10 e 11; e o que permite
+                            compilar o desinstalador companion)
+  - Node.js + npm          (apenas para compilar o aplicativo, que fica
+                            no projeto vizinho)
+  - Visual Studio Build Tools com "Desenvolvimento para Desktop com C++"
+    (apenas para compilar o aplicativo Rust, no projeto vizinho)
+
+  O usuario final nao precisa de nada disso: o instalador e um .exe
+  autocontido.
+
+================================================================================
+3. COMPILAR
+================================================================================
+
+  3.1 Compilar o aplicativo (o projeto vizinho)
+  ----------------------------------------------
+      cd ..\fhzipa-inject-app
+      npm run tauri build
+
+  Isso gera:
+      ..\fhzipa-inject-app\src-tauri\target\release\fhzipa-inject.exe
+
+  3.2 Gerar o instalador (este projeto)
+  --------------------------------------
+      powershell -ExecutionPolicy Bypass -File scripts\build.ps1
+
+  O script faz tudo, nesta ordem:
+    1. confere se existe o .NET 10 SDK;
+    2. COPIA o executavel do aplicativo (do projeto vizinho) para
+         src\FHZIPA.Installer\Resources\fhzipa-inject.exe
+       e REGERA o resumo
+         src\FHZIPA.Installer\Resources\payload.sha256
+       (o resumo e conferido na hora de instalar, antes de qualquer escrita);
+    3. restaura, compila e roda os testes;
+    4. publica o instalador em out\publish\ como arquivo unico;
+    5. compila o desinstalador companion (desinstalar.exe);
+    6. valida os artefatos e gera SHA256SUMS.txt;
+    7. copia a entrega para ..\FHZIPA INJECT\ (a pasta de distribuicao).
+
+  Opcoes do script:
+      -Configuration Debug|Release   padrao: Release
+      -SkipTests                    nao roda os testes
+      -SkipPublish                   nao copia para a pasta de distribuicao
+
+  3.3 Rodar os testes
+  -------------------
+      dotnet test FHZIPA-INJECT.slnx -c Release
+
+  3.4 Onde fica a entrega
+  ----------------------
+      out\publish\FHZIPA_INJECT_Setup.exe   o instalador (arquivo unico)
+      out\publish\desinstalar.exe           o desinstalador que ele instala
+      out\publish\installer.config.json     a configuracao
+      out\publish\SHA256SUMS.txt            os resumos de SHA-256
+      ..\FHZIPA INJECT\                    a copia de distribuicao
+
+================================================================================
+4. ABRIR A PREVIA (VER TODAS AS TELAS SEM INSTALAR NADA)
+================================================================================
+
+      out\publish\FHZIPA_INJECT_Setup.exe --preview
+
+  O modo de previa:
+    - mostra uma faixa amarela no topo: "MODO DE PREVIA - nenhuma instalacao
+      sera feita de verdade";
+    - mostra o titulo da janela como "Previa do instalador do FHZIPA INJECT";
+    - percorre todas as telas com progresso SIMULADO;
+    - NAO copia nenhum arquivo, NAO cria atalho, NAO escreve no registro e
+      NAO pede autorizacao de administrador;
+    - nao altera os dados do usuario.
+
+  As teclas funcionam na previa:
+      Enter   avanca (equivale ao botao principal)
+      Esc     cancela
+
+  Serve para conferir as telas, o layout e o texto. NAO serve como prova
+  de instalacao: para isso, use o instalador de verdade (secao 5).
+
+================================================================================
+5. INSTALAR DE VERDADE (PARA TESTAR)
+================================================================================
+
+  5.1 Em um diretorio isolado (recomendado para teste)
+  ----------------------------------------------------
+      out\publish\FHZIPA_INJECT_Setup.exe --install-dir="C:\Temp\FHZIPA-TESTE"
+
+  O instalador instala nesse caminho, cria os atalhos e escreve o registro
+  apontando para ele. Para desfazer, rode o desinstalador que ficou la:
+
+      C:\Temp\FHZIPA-TESTE\desinstalar.exe
+
+  5.2 No caminho normal
+  --------------------
+      out\publish\FHZIPA_INJECT_Setup.exe
+
+  O caminho padrao e C:\Program Files\FHZIPA INJECT. Como essa pasta e do
+  sistema, o Windows vai pedir autorizacao de administrador.
+
+  5.3 Opcoes de linha de comando
+  -------------------------------
+      --preview                       modo de previa, nao instala nada
+      --install-dir="<caminho>"        instala no caminho escolhido
+      --desktop-shortcut=0|1           cria ou nao o atalho da area de trabalho
+      --start-menu-shortcut=0|1        cria ou nao o atalho do menu Iniciar
+      --uninstall                     o proprio instalador como desinstalador
+      --remove-folder "<caminho>" <pid>  uso interno: apaga a pasta depois
+                                       que o processo atual terminar
+
+================================================================================
+6. AS ETAPAS DA INSTALACAO
+================================================================================
+
+  1. Boas-vindas
+     A marca, o que o instalador faz e os avisos. Nao pede login, senha
+     nem codigo de 2FA: o instalador nao tem nada a ver com a conta Apple.
+
+  2. Diretorio de instalacao
+     O caminho, o botao Procurar, o espaco necessario e o disponivel, as
+     opcoes de atalho e o aviso quando ja existe uma instalacao no lugar.
+     O caminho padrao (Program Files) exige autorizacao do Windows: o
+     instalador pede a elevacao no momento em que ela e necessaria e
+     avisa se a autorizacao for recusada.
+
+  3. Verificando requisitos
+     Cinco verificacoes reais: sistema operacional, espaco em disco,
+     permissao de escrita, WebView2 e conexao com a internet.
+     Se o WebView2 faltar, a tela diz o que fazer.
+
+  4. Obtencao dos arquivos
+     O aplicativo vem dentro do instalador. O progresso mostra os bytes
+     lidos, a velocidade e o tempo restante, todos medidos.
+
+  5. Instalando
+     Cinco operacoes reais, uma por uma:
+       - Preparando a area de instalacao
+       - Extraindo o aplicativo
+       - Copiando os arquivos
+       - Criando os atalhos
+       - Registrando o desinstalador
+
+  6. Finalizando
+     Tres verificacoes finais, que nao sao decorativas: o executavel
+     principal existe, os atalhos foram criados e o desinstalador foi
+     registrado. Se uma delas falhar, a instalacao NAO e declarada
+     concluida: a tela de erro mostra o que ficou pendente.
+
+  7. Conclusao
+     O selo verde, a versao, a pasta, o botao de abrir o aplicativo e o de
+     concluir. Se o aplicativo nao abrir, isso e tratado separado da
+     instalacao.
+
+  8. Erro (quando da)
+     Uma tela propria com o titulo, o codigo (FHZ-xxxx), a descricao, o que
+     a pessoa pode fazer e onde esta o arquivo de log. O botao principal
+     fica "Tentar de novo" quando a operacao pode ser repetida.
+
+================================================================================
+7. ONDE FICAM OS RECURSOS
+================================================================================
+
+  Logo e icones
+    src\FHZIPA.Installer\Assets\logo.png       a marca como imagem (3251 bytes)
+    src\FHZIPA.Installer\Assets\app.ico         o icone do executavel
+    src\FHZIPA.Installer\Controls\BrandLogo.xaml  a marca vetorial usada na tela
+    src\FHZIPA.Installer\Assets\app-preview.png a captura do aplicativo mostrada
+                                                na tela final (atualizada com a
+                                                captura do codigo atual)
+
+  O simbolo branco de download esta desenhado em vetor no
+  Controls\BrandLogo.xaml (caminho "M 17,4 L 17,20 M 9,14 L 17,22 L 25,14
+  M 6,27 L 28,27") e na barra de titulo da janela. Trocar o desenho do
+  simbolo e mexer nesses dois lugares.
+
+  Cores, fontes, espacamentos, cantos
+    src\FHZIPA.Installer\Themes\Colors.xaml      a paleta e os gradientes
+    src\FHZIPA.Installer\Themes\Typography.xaml  fontes, tamanhos, espacamentos
+    src\FHZIPA.Installer\Themes\Controls.xaml    o estilo dos botoes, cartoes,
+                                                 campos e da barra de progresso
+    src\FHZIPA.Installer\Themes\Backgrounds.xaml as curvas do fundo e as sombras
+
+  Textos
+    src\FHZIPA.Installer\Localization\Strings.resx     portugues (padrao)
+    src\FHZIPA.Installer\Localization\Strings.en.resx   ingles
+    As duas telas tem as mesmas chaves. Para mudar um texto, edite as duas.
+
+  Icones da interface
+    Nao ha arquivos de icone: os simbolos sao vetores desenhados no XAML
+    (Path com o atributo Data) ou vem da fonte Segoe UI.
+
+  O executavel do aplicativo
+    src\FHZIPA.Installer\Resources\fhzipa-inject.exe   (recurso embutido)
+    src\FHZIPA.Installer\Resources\payload.sha256     (o resumo esperado)
+
+================================================================================
+8. COMO AS CORES DO APLICATIVO VIRAM AS DO INSTALADOR
+================================================================================
+
+  O instalador usa a mesma paleta do aplicativo principal:
+      fundo        #080B12
+      vermelho     #FF1744
+      verde        #22C55E
+      azul         #2589FF
+      ambar        #F59E0B
+      texto        #F8FAFC / #94A3B8 / #64748B
+      bordas       #273244 / #354258
+
+  Essas cores estao todas em Themes\Colors.xaml. O vinculo com o
+  aplicativo principal e de identidade, nao de codigo: se a paleta do
+  aplicativo mudar, e preciso mexer aqui tambem.
+
+================================================================================
+9. COMO AS ETAPAS FUNCIONAM (por dentro)
+================================================================================
+
+  A maquina de estados esta em
+      src\FHZIPA.Installer\Models\InstallerState.cs
+  e a transicao e recusada quando nao faz sentido. Por exemplo, nao se
+  chega em "Concluido" sem passar por "Finalizando", e uma falha nunca vira
+  sucesso.
+
+  O progresso global esta em
+      src\FHZIPA.Installer\Models\InstallationProgressTracker.cs
+  e so anda com trabalho de verdade:
+
+      obtencao do pacote  30 %   bytes extraidos do instalador
+      copia dos arquivos  45 %   bytes gravados no destino
+      registro e atalhos  15 %   tres operacoes discretas, 5 % cada
+      verificacoes finais 10 %   tres verificacoes, um terco cada
+
+  A barra nunca chega a 100 % antes das verificacoes finais passarem.
+
+  As operacoes de verdade ficam em
+      src\FHZIPA.Installer\Services\InstallationService.cs
+  que faz: resumo conferido -> copia -> atalhos -> registro -> desinstalador,
+  com um registro do que foi feito para desfacer se algo falhar
+  (src\FHZIPA.Installer\Installation\InstallationJournal.cs).
+
+  Os requisitos sao conferidos em
+      src\FHZIPA.Installer\Services\RequirementChecker.cs
+
+  A interface e a maquina de estados se falam pelos eventos de
+      src\FHZIPA.Installer\Models\InstallerProgress.cs
+  (etapa, estado, bytes, total, velocidade, tempo restante, mensagem,
+  codigo de erro). A interface nunca deduz sucesso sozinha: quem confirma e o
+  codigo de saida e a verificacao final.
+
+================================================================================
+10. ONDE CONFIGURAR DEPENDENCIAS E COMPORTAMENTO
+================================================================================
+
+  src\FHZIPA.Installer\installer.config.json
+      Application.Name              o nome do produto
+      Application.ExecutableName    o nome do executavel instalado
+      Application.Version           a versao (vai para o registro)
+      Application.Description       a descricao curta
+      Application.Publisher          quem publica (vai para o registro)
+      Installer.DefaultDirectory    o caminho padrao de instalacao
+      Installer.CreateDesktopShortcut    criar o atalho da area de trabalho
+      Installer.CreateStartMenuShortcut  criar o atalho do menu Iniciar
+      Installer.LaunchAfterInstall       abrir o aplicativo depois
+      Downloads.ManifestUrl        origem remota do manifesto (vazio = usa o
+                                    pacote embutido)
+      Downloads.TimeoutSeconds     tempo limite das conexoes
+      Downloads.MaxRetries         numero de tentativas
+      Security.RequireHashValidation     conferir o resumo antes de instalar
+      Security.VerifyDigitalSignatureWhenAvailable  conferir a assinatura
+
+  As variaveis de ambiente do caminho (%ProgramFiles%) sao resolvidas pelo
+  proprio Windows na hora de ler a configuracao.
+
+  O pacote embutido e o padrao: o manifesto remoto existe, mas so e usado
+  quando o ManifestUrl esta preenchido. Com o pacote embutido, nenhuma
+  conexao de rede e feita durante a instalacao.
+
+================================================================================
+11. ONDE FICAM OS LOGS
+================================================================================
+
+      %LOCALAPPDATA%\FHZIPA INJECT\Logs\instalador.log
+
+  O log registra: inicio e fim, cada etapa, os requisitos detectados, os
+  codigos de saida, as falhas, o cancelamento e o resultado final.
+  Nao entram no log senhas, tokens, codigos de 2FA nem credenciais.
+  A tela de erro mostra esse caminho para a pessoa poder abrir o arquivo.
+
+================================================================================
+12. COMO GERAR A ENTREGA
+================================================================================
+
+  1. Compile o aplicativo no projeto vizinho (npm run tauri build).
+  2. Rode scripts\build.ps1.
+  3. Pegue out\publish\FHZIPA_INJECT_Setup.exe e o SHA256SUMS.txt.
+
+  O instalador nao esta assinado. A assinatura de verdade acontece no
+  GitHub Actions, com o secret TAURI_SIGNING_PRIVATE_KEY, e vale para o
+  atualizador automatico do Tauri. Um instalador sem assinatura mostra o
+  aviso do SmartScreen, que e o comportamento normal de um instalador
+  pessoal.
+
+  O instalador antigo (NSIS) continua em legacy-nsis\ so como referencia.
+  Ele nao e mais gerado nem publicado.
+
+================================================================================
+13. O QUE NAO ESTA PRONTO
+================================================================================
+
+  - O atualizador automatico do Tauri continua esperando um instalador
+    NSIS. Se o FHZIPA INJECT passar a ser distribuido so pelo instalador
+    novo, o caminho de atualizacao precisa ser revisto (o manifesto
+    latest.json aponta para o instalador NSIS).
+  - O modo de previa mostra o que acontece, mas nao e uma prova de
+    instalacao: a prova e instalar de verdade, em um diretorio isolado.
+  - A desinstalacao usa um desinstalador companion em .NET Framework 4.8.
+    Ele agenda a remocao da pasta para depois que o processo termina.
+
+================================================================================
+FIM DO GUIA
+================================================================================

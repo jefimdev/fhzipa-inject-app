@@ -1,0 +1,56 @@
+.certificate-table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.certificate-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.92rem;
+}
+
+.certificate-table td,
+.certificate-table th {
+  padding: 11px 14px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.certificate-table th {
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 700;
+}
+
+.certificate-item {
+  border-bottom: 1px solid var(--border-soft);
+  margin: 0;
+  padding: 0;
+}
+
+.cert-item-last {
+  border-bottom: none;
+}
+
+.cert-item-part {
+  border-right: 1px solid var(--border-soft);
+  padding-right: 0.9rem;
+}
+
+.cert-item-revoke {
+  cursor: pointer;
+  color: var(--red);
+  font-weight: 650;
+}
+
+.cert-item-revoke:hover {
+  color: var(--text);
+}
+
+.pairing-place {
+  cursor: pointer;
+  color: var(--red);
+  font-weight: 650;
+}

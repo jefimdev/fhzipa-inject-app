@@ -1,0 +1,1817 @@
+================================================================================
+GUIA DE EDICAO DO APLICATIVO - FHZIPA INJECT
+================================================================================
+Manual de referencia do codigo-fonte deste projeto.
+Todos os caminhos sao relativos a raiz do repositorio (a pasta que contem
+package.json, index.html, src/ e src-tauri/).
+
+Ultima organizacao interna: pastas da interface reagrupadas por
+responsabilidade, com nomes em portugues, minusculos e com hifen.
+Nenhuma funcionalidade, texto, cor, layout ou URL publica foi alterada.
+
+Este guia foi conferido contra os arquivos do projeto depois da
+organizacao: todos os caminhos citados existem, todos os comandos citados
+existem no package.json e todos os nomes de componente, variavel e chave
+citados existem no codigo. Se voce mover ou renomear um arquivo, atualize
+este guia junto.
+
+Ultima atualizacao deste guia: a infraestrutura passou a usar npm de
+forma consistente (instalacao local, GitHub Actions, scripts de CI,
+scripts de versao e ambiente Nix), e o guia passou a explicar os
+requisitos reais do Windows e o que cada pasta da raiz significa.
+
+================================================================================
+A. VISAO GERAL
+================================================================================
+
+O QUE E O APLICATIVO
+--------------------
+O FHZIPA INJECT e um aplicativo de DESKTOP (nao e um site) que instala
+arquivos .ipa em iPhone e iPad conectados por USB no computador. Ele tambem
+baixa .ipa de um catalogo integrado, pareia o aparelho, gerencia certificados
+de desenvolvimento e App IDs da Apple e guarda as credenciais no chaveiro do
+Windows.
+
+Duas partes que trabalham juntas:
+  * FRONTEND  -> a interface (React), dentro de src/
+  * BACKEND   -> o codigo nativo em Rust (Tauri), dentro de src-tauri/
+
+O frontend chama o backend por meio do comando `invoke(...)`
+(@tauri-apps/api/core). Cada comando chamado no frontend tem um
+correspondente em Rust registrado em src-tauri/src/lib.rs, na lista
+`tauri::generate_handler![...]`. Se voce criar um comando novo, registre
+nos dois lados.
+
+TECNOLOGIAS
+-----------
+  Frontend
+    React 19 + TypeScript (tsconfig "strict" ligado)
+    Vite 8 (bundler + servidor de desenvolvimento)
+    i18next / react-i18next (traducao, 28 idiomas)
+    react-icons (todos os icones da interface sao de biblioteca, nao ha
+                 arquivos de icone proprios no frontend)
+    sonner (as mensagens/"toasts" do canto da tela)
+    react-virtuoso (lista virtualizada dos registros de log)
+    @tauri-apps/api, /plugin-dialog, /plugin-opener, /plugin-store
+  Backend
+    Rust estavel (toolchain x86_64-pc-windows-msvc)
+    Tauri 2 (shell desktop, plugins dialog/opener/store)
+    crates isideload e idevice (autenticacao Apple, assinatura, instalacao)
+  Outros
+    Nix (flake.nix / shell.nix / default.nix) - ambiente de desenvolvimento
+    GitHub Actions (pasta .github/workflows) - build e publicacao
+    npm como gerenciador de pacotes (package.json + package-lock.json)
+
+QUAL PASTA ABRIR NO VISUAL STUDIO CODE
+---------------------------------------
+Abra a RAIZ do repositorio: a pasta que contem `package.json`.
+Abrir uma pasta interna (por exemplo so `src/`) quebra o Vite, o TypeScript e
+o Tauri, porque todos eles procuram a raiz para achar index.html, tsconfig.json
+e src-tauri/.
+
+A raiz contem:
+    .github/      automacoes do GitHub
+    .vscode/      recomendacoes de extensoes
+    dist/         saida de build (gerada, nao editar)
+    public/       arquivos servidos como estao (favicon)
+    src/          todo o codigo da interface
+    src-tauri/    todo o codigo nativo em Rust
+    node_modules/ dependencias instaladas (gerada, nao editar)
+
+ONDE FICA O PONTO DE ENTRADA
+----------------------------
+  Interface (web):  index.html  ->  src/main.tsx
+                    O index.html carrega <script type="module"
+                    src="/src/main.tsx">. O Vite precisa desse caminho
+                    exato, por isso o arquivo main.tsx continua na raiz
+                    de src/.
+
+  Nativo (Rust):    src-tauri/src/main.rs  ->  src-tauri/src/lib.rs
+                    A funcao `run()` de lib.rs monta o aplicativo Tauri,
+                    registra os plugins e a lista de comandos.
+
+COMO O APLICATIVO ESTA ORGANIZADO
+----------------------------------
+src/
+  main.tsx              ponto de entrada da interface: monta os provedores de
+                        contexto e renderiza o componente principal
+  app-principal.tsx               componente raiz: barra lateral + cabecalho + a tela
+                        que corresponde ao item escolhido no menu
+  vite-env.d.ts         tipos globais do Vite (nao editar)
+
+  componentes/          pecas de interface reutilizadas (uma por arquivo)
+  paginas/              as telas do menu (uma por arquivo)
+  modulos/              blocos de funcionalidade maiores (login Apple ID e
+                        dispositivos/pareamento)
+  contextos/            estado global compartilhado (React Context)
+  configuracoes/        constantes e ajustes do projeto (links externos,
+                        servidores Anisette, configuracao de idioma)
+  utilitarios/          funcoes e tipos de apoio (erros, formatacao de
+                        tamanho, modelo do aparelho, tipos da loja)
+  estilos/              folhas de estilo globais (app.css e tema.css)
+  recursos/imagens/     logo e desenhos dos aparelhos
+  idiomas/              um arquivo .json por idioma
+
+src-tauri/
+  src/                  modulos Rust, um por responsabilidade
+  capabilities/         permissoes do Tauri por janela
+  icons/                icones do instalador (Windows, macOS, Android, iOS)
+  tauri.conf.json       configuracao do aplicativo (janela, pacote, build)
+  ci.conf.json          configuracao usada so pelo GitHub Actions
+
+Para o restante deste guia, as secoes E ate M dizem ONDE mexer em cada coisa.
+A secao D traz a arvore de pastas com a finalidade de cada uma.
+
+================================================================================
+B. PREPARACAO DO AMBIENTE
+================================================================================
+
+FERRAMENTAS NECESSARIAS
+-----------------------
+  1. Node.js 20 ou superior        (o README pede 20+; foi testado com 24.x)
+  2. npm                          (vem junto com o Node.js)
+  3. Rust estavel                  (cargo/rustc) - toolchain
+                                    x86_64-pc-windows-msvc
+  4. Visual Studio Build Tools     com a carga de trabalho
+     (ou Visual Studio 2022)       "Desenvolvimento para Desktop com C++"
+  5. Windows SDK                   (vem junto com a carga acima; e o que
+                                    fornece as bibliotecas de linkagem)
+  6. WebView2 Runtime              (ja vem no Windows 11; instalar no
+                                    Windows 10 se faltar)
+  7. iTunes / Apple Devices         so para o APLICATIVO USAR com o iPhone
+  8. Git                           (opcional, mas recomendado)
+
+  Sem os itens 3 e 4 o codigo da interface ainda abre no navegador
+  (veja a secao C), mas o aplicativo desktop nao compila e nao roda.
+
+COMO INSTALAR O VISUAL STUDIO BUILD TOOLS (itens 4 e 5)
+---------------------------------------------------------
+  A Microsoft publica um instalador oficial que instala SO o que o
+  projeto precisa, sem o Visual Studio completo:
+
+    1. Baixe o instalador:
+         https://aka.ms/vs/17/release/vs_BuildTools.exe
+
+    2. Execute com estes componentes (ou o equivalente pela interface):
+         --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools"
+         --add Microsoft.VisualStudio.Workload.VCTools
+         --includeRecommended
+
+       Na interface, a opcao correspondente e "Desenvolvimento para
+       Desktop com C++". O "--includeRecommended" traz o Windows SDK, o
+       compilador MSVC (cl.exe) e o linker (link.exe) de 64 bits.
+
+    3. Exige elevacao de administrador (o Windows pergunta). Depois de
+       terminar, abra um terminal NOVO: o caminho das ferramentas so entra
+       no PATH quando o terminal e reaberto.
+
+  COMO CONFERIR QUE DEU CERTO (sem abrir o aplicativo):
+      where link.exe
+      where cl.exe
+      rustc -vV          (o host deve ser x86_64-pc-windows-msvc)
+      cargo check --manifest-path src-tauri\Cargo.toml
+  Se "where link.exe" nao encontrar nada, o Build Tools nao esta instalado
+  ou o terminal ainda nao foi reaberto.
+
+  NAO E PRECISO COLO CAR NO PATH
+  O Rust encontra o compilador e o linker do MSVC sozinho, pelo registro
+  do Windows. Nao precisa de "Developer Command Prompt" nem de mexer no
+  PATH. Para saber ONDE a ferramenta esta instalada:
+      "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" ^
+        -products * -format value -property installationPath
+  O caminho padrao do Visual Studio Build Tools e
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools
+  e o compilador/linker ficam em
+      <instalacao>\VC\Tools\MSVC\<versao>\bin\Hostx64\x64\link.exe
+  (o Windows SDK fica em "C:\Program Files (x86)\Windows Kits\10").
+
+  ATENCAO - um "link.exe" do Git (em C:\Program Files\Git\usr\bin) NAO e o
+  linker da Microsoft: e um utilitario Unix com o mesmo nome e nao serve
+  para compilar Rust.
+
+VERSOES DECLARADAS PELO PROJETO
+-------------------------------
+  package.json
+    @tauri-apps/api 2.11.1  |  @tauri-apps/cli ^2.11.5
+    react ^19.3.0  |  react-dom ^19.3.0  |  typescript ~6.0.3  |  vite ^8.3.0
+    i18next ^26.4.2  |  react-i18next ^17.0.15
+    @tauri-apps/plugin-dialog 2.7.3  |  plugin-opener 2.5.5  |  plugin-store 2.4.5
+    react-icons ^5.7.0  |  react-virtuoso ^4.18.15  |  sonner ^2.0.8
+  src-tauri/Cargo.toml
+    crate "tauri" 2.x  (com tauri-build, tauri-plugin-dialog,
+    tauri-plugin-opener, tauri-plugin-store)
+  Documentado no README
+    Node.js 20 ou superior; Rust estavel; Visual Studio Build Tools com C++
+
+GERENCIADOR DE PACOTES CORRETO
+-------------------------------
+  npm.  O arquivo de bloqueio do projeto e `package-lock.json`.
+  NAO use yarn, pnpm ou bun para instalar dependencias locais: o
+  `src-tauri/tauri.conf.json` ja chama `npm run dev` e `npm run build`
+  nos hooks beforeDevCommand / beforeBuildCommand.
+
+  O projeto e CONSISTENTE com npm em todos os lugares:
+    - a instalacao local:      npm install  /  npm ci
+    - o GitHub Actions:         npm ci (workflow build.yml)
+    - os scripts de CI:        node .github/scripts/*.mjs
+    - os scripts bump-*:       tauri-version (instalado como devDependency)
+    - o ambiente Nix:          buildNpmPackage, usando o package-lock.json
+  Se voce encontrar "bun" em algum lugar do repositorio, e texto
+  historico (por exemplo um comentario) e nao um comando ativo.
+
+COMANDO DE INSTALACAO
+---------------------
+    npm install        instala o que falta
+    npm ci             instala exatamente o que esta no package-lock.json
+                       (recomendado no CI e sempre que o lock for a fonte
+                        da verdade; apaga e recria node_modules)
+
+  Rode dentro da raiz do projeto (a pasta com package.json).
+  Se o VS Code perguntar "instalar dependencias?", aceite.
+
+CONFIGURACOES DE AMBIENTE NECESSARIAS
+--------------------------------------
+  Nenhuma e obrigatoria para compilar.
+
+  Opcionais (arquivo `.env` na raiz do projeto, criado por voce; o
+  `.env` nao esta no Git e nao deve ser versionado):
+
+    VITE_REPO_URL=https://github.com/<owner>/<repo>
+    VITE_ISSUES_URL=https://github.com/<owner>/<repo>/issues
+    VITE_SPONSOR_URL=https://github.com/sponsors/<owner>
+    VITE_DISCORD_URL=https://discord.gg/<invite>
+    VITE_TRANSLATE_URL=https://github.com/<owner>/<repo>#translations
+
+  Quem le essas variables: src/configuracoes/links.ts.
+  Se o arquivo `.env` nao existir, o codigo usa os valores fixos que
+  estao em src/configuracoes/links.ts.
+
+  Para o Rust, ambiente e so necessario se voce for compilar o
+  aplicativo nativo: o alvo `x86_64-pc-windows-msvc` precisa estar
+  instalado (`rustup target add x86_64-pc-windows-msvc`).
+
+EXTENSOES DO VISUAL STUDIO CODE
+-------------------------------
+  O projeto ja declara as recomendacoes em .vscode/extensions.json:
+    - tauri-apps.tauri-vscode   (painel do Tauri,atalhos uteis)
+    - rust-lang.rust-analyzer    (diagnostico do codigo Rust)
+  O VS Code oferece instalar as duas ao abrir a pasta.
+
+  Se for instalar mais alguma, vale a pena:
+    - "ESLint" ou "Biome" NAO sao necessarios: o projeto nao tem
+      configuracao de linter. O TypeScript strict do proprio `tsc` faz
+      o papel de verificacao.
+    - "Prettier" tambem nao e necessario e NAO esta configurado.
+      O codigo usa 2 espacos e aspas duplas; siga o que ja existe em
+      vez de reformatar o arquivo inteiro.
+
+================================================================================
+C. COMO EXECUTAR
+================================================================================
+
+ABRIR O TERMINAL
+----------------
+  No Visual Studio Code: menu Terminal > Novo Terminal (ou Ctrl+`).
+  Ele abre na raiz do projeto. Se nao abrir, use o menu Terminal >
+  Selecionar Pasta Inicial.
+
+INICIAR O APLICATIVO DESKTOP (o que o usuario final usa)
+---------------------------------------------------------
+    npm run tauri dev
+
+  O que acontece: o Vite sobe em http://localhost:1420, o Rust compila em
+  modo debug e a janela do aplicativo abre. As alteracoes no frontend
+  aparecem sozinhas (hot reload); alteracoes em src-tauri/src/*.rs fazem o
+  Rust recompilar e a janela reabrir.
+
+  Endereco: o aplicativo abre como JANELA PROPRIA do Windows, com o titulo
+  "FHZIPA INJECT" (nao e uma aba de navegador). Tamanho inicial 1600x960,
+  minimo 1024x700, definidos em src-tauri/tauri.conf.json.
+  A URL http://localhost:1420 e usada DENTRO da janela do aplicativo; nao e
+  um site para uso direto. O icone que aparece na barra de titulo e na
+  barra de tarefas vem de src-tauri/icons/ (veja a secao E).
+
+  Atencao: este comando precisa do Visual Studio Build Tools com C++ e do
+  WebView2 Runtime. Se faltar, o erro aparece na etapa do Rust
+  ("linker `link.exe` not found" ou similar). Na duvida, veja a secao K.
+
+INICIAR SO A INTERFACE (para mexer no visual com mais rapididao)
+---------------------------------------------------------------
+    npm run dev
+
+  O Vite serve a interface em http://localhost:1420. Voce pode abrir essa
+  URL no Chrome/Edge, mas o aplicativo NAO vai funcionar no navegador
+  comum: as chamadas ao backend Tauri (`invoke`) vao falhar com
+  "Cannot read properties of undefined (reading 'invoke')" e a tela fica
+  em branco. Serve para conferir folhas de estilo, textos e layout, e
+  nada mais.
+
+  DIFERENCA ENTRE OS DOIS MODOS (importante)
+  -------------------------------------------
+  `npm run dev`      -> SOMENTE a interface, servida pelo Vite. Roda em
+                         qualquer navegador, mas sem o backend Rust: nada
+                         de dispositivos, conta Apple, certificados, loja
+                         ou logs funciona.
+  `npm run tauri dev`-> O APLICATIVO DE VERDADE: janela do Windows, com
+                         o backend Rust (Tauri) junto. E este modo que
+                         serve para conferir o funcionamento.
+  Para conferir a versao de producao (mesmo frontend que vai no
+  instalador), veja a secao J.
+
+  OUTRO MODO DE VERIFICAR (para quem nao tem o Build Tools instalado)
+  --------------------------------------------------------------------
+  Se o `npm run tauri dev` falhar por falta do linker, ainda da para ver
+  o frontend DENTRO de uma janela nativa: compile a interface
+  (`npm run build`) e sirva-a com `npm run preview`, abrindo
+  http://localhost:4173 no navegador. A aparencia e os textos sao os
+  mesmos do aplicativo, mas as integracoes com a Apple NAO funcionam
+  (sao substituidas por respostas vazias). Serve para conferir layout,
+  nao para conferir funcionalidade.
+
+COMO ENCERRAR
+-------------
+  No terminal do VS Code: Ctrl+C.
+  Se a janela do aplicativo continuar aberta, feche-a.
+  Se o cargo travar, feche a janela do aplicativo e pressione Ctrl+C
+  de novo.
+
+QUANDO REINICIAR
+----------------
+  Alteracao em src/**  ->  nao precisa reiniciar nada; o Vite recarrega
+                           sozinho (hot reload). Se a tela ficar
+                           inconsistente, recarregue (Ctrl+R na janela
+                           do aplicativo).
+  Alteracao em index.html, vite.config.ts, package.json ou tsconfig.json
+                        ->  reinicie o `npm run tauri dev`.
+  Alteracao em src-tauri/**  ->  o `tauri dev` recompila e reabre a
+                                 janela sozinho. Se nao recompilar,
+                                 encerre e start de novo.
+  Alteracao em src-tauri/tauri.conf.json ou src-tauri/Cargo.toml
+                        ->  reinicie o `npm run tauri dev`.
+
+================================================================================
+D. MAPA DAS PASTAS
+================================================================================
+
+ARVORE RESUMIDA
+----------------
+    .
+    |-- index.html                 <- entrada da interface (Vite). EDITAVEL
+    |-- package.json               <- scripts e dependencias. EDITAVEL
+    |-- package-lock.json          <- trava das versoes. GERADO, nao editar
+    |-- tsconfig.json              <- regras do TypeScript. EDITAVEL
+    |-- tsconfig.node.json         <- regras do TS para vite.config.ts
+    |-- vite.config.ts             <- build e servidor do Vite. EDITAVEL
+    |-- README.md / CONTRIBUTING.md / NOTICE.md / LICENSE  <- documentacao
+    |-- download-state.json        <- contador de downloads (GitHub Actions)
+    |-- flake.nix / flake.lock / shell.nix / default.nix  <- ambiente Nix
+    |
+    |-- .github/
+    |     |-- workflows/           <- build.yml, download-count.yml,
+    |     |                           download-notifier.yml
+    |     |-- scripts/             <- check-downloads.mjs, count-downloads.mjs
+    |     |-- ISSUE_TEMPLATE/       <- modelos de issue
+    |     `-- FUNDING.yml
+    |
+    |-- .vscode/extensions.json     <- extensoes recomendadas
+    |
+    |-- public/
+    |     `-- fhzipa-inject.svg     <- favicon (copiado direto para a saida)
+    |
+    |-- src/
+    |     |-- main.tsx             <- ponto de entrada da interface
+    |     |-- app-principal.tsx   <- componente raiz (menu + tela)
+    |     |-- vite-env.d.ts        <- tipos do Vite
+    |     |-- componentes/         <- pecas reutilizadas da interface
+    |     |     |-- app-header.tsx        + (sem css proprio)
+    |     |     |-- barra-lateral.tsx     + barra-lateral.css
+    |     |     |-- cartao-loja.tsx
+    |     |     |-- destaque-loja.tsx
+    |     |     |-- detalhe-loja.tsx
+    |     |     |-- dropdown.tsx          + dropdown.css
+    |     |     |-- faixa-passos.tsx
+    |     |     |-- menu-filtro.tsx
+    |     |     |-- modal.tsx             + modal.css
+    |     |     |-- operacoes.ts
+    |     |     |-- painel.tsx
+    |     |     |-- painel-dispositivo.tsx
+    |     |     |-- painel-importacao.tsx
+    |     |     |-- painel-status.tsx
+    |     |     |-- render-aparelho.tsx
+    |     |     `-- vista-operacao.tsx    + vista-operacao.css
+    |     |-- paginas/
+    |     |     |-- app-ids.tsx
+    |     |     |-- certificados.tsx      + certificados.css
+    |     |     |-- configuracoes.tsx     + configuracoes.css
+    |     |     |-- loja.tsx              + loja.css
+    |     |     `-- pareamento.tsx
+    |     |-- modulos/
+    |     |     |-- apple-id.tsx          + apple-id.css
+    |     |     `-- dispositivo.tsx       + dispositivo.css
+    |     |-- contextos/
+    |     |     |-- dialogo.tsx           + dialogo.css
+    |     |     |-- erro.tsx              + erro.css
+    |     |     |-- log.tsx
+    |     |     |-- loja.tsx
+    |     |     `-- plataforma.tsx
+    |     |-- configuracoes/
+    |     |     |-- i18n.ts
+    |     |     |-- links.ts
+    |     |     `-- servidores-anisette.ts
+    |     |-- utilitarios/
+    |     |     |-- erros.tsx
+    |     |     |-- formato.ts
+    |     |     |-- modelos-dispositivo.ts
+    |     |     `-- tipos-loja.ts
+    |     |-- estilos/
+    |     |     |-- app.css            <- estilos globais da aplicacao
+    |     |     `-- tema.css           <- variaveis de cor, raio, espaco, fonte
+    |     |-- recursos/imagens/
+    |     |     |-- fhzipa-inject.svg <- logo da barra lateral
+    |     |     `-- dispositivos/     <- desenhos dos aparelhos (7 .svg)
+    |     `-- idiomas/                <- 28 arquivos .json de traducao
+    |
+    |-- src-tauri/
+    |     |-- src/                    <- modulos Rust (ver secao D, nota)
+    |     |     |-- main.rs, lib.rs, account.rs, device.rs, error.rs,
+    |     |     |-- ipa.rs, logging.rs, operation.rs, pairing.rs,
+    |     |     `-- secure_storage.rs, sideload.rs, store.rs
+    |     |-- capabilities/default.json
+    |     |-- icons/                  <- icones do instalador
+    |     |-- gen/schemas/            <- GERADO pelo Tauri, nao editar
+    |     |-- build.rs                <- GERADO/necessario pelo Tauri
+    |     |-- Cargo.toml / Cargo.lock <- dependencias Rust
+    |     |-- ci.conf.json
+    |     `-- tauri.conf.json         <- janela, pacote, icones, hooks
+    |
+    |-- dist/                         <- GERADO por `npm run build`
+    `-- node_modules/                 <- GERADO por `npm install`
+
+FINALIDADE DE CADA PASTA
+------------------------
+  src/componentes/   Componentes React pequenos e reutilizados. Cada
+                     arquivo .tsx tem, quando precisa, o seu .css ao lado.
+  src/paginas/       As telas do menu lateral. Um arquivo por tela.
+  src/modulos/       Blocos maiores de funcionalidade que tem estado
+                     proprio: login Apple ID (apple-id) e lista de
+                     aparelhos + pareamento (dispositivo).
+  src/contextos/     Estado global via React Context:
+                       dialogo.tsx    - confirmacao ("Tem certeza?")
+                       erro.tsx       - mensagens de erro e sugestoes
+                       log.tsx        - registros de log do Rust
+                       loja.tsx       - preferencias salvas em disco
+                       plataforma.tsx - detecta Windows/Mac/Linux
+  src/configuracoes/ Constantes do projeto:
+                       links.ts              - URLs externas
+                       servidores-anisette.ts - servidores Anisette
+                       i18n.ts               - idiomas e carga dos .json
+  src/utilitarios/   Funcoes e tipos sem estado:
+                       erros.tsx             - tipo AppError e sugestoes
+                       formato.ts            - formatacao de tamanho de arquivo
+                       modelos-dispositivo.ts- nome e arte de cada aparelho
+                       tipos-loja.ts         - tipos do catalogo
+  src/estilos/       app.css (regras globais: layout, paineis, botoes,
+                     tabelas, responsividade) e tema.css (as variaveis
+                     --cor, --raio, --espaco, --fonte, --sombra).
+  src/recursos/      Arquivos binarios/estaticos usados pela interface.
+  src/idiomas/       Um .json por idioma. O nome do arquivo e o codigo do
+                     idioma (pt_br, en, es, de_ch...).
+
+O QUE E EDITAVEL E O QUE NAO E
+------------------------------
+  EDITAVEIS:  src/** (menos vite-env.d.ts), index.html, vite.config.ts,
+              tsconfig.json, tsconfig.node.json, package.json, README.md,
+              src-tauri/src/**, src-tauri/tauri.conf.json,
+              src-tauri/capabilities/**, src-tauri/Cargo.toml,
+              .github/**, os arquivos .nix.
+  GERADOS (nao editar a mao):  dist/, node_modules/, src-tauri/target/,
+              src-tauri/gen/schemas/, package-lock.json, Cargo.lock,
+              src-tauri/Cargo.lock.
+  O que o Tauri regenera sozinho: src-tauri/gen/schemas/ e
+  src-tauri/icons/ (quando se roda `tauri icon`).
+
+AS PASTAS DA RAIZ, UMA POR UMA
+------------------------------
+  src/                CODIGO DA INTERFACE. Tudo o que o React desenha:
+                      componentes, telas, estilos, traducoes e imagens.
+                      E a pasta que voce edita 90% das vezes.
+                      (nao confunda com src-tauri/)
+
+  src-tauri/           O APLICATIVO NATIVO e o BACKEND. Aqui esta o
+                      codigo Rust (src-tauri/src/), a configuracao da
+                      janela e do instalador (tauri.conf.json), as
+                      permissoes (capabilities/) e os icones do executavel
+                      (icons/). A interface conversa com esta parte por
+                      meio do comando `invoke(...)`.
+
+  public/              RECURSOS PUBLICOS. Arquivos que sao servidos
+                      exatamente como estao, sem passar pelo Vite e sem
+                      ganhar hash no nome. Hoje tem o favicon
+                      (fhzipa-inject.svg). Se voce colocar algo aqui, ele
+                      fica acessavel por "/nome-do-arquivo".
+
+  .github/             AUTOMACOES. Workflows do GitHub Actions (build,
+                      contagem de downloads, aviso de downloads), scripts
+                      auxiliares e modelos de issue. Nada disso roda no
+                      aplicativo do usuario final.
+
+  .vscode/             CONFIGURACOES DO EDITOR. A recommendation de
+                      extensoes (Tauri e rust-analyzer). O restante da
+                      pasta e ignorado pelo Git de proposito.
+
+  node_modules/        DEPENDENCIAS INSTALADAS. Criado pelo `npm install`
+                      ou `npm ci`. REGENERAVEL: pode ser apagado a
+                      qualquer momento e recriado com `npm ci`.
+
+  dist/                SAIDA WEB GERADA. Criado pelo `npm run build`.
+                      REGENERAVEL: e o mesmo `dist/` que o Tauri embute
+                      no executavel. Pode ser apagado e recriado.
+
+  src-tauri/target/    SAIDA DA COMPILACAO RUST. Criado pelo cargo.
+                      REGENERAVEL no papel, mas MUITO caro de recriar
+                      (foi ~14 GB e varias horas aqui). Dentro dela
+                      guarda tambem o executavel pronto e o instalador NSIS:
+                          src-tauri/target/release/fhzipa-inject.exe
+                          src-tauri/target/release/bundle/nsis/
+                      Se voce apagar essa pasta, perde tempo; se ela
+                      ficar, ganha tempo. Por isso ela NAO esta no Git
+                      (src-tauri/.gitignore) e nao deve ser apagada por
+                      "organizacao".
+
+  .git/                HISTORICO DO GIT. Guardado em .git/. Nao aparece
+                      em alguns exploradores de arquivo (e um item
+                      oculto do Windows). NAO apague: e o historico do
+                      projeto e a unica forma de voltar atras.
+
+  O QUE TEM CODIGO OU DADO IMPORTANTE (nao pode ser apagado):
+      src/, src-tauri/ (menos target/ e gen/), public/, .github/,
+      .vscode/extensions.json, index.html, package.json,
+      package-lock.json, tsconfig*.json, vite.config.ts, README.md,
+      CONTRIBUTING.md, NOTICE.md, LICENSE, os arquivos .nix,
+      download-state.json
+  O QUE E REGENERAVEL (pode ser apagado, mas nao ha ganho em apagar):
+      node_modules/, dist/, src-tauri/target/, src-tauri/gen/schemas/
+
+NOMES QUE NAO DEVEM SER MUDADOS
+--------------------------------
+  index.html                  - o Vite procura esse nome na raiz
+  public/                     - nome padrao do Vite para arquivos estaticos
+  src/main.tsx                - o index.html aponta para esse caminho
+  src-tauri/                  - nome padrao do Tauri (o CI e o tauri.conf
+                                dependem dele)
+  src-tauri/tauri.conf.json   - nome exigido pelo Tauri
+  src-tauri/Cargo.toml        - nome exigido pelo Cargo
+  src-tauri/src/main.rs       - ponto de entrada exigido pelo Cargo
+  src-tauri/src/lib.rs        - a crate do Tauri e lida por aqui
+  src-tauri/build.rs          - build script exigido pelo Cargo
+  src-tauri/capabilities/     - nome exigido pelo Tauri
+  src-tauri/icons/            - nome exigido pelo Tauri
+  public/fhzipa-inject.svg    - o index.html referencia /fhzipa-inject.svg
+  src/idiomas/*.json          - o NOME do arquivo e o codigo do idioma; o
+                                i18n.ts monta o mapa de idiomas a partir
+                                do nome do arquivo
+  package-lock.json / Cargo.lock - arquivos de bloqueio
+
+================================================================================
+E. ONDE ALTERAR CADA ELEMENTO
+================================================================================
+
+Legenda: [tela] = usado em uma tela so;  [varias telas] = usado em mais de uma.
+
+--------------------------------------------------------------------------------
+NOME VISIVEL DO APLICATIVO  ("FHZIPA INJECT")
+--------------------------------------------------------------------------------
+  src-tauri/tauri.conf.json   ->  "productName": "FHZIPA INJECT"
+                                (o nome do executavel e do instalador)
+  src-tauri/tauri.conf.json   ->  em app.windows[0]: "title": "FHZIPA INJECT"
+                                (titulo da janela)
+  src-tauri/tauri.conf.json   ->  em bundle: "publisher": "FHZIPA INJECT"
+  index.html                   ->  <title>FHZIPA INJECT</title>
+  src/componentes/barra-lateral.tsx ->  <span className="brand-name">
+                                FHZIPA INJECT</span>  [varias telas]
+                                (nome grande no topo do menu)
+  src-tauri/src/lib.rs         ->  filename_prefix: "fhzipa-inject"
+                                (nome dos arquivos de log em disco)
+  src-tauri/tauri.conf.json   ->  "identifier": "app.fhzipa.inject"
+                                (identificador do app; NAO mude sem motivo,
+                                ele define onde ficam os dados do usuario)
+  src-tauri/tauri.conf.json   ->  "version": "1.0.0"
+
+  CUIDADO: mudar o "identifier" muda a pasta de dados do usuario
+  (%APPDATA%\app.fhzipa.inject) e faz o app pedir login e configuracoes de
+  novo. Nao mude por vao.
+
+--------------------------------------------------------------------------------
+NOME DA EMPRESA / PUBLICADOR
+--------------------------------------------------------------------------------
+  src-tauri/tauri.conf.json   ->  bundle.publisher: "FHZIPA INJECT"
+  src-tauri/tauri.conf.json   ->  bundle.copyright:
+                                "Copyright (C) 2025 nab138. Modified fork
+                                distributed under the MIT License."
+  .github/FUNDING.yml         ->  github: [nab138]
+  NOTICE.md                   ->  creditos e atribuicao do projeto original
+  LICENSE                     ->  termos da licenca MIT
+
+--------------------------------------------------------------------------------
+NOME DA ABA OU JANELA
+--------------------------------------------------------------------------------
+  src-tauri/tauri.conf.json   ->  app.windows[0].title
+  index.html                  ->  <title> (titulo da aba do navegador;
+                                no aplicativo desktop quem manda e o
+                                tauri.conf.json)
+
+--------------------------------------------------------------------------------
+PAGINA INICIAL (a tela "Visao geral")
+--------------------------------------------------------------------------------
+  src/app-principal.tsx                 ->  const [view, setView] = useState<AppView>
+                                ("overview");
+                                e o bloco {view === "overview" && (...)}
+  src/componentes/barra-lateral.tsx ->  NAV_ITEMS: primeiro item =
+                                { id: "overview", icon: FaHouse,
+                                labelKey: "nav.overview" }
+  src/idiomas/pt_br.json      ->  bloco "home": "eyebrow", "title", "subtitle"
+                                (o titulo "Seu iPhone. Novas possibilidades.")
+  src/app-principal.tsx                 ->  headerCopy.overview  [repetido em 1 lugar]
+
+--------------------------------------------------------------------------------
+DEMAIS PAGINAS (as outras 5 telas do menu)
+--------------------------------------------------------------------------------
+  Todas as telas sao controladas por um estado `view` (uma string). Nao ha
+  biblioteca de rotas neste projeto: a "URL" e so o valor do estado.
+
+  src/componentes/barra-lateral.tsx ->  type AppView = "overview" | "store"
+                                | "devices" | "certificates" | "appids"
+                                | "settings"
+                                e o array NAV_ITEMS (rotulo + icone + id)
+  src/app-principal.tsx                 ->  os blocos {view === "..." && (...)}
+  src/app-principal.tsx                 ->  headerCopy.store / .devices / .certificates
+                                / .appids / .settings  (titulo e subtitulo
+                                de cada tela)
+
+  Tela "Baixar apps"  (view = "store")
+    src/paginas/loja.tsx                 (componente Store)
+    src/paginas/loja.css                 (folha de estilo)
+    src/componentes/menu-filtro.tsx      (filtro de categorias)
+    src/componentes/cartao-loja.tsx      (cartao da listagem)
+    src/componentes/destaque-loja.tsx    (bloco em destaque)
+    src/componentes/detalhe-loja.tsx     (janela de detalhes do app)
+    src/idiomas/pt_br.json               bloco "store" e "featured"
+    src-tauri/src/store.rs               as 5 fontes do catalogo (SOURCES)
+
+  Tela "Dispositivos"  (view = "devices")
+    src/modulos/dispositivo.tsx          (DeviceList, PairingDialog,
+                                         hook useDevices)
+    src/modulos/dispositivo.css
+    src/idiomas/pt_br.json               bloco "device" e "devices"
+
+  Tela "Certificados"  (view = "certificates")
+    src/paginas/certificados.tsx
+    src/paginas/certificados.css
+    src/idiomas/pt_br.json               bloco "certificates"
+
+  Tela "IDs de App"  (view = "appids")
+    src/paginas/app-ids.tsx
+    (usa a folha src/paginas/certificados.css, a mesma da tela de
+     certificados)
+    src/idiomas/pt_br.json               bloco "app_ids"
+
+  Tela "Ajustes"  (view = "settings")
+    src/paginas/configuracoes.tsx        (exporta Preferences)
+    src/paginas/configuracoes.css
+    src/componentes/dropdown.tsx         (as listas suspensas)
+    src/componentes/dropdown.css
+    src/idiomas/pt_br.json               blocos "settings", "prefs"
+
+  Janela modal "Pareamento" (aparece por cima de qualquer tela)
+    src/paginas/pareamento.tsx
+    src/componentes/modal.tsx + modal.css
+
+--------------------------------------------------------------------------------
+CABECALHO
+--------------------------------------------------------------------------------
+  src/componentes/app-header.tsx    (componente AppHeader)
+      - o texto vem por parametro: eyebrow, title, subtitle
+      - o botao "GitHub" chama openUrl(REPO_URL)
+      - usa a folha src/estilos/app.css (classes .app-header, .app-title,
+        .app-eyebrow, .app-subtitle)
+  src/app-principal.tsx                        ->  headerCopy  [o texto de cada tela]
+  src/componentes/faixa-passos.tsx   ->  a faixa de 3 passos logo abaixo do
+                                        cabecalho (Dispositivo / Apple ID /
+                                        Importar IPA)
+  src/idiomas/pt_br.json             ->  blocos "home", "nav", "steps"
+
+--------------------------------------------------------------------------------
+RODAPE
+--------------------------------------------------------------------------------
+  Nao existe um componente de rodape separado. O rodape e o rodape do menu
+  lateral:
+  src/componentes/barra-lateral.tsx  ->  <div className="sidebar-footer">
+                                {t("version")} {version}</div>
+  (mostra "Versao 1.0.0"). A versao vem de getVersion() em src/app-principal.tsx.
+
+--------------------------------------------------------------------------------
+MENU LATERAL
+--------------------------------------------------------------------------------
+  src/componentes/barra-lateral.tsx  ->  NAV_ITEMS (id, icone, labelKey)
+                                e o bloco <nav className="nav">
+  src/componentes/barra-lateral.css  ->  estilo do menu (.nav, .nav-item,
+                                .nav-item.active, .brand, .brand-logo)
+  src/idiomas/pt_br.json             ->  bloco "nav" com os rotulos
+  src/app-principal.tsx                        ->  o estado `view` e `setView`
+
+  Atalhos de teclado (definidos em src/app-principal.tsx, no listener de keydown):
+      Ctrl+P        abrir janela de pareamento
+      Ctrl+Shift+C  ir para Certificados
+      Ctrl+Shift+A  ir para IDs de App
+      Ctrl+R        atualizar lista de dispositivos
+      Ctrl+L        ver registros de log (dentro de Ajustes)
+  Em Mac, o modificador e Cmd em vez de Ctrl (o codigo checa a plataforma
+  em src/contextos/plataforma.tsx).
+
+--------------------------------------------------------------------------------
+TEXTOS E TITULOS
+--------------------------------------------------------------------------------
+  Todos os textos visiveis estao em 28 arquivos de traducao:
+  src/idiomas/<codigo>.json   (pt_br = portugues do Brasil, o padrao)
+
+  Chave por chave:
+    "subtitle", "version"              -> textos soltos de topo
+    "common"                           -> botoes genericos
+    "dropdown"                         -> textos do componente de lista
+    "app"                              -> textos do aplicativo (marca, GitHub)
+    "apple_id"                         -> tela de login Apple ID
+    "device"                           -> lista de aparelhos
+    "operation" / "operations"         -> tela de progresso da instalacao
+    "certificates"                     -> tela de certificados
+    "app_ids"                          -> tela de IDs de App
+    "pairing"                          -> tela de pareamento
+    "settings"                         -> botoes de Ajustes
+    "dialog"                           -> janela de confirmacao
+    "error"                            -> mensagens de erro
+    "update"                           -> textos de atualizacao
+    "nav"                              -> rotulos do menu lateral
+    "home"                             -> titulo e subtitulo da tela inicial
+    "steps"                            -> "Dispositivo conectado", etc.
+    "account"                          -> area da conta
+    "import"                           -> painel "Importar IPA"
+    "status"                           -> painel de status
+    "prefs"                            -> bloco de preferencias
+    "devices"                          -> textos de dispositivos
+    "store"                            -> tela da loja
+    "featured"                         -> bloco em destaque da loja
+    "sort"                             -> opcoes de ordenacao
+    "filters"                          -> filtros da loja
+
+  Como o texto e lido no codigo:
+      const { t } = useTranslation();
+      t("nav.store")        ->  "nav" -> "store"
+      t("home.title")
+      t("settings.debug", { ... })  ->  com variaveis
+  Para textos com um trecho em negrito/quebra, use o componente <Trans>
+  (exemplos em src/contextos/erro.tsx e src/paginas/configuracoes.tsx).
+
+  Traduzir para outro idioma: crie src/idiomas/<codigo>.json com as MESMAS
+  chaves. O i18n.ts monta o mapa pegando o nome do arquivo
+  (src/configuracoes/i18n.ts, import.meta.glob("../idiomas/*.json")).
+  O novo idioma aparece sozinho na lista de Ajustes se voce adicionar o
+  codigo e o nome do idioma no array `languages` do mesmo arquivo.
+
+--------------------------------------------------------------------------------
+BOTOES E SEUS DESTINOS
+--------------------------------------------------------------------------------
+  src/app-principal.tsx
+    "Abrir janela de pareamento" (Ctrl+P)  ->  setPairingOpen(true)
+    "Atualizar dispositivos"                 ->  refreshDevices()
+    "Importar IPA" / "Instalar"              ->  install() -> startOperation
+    Botao "GitHub" (no cabecalho)            ->  openUrl(REPO_URL)
+  src/modulos/apple-id.tsx
+    "Entrar na conta" / "Sair"               ->  invoke("login_new" / ...),
+                                                 evento "apple-id-login"
+  src/modulos/dispositivo.tsx
+    "Atualizar"                              ->  onRefresh()
+    item da lista de aparelho                 ->  onSelect(device)
+  src/paginas/loja.tsx
+    "Baixar"                                 ->  invoke("store_download")
+    "Instalar"                               ->  onInstall(path)
+    "Abrir" / card                           ->  openUrl(item.pageUrl)
+    "Filtros" / "Carregar mais"              ->  filtros e paginacao
+  src/paginas/configuracoes.tsx
+    "Reiniciar estado Anisette"              ->  invoke("reset_anisette_state")
+    "Apagar pareamento armazenado"           ->  invoke("delete_stored_rppairing")
+    "Verificar registros" (Ctrl+L)           ->  abre a janela de logs
+  src/componentes/vista-operacao.tsx
+    "Abrir no Discord" / "Relatar no GitHub" ->  openUrl(DISCORD_URL /
+                                                 ISSUES_URL)
+  src/contextos/erro.tsx
+    links de sugestao de erro                 ->  openUrl(url)
+
+  Os rotulos desses botoes estao nos arquivos de idioma; o icone vem de
+  react-icons (FaXxx importado no arquivo do componente).
+
+--------------------------------------------------------------------------------
+LOGO PRINCIPAL E LOGO DO CABECALHO
+--------------------------------------------------------------------------------
+  Logo no menu lateral (o quadrado vermelho com a seta):
+    src/recursos/imagens/fhzipa-inject.svg
+    usado em src/componentes/barra-lateral.tsx:
+        import logo from "../recursos/imagens/fhzipa-inject.svg";
+        <img className="brand-logo" src={logo} alt={t("app.logo_alt")} />
+    DETALHE TECNICO: como o arquivo tem menos de 4 KB, o Vite o embute
+    DENTRO do JavaScript como um "data:image/svg+xml,..." (sem arquivo
+    separado em dist/assets). Se o logo novo for maior que isso, ele passa
+    a virar um arquivo com hash em dist/assets/ e a referencia continua
+    funcionando sozinha. Nao ha nada para ajustar no codigo em nenhum dos
+    dois casos.
+
+  Logo do "cabecalho": nao existe uma imagem de logo no cabecalho da
+  aplicacao. O cabecalho (src/componentes/app-header.tsx) tem so texto
+  (eyebrow, titulo, subtitulo) e o botao com o icone do GitHub. O que
+  aparece no topo do aplicativo e o bloco .brand do menu lateral.
+
+--------------------------------------------------------------------------------
+RESUMO: LOGO, FAVICON, ICONE E IDENTIFICADORES (sao coisas diferentes!)
+--------------------------------------------------------------------------------
+  Sao 5 itens distintos. Trocar um NAO troca os outros.
+
+  1) LOGO EXIBIDO DENTRO DO APLICATIVO
+     Onde:  src/recursos/imagens/fhzipa-inject.svg
+     Como:  importado por src/componentes/barra-lateral.tsx
+     Vira:  o quadrado vermelho no topo do menu lateral
+     Onde mexer: troque o arquivo (mesmo nome) ou ajuste o import e a
+     classe .brand-logo em src/componentes/barra-lateral.css
+
+  2) FAVICON USADO NA INTERFACE WEB
+     Onde:  public/fhzipa-inject.svg
+     Como:  index.html -> <link rel="icon" ... href="/fhzipa-inject.svg" />
+     Vira:  o icone da aba do navegador (so aparece se voce abrir a
+            interface no navegador; no aplicativo desktop nao aparece)
+     Onde mexer: troque o arquivo e mantenha o nome, OU atualize o
+     index.html se renomear
+
+  3) ICONE DO EXECUTAVEL E DA JANELA
+     Onde:  src-tauri/icons/  (icon.ico, icon.icns, 32x32.png, 128x128.png,
+             128x128@2x.png, icon.png, 64x64.png, Square*Logo.png,
+             android/, ios/)
+     Como:  src-tauri/tauri.conf.json -> bundle.icon (a lista que o
+             empacotador usa)
+     Vira:  o icone do .exe, da janela do aplicativo, da barra de tarefas
+            e do instalador
+     Onde mexer: regere com "npx tauri icon logo-1024.png" (reescreve a
+     pasta inteira) ou troque um arquivo e ajuste bundle.icon
+
+  4) NOME EXIBIDO NO INSTALADOR E NO SISTEMA
+     Onde:  src-tauri/tauri.conf.json
+             -> "productName"        nome do executavel e do instalador
+             -> bundle.publisher     "editor" mostrado pelo Windows
+             -> bundle.shortDescription / longDescription  texto do
+                instalador
+             -> bundle.nsis.languages  idiomas do instalador
+     Vira:  o nome da pasta do instalador, do atalho no menu Iniciar e do
+            nome do programa em "Programas e Recursos"
+     Onde mexer: so o tauri.conf.json
+
+  5) IDENTIFICADORES TECNICOS (mudar pode quebrar o app)
+     Onde:  src-tauri/tauri.conf.json -> "identifier" e "version"
+     Vem de: app.fhzipa.inject
+     Vira:  o "identificador" que o Windows registra para o app e a pasta
+            onde ficam os dados do usuario:
+                %APPDATA%\app.fhzipa.inject\   (logs e preferencias)
+            e o nome dos arquivos de log:
+                src-tauri/src/lib.rs -> filename_prefix: "fhzipa-inject"
+                (vira fhzipa-inject-AAAA-MM-DD.log)
+     CUIDADO: mudar o identifier faz o Windows tratar como um aplicativo
+     NOVO: o usuario perde as preferencias, os logs e o chaveiro, e o
+     aplicativo aparece duplicado. So mexa se voce realmente quiser
+     mudar de identidade. O "version" pode mudar de verdade (e deve
+     mudar a cada publicacao).
+
+--------------------------------------------------------------------------------
+IMAGENS
+--------------------------------------------------------------------------------
+  Desenhos dos aparelhos (usados no painel de dispositivo):
+    src/recursos/imagens/dispositivos/
+      ipad.svg
+      iphone-diagonal.svg
+      iphone-island.svg
+      iphone-se.svg
+      iphone-single.svg
+      iphone-square.svg
+      iphone-vertical.svg
+    usados em src/componentes/render-aparelho.tsx (importados um a um).
+    Qual desenho aparece para cada aparelho e decidido em
+    src/utilitarios/modelos-dispositivo.ts (funcao deviceModel, campo "art").
+    CUIDADO: se voce renomear um .svg, atualize o import em
+    render-aparelho.tsx.
+
+--------------------------------------------------------------------------------
+ICONES
+--------------------------------------------------------------------------------
+  Os icones da interface NAO sao arquivos: vem da biblioteca react-icons
+  (familia "fa6"). Exemplo: `import { FaGear } from "react-icons/fa6";`
+  Trocar um icone = trocar o componente importado (Ha, Fa, Fi, Lu... todos
+  existem). Nao ha arquivos de icone no frontend.
+
+  Os icones do INSTALADOR (o .exe, o .icns do Mac, os icones do Windows
+  Store e do celular) sao arquivos:
+    src-tauri/icons/32x32.png
+    src-tauri/icons/128x128.png
+    src-tauri/icons/128x128@2x.png
+    src-tauri/icons/icon.ico
+    src-tauri/icons/icon.icns
+    src-tauri/icons/icon.png
+    src-tauri/icons/64x64.png
+    src-tauri/icons/Square*Logo.png  (Windows Store)
+    src-tauri/icons/android/...        (Android)
+    src-tauri/icons/ios/...            (iOS)
+  A lista usada pelo empacotador esta em src-tauri/tauri.conf.json, em
+  bundle.icon. Para regerar todos a partir de um PNG:
+    npx tauri icon caminho/do/logo.png
+  (isso reescreve a pasta src-tauri/icons inteira).
+
+--------------------------------------------------------------------------------
+CORES
+--------------------------------------------------------------------------------
+  src/estilos/tema.css   ->  bloco :root com as variaveis de design:
+      --bg, --bg-elevated, --panel, --panel-alt, --surface,
+      --surface-hover, --surface-active      (fundos)
+      --border, --border-soft, --border-strong  (bordas)
+      --text, --text-muted, --text-dim       (textos)
+      --red, --red-press, --red-soft, --red-border, --red-glow  (marca)
+      --green, --green-soft, --green-border, --amber  (feedback)
+      --r-xs ... --r-pill                  (raios)
+      --gap-xs ... --pad                   (espacamentos)
+      --shadow-panel, --shadow-raised, --shadow-red, --shadow-inset
+      --t-fast, --t, --t-slow, --ease      (animacoes)
+      --font-display, --font-body, --font-mono  (fontes)
+
+  A cor da marca e o vermelho #ff2343. As demais telas usam as variaveis.
+
+  ATENCAO: existem CORES FIXAS (escritas direto no CSS) fora do tema.css.
+  Para uma troca completa de cor, procure por "#ff2343", "#d90d30",
+  "rgba(255, 35, 67" e por nomes de classe como .btn-danger, .pill.ok,
+  .text-muted, .panel-glyph. Use Ctrl+Shift+F no VS Code para varrer.
+
+  src/estilos/app.css    ->  regras globais de cor e fundo dos paineis,
+                             botoes (.btn, .btn-outline, .btn-ghost,
+                             .btn-danger, .btn-sm), campos (.input),
+                             etiquetas (.pill), tabelas, e o gradiente de
+                             fundo do .app-shell
+  src/componentes/barra-lateral.css, src/componentes/modal.css,
+  src/componentes/dropdown.css, src/componentes/vista-operacao.css,
+  src/contextos/erro.css, src/contextos/dialogo.css,
+  src/modulos/apple-id.css, src/modulos/dispositivo.css,
+  src/paginas/certificados.css, src/paginas/configuracoes.css,
+  src/paginas/loja.css   ->  estilos especificos de cada parte
+
+--------------------------------------------------------------------------------
+FONTES
+--------------------------------------------------------------------------------
+  Nao ha arquivos de fonte no projeto. As fontes vem do sistema:
+    --font-display: "SF Pro Display", "Inter", -apple-system,
+                    BlinkMacSystemFont, "Segoe UI", sans-serif
+    --font-body:    "SF Pro Text", "Inter", -apple-system,
+                    BlinkMacSystemFont, "Segoe UI", sans-serif
+    --font-mono:    "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace
+  (definidas em src/estilos/tema.css)
+  Para mudar a tipografia do aplicativo inteiro, mexa nessas tres variaveis.
+  As familias sao resolvidas pelo sistema operacional: se o computador nao
+  tiver "SF Pro Display", cai na proxima da lista.
+
+--------------------------------------------------------------------------------
+FUNDOS, BORDAS E ESPACAMENTOS
+--------------------------------------------------------------------------------
+  src/estilos/tema.css   ->  os valores base (--gap, --pad, --r-*, --shadow-*)
+  src/estilos/app.css    ->  onde as bases sao aplicadas:
+      .app-shell (fundo com gradiente radial vermelho), .app-main (padding),
+      .panel, .panel-heading, .panel-title, .panel-subtitle, .row,
+      .btn, .input, .pill, .card, tabelas, .spinner, .text-muted
+  src/componentes/barra-lateral.css ->  largura da coluna do menu, fundo,
+                                      logo, item ativo
+  Demais .css de componente ->  espacamento e borda local de cada parte
+
+--------------------------------------------------------------------------------
+LINKS INTERNOS
+--------------------------------------------------------------------------------
+  Nao existe sistema de rotas com URL. A navegacao interna acontece pelo
+  estado `view` em src/app-principal.tsx, controlado pelos botoes do menu em
+  src/componentes/barra-lateral.tsx.
+
+  Um "link interno" e, na pratica:
+      const [view, setView] = useState<AppView>("overview");
+      setView("store");     // troca a tela
+  Os ids validos sao os do type AppView (barra-lateral.tsx).
+  Para ir para uma tela por atalho, use o bloco de keydown em src/app-principal.tsx
+  (exemplo: setView("certificates")).
+
+--------------------------------------------------------------------------------
+LINKS EXTERNOS
+--------------------------------------------------------------------------------
+  src/configuracoes/links.ts  ->  o unico lugar com os links do projeto:
+      REPO_URL       (padrao: https://github.com/jefimdev)
+      ISSUES_URL    (padrao: REPO_URL + /issues)
+      SPONSOR_URL    (padrao: https://github.com/sponsors/jefimdev)
+                       ATENCAO: esta constante esta exportada, mas
+                       NENHUM componente a usa hoje (o botao "Doar" nao
+                       existe na versao atual do cabecalho). Se voce for
+                       usa-la, crie o botao em
+                       src/componentes/app-header.tsx e chame
+                       openUrl(SPONSOR_URL).
+      DISCORD_URL    (padrao: https://discord.gg/EA6yVgydBz)
+      TRANSLATE_URL  (padrao: REPO_URL + #translations)
+  Cada uma pode ser trocada por variavel de ambiente VITE_* (ver secao I).
+  Quem usa:
+      REPO_URL       -> src/componentes/app-header.tsx (botao GitHub)
+      ISSUES_URL    -> src/contextos/erro.tsx, src/componentes/vista-operacao.tsx
+      DISCORD_URL    -> src/contextos/erro.tsx, src/componentes/vista-operacao.tsx
+      SPONSOR_URL    -> (previsto no arquivo; nenhum componente usa hoje.
+                        Verifique antes de trocar)
+      TRANSLATE_URL  -> src/paginas/configuracoes.tsx (link "aqui" do texto
+                        de traducao)
+
+  Outros links externos que NAO passam por esse arquivo:
+    - as paginas dos apps da loja: item.pageUrl, aberto com openUrl em
+      src/componentes/cartao-loja.tsx, src/componentes/detalhe-loja.tsx e
+      src/componentes/destaque-loja.tsx
+    - as homepages das fontes do catalogo: src-tauri/src/store.rs (SOURCES)
+    - o link "aqui" do texto de traducao usa TRANSLATE_URL
+
+  Como abrir links externos: sempre com `openUrl()` do
+  @tauri-apps/plugin-opener (nao usar <a href>, que nao funciona igual
+  dentro do Tauri).
+
+--------------------------------------------------------------------------------
+WHATSAPP, TELEFONE, E-MAIL E REDES SOCIAIS
+--------------------------------------------------------------------------------
+  NAO EXISTE NESTE PROJETO.
+  Nao ha WhatsApp, telefone, e-mail de contato, Facebook, Instagram,
+  Twitter, TikTok, YouTube ou LinkedIn na interface. Os unicos destinos
+  externos sao: repositorio no GitHub, issues no GitHub, Discord,
+  pagina de apoios (sponsors) e pagina de traducoes.
+  (As ocorrencias de "YouTube"/"Instagram"/"TikTok" em
+  src-tauri/src/store.rs sao nomes de aplicativos do catalogo, nao links.)
+
+--------------------------------------------------------------------------------
+FORMULARIOS E MENSAGENS
+--------------------------------------------------------------------------------
+  Formulario de login Apple ID:
+    src/modulos/apple-id.tsx  (campos de e-mail, senha, "salvar credenciais"
+    + botao "Entrar na conta" + pedido do codigo 2FA)
+    src/modulos/apple-id.css
+    src/idiomas/pt_br.json  ->  bloco "apple_id" e "account"
+
+  Painel de importacao de .ipa (arrastar e soltar ou escolher o arquivo):
+    src/componentes/painel-importacao.tsx
+
+  Janela de confirmacao ("Tem certeza?"):
+    src/contextos/dialogo.tsx  (hook useDialog, funcao confirm)
+    src/contextos/dialogo.css
+
+  Mensagens de erro com sugestoes:
+    src/contextos/erro.tsx  (hook useError)
+    src/utilitarios/erros.tsx  (errorSuggestionKeys, getErrorSuggestions,
+                                 parseLinkToken)
+    src/utilitarios/erros.tsx  ->  o texto das sugestoes esta nos idiomas
+    (bloco "error")
+
+  Avisos rápidos (canto da tela) e barras de progresso:
+    a biblioteca `sonner` (toast). Exemplos:
+      toast.error(t("app.must_be_logged_in"))
+      toast.promise(promise, { loading, success, error })
+    A "<Toaster richColors expand />" fica em src/main.tsx.
+
+  Lista de registros de log:
+    src/paginas/configuracoes.tsx  (janela de logs, com react-virtuoso)
+    Os logs chegam do Rust pelo evento "log-record" e sao guardados em
+    src/contextos/log.tsx.
+
+--------------------------------------------------------------------------------
+CONFIGURACOES PUBLICAS DE INTEGRACAO
+--------------------------------------------------------------------------------
+  src/configuracoes/links.ts            -> URLs externas (ver acima)
+  src/configuracoes/servidores-anisette.ts -> lista ANISETTE_SERVERS e o
+                                padrao DEFAULT_ANISETTE_SERVER
+  src/configuracoes/i18n.ts             -> idiomas, lingua padrao (pt_br) e
+                                fallback, e a carga dos arquivos de idioma
+  src-tauri/src/store.rs (SOURCES)      -> as 5 fontes do catalogo
+                                (ipaomtk, iappstores, github, ipalibrary,
+                                ipajb), com endpoint, homepage e se o
+                                .ipa vem direto
+  src/configuracoes/... + o restante    -> nenhuma outra chave publica
+
+  Preferencias salvas em disco (ficam no chaveiro/arquivo do usuario, nao
+  no repositorio):
+    "lang"                -> idioma escolhido
+    "newAnisetteServer"   -> servidor Anisette escolhido
+    "overrideKeyring"     -> desliga o chaveiro do Windows
+    "allowAppIdDeletion"  -> libera a exclusao de App IDs
+  (chave "lang" e "newAnisetteServer" em
+  src/paginas/configuracoes.tsx; "overrideKeyring" tambem em
+  src/paginas/configuracoes.tsx; "allowAppIdDeletion" em
+  src/paginas/app-ids.tsx)
+  Os dois arquivos usados pelo plugin de preferencias sao:
+    "preferences.json"  -> carregado em src/contextos/loja.tsx
+    "data.json"         -> carregado em src/modulos/apple-id.tsx
+  Eles ficam em %APPDATA%\app.fhzipa.inject\ (veja a secao E, item 5).
+
+================================================================================
+F. COMO SUBSTITUIR LOGOS, IMAGENS E ICONES
+================================================================================
+
+ONDE ESTAO OS ARQUIVOS ATUAIS
+-----------------------------
+  Logo da barra lateral  : src/recursos/imagens/fhzipa-inject.svg
+  Favicon da aba         : public/fhzipa-inject.svg
+  Desenhos dos aparelhos : src/recursos/imagens/dispositivos/*.svg
+  Icones do instalador   : src-tauri/icons/  (png, ico, icns)
+
+ONDE COLOCAR OS NOVOS ARQUIVOS
+-------------------------------
+  Trocar o logo da barra lateral:
+    1. Substitua o conteudo de src/recursos/imagens/fhzipa-inject.svg
+       (ou coloque o arquivo novo com esse mesmo nome).
+    2. Nada mais: o import em src/componentes/barra-lateral.tsx continua
+       valendo. Se mudar o NOME do arquivo, ajuste o import e o
+       className "brand-logo" em src/componentes/barra-lateral.css.
+
+  Trocar o favicon:
+    1. Substitua public/fhzipa-inject.svg pelo arquivo novo.
+    2. Se mudar o nome, atualize a linha <link rel="icon" ...> no index.html.
+    3. O Vite copia a pasta public/ inteira para a saida (dist/).
+
+  Trocar um desenho de aparelho:
+    1. Substitua o .svg em src/recursos/imagens/dispositivos/.
+    2. O nome do arquivo e a chave em src/utilitarios/modelos-dispositivo.ts
+       (campo "art"): island, se, single, vertical, square, diagonal, tablet.
+    3. Se voce criar um desenho novo, acrescente o arquivo, o import em
+       src/componentes/render-aparelho.tsx e o caso novo em
+       src/utilitarios/modelos-dispositivo.ts.
+
+  Trocar os icones do instalador:
+    Use a ferramenta oficial, a partir de um PNG quadrado (1024x1024 e o
+    recomendado):
+        npx tauri icon caminho/do/logo-1024.png
+    Ela reescreve src-tauri/icons/ com todos os tamanhos (Windows, macOS,
+    Android e iOS). Depois confira a lista em src-tauri/tauri.conf.json
+    (bundle.icon).
+    ESTE E O ICONE DO EXECUTAVEL E DA JANELA, NAO O LOGO DENTRO DO
+    APLICATIVO. Sao coisas separadas (veja o resumo na secao E).
+
+COMO AS REFERENCIAS FUNCIONAM
+-----------------------------
+  - Um SVG dentro de src/ e importado pelo codigo (import ... from
+    "...svg"). O Vite transforma em URL e o copia para dist/assets/ com um
+    nome com hash. Se o import estiver errado, o build falha com
+    "Could not resolve".
+    EXCECAO: arquivos com menos de 4 KB sao embutes no proprio JavaScript
+    como "data:image/svg+xml,...". E o caso do logo de hoje (309 bytes).
+    Os desenhos dos aparelhos (9 KB a 10,6 KB) passam do limite e viram
+    arquivos em dist/assets/ (por exemplo
+    dist/assets/iphone-island-DxwqdITg.svg).
+  - Um arquivo em public/ e acessado por URL ABSOLUTA a partir da raiz
+    ("/fhzipa-inject.svg"). Ele NAO passa pelo Vite e NAO ganha hash.
+  - Os PNG/ICO/ICNS do instalador sao lidos pelo empacotador do Tauri a
+    partir de src-tauri/tauri.conf.json.
+
+FORMATOS E DIMENSOES ATUAIS
+---------------------------
+  src/recursos/imagens/fhzipa-inject.svg  ->  SVG, 309 bytes (logo do app)
+  public/fhzipa-inject.svg                ->  SVG, 309 bytes (favicon)
+  desenhos dos aparelhos                  ->  SVG, entre 9 KB e 10,6 KB cada
+  icones do instalador                    ->  PNG de 32x32 ate 512x512, mais
+                                             .ico e .icns
+  Os dois fhzipa-inject.svg sao copias com o mesmo desenho, mas em
+  lugares diferentes e com papeis diferentes (veja o resumo na secao E).
+
+CUIDADOS
+--------
+  PROPORCAO: o logo e exibido em tamanho fixo pela folha
+  src/componentes/barra-lateral.css (classe .brand-logo). Se o novo logo
+  tiver outra proporcao, ele vai ser esticado ou cortado. Confira a regra
+  .brand-logo e ajuste o width/height/object-fit se necessario.
+  TRANSPARENCIA: o logo do menu e o favicon ficam sobre fundo escuro.
+  Um SVG com fundo branco vai aparecer como um bloco claro.
+  TAMANHO: mantenha o SVG leve (o logo atual tem 309 bytes). Para o favicon
+  do Windows/Edge, um SVG quadrado de no maximo 512x512 e o ideal.
+  FORMATO: o Vite so embute SVG, PNG, JPG, GIF, WEBP e AVIF. Se voce usar
+  outro formato (por exemplo .ico na interface), ele nao sera importado.
+  NOME: nao coloque acento, espaco ou caixa alta no nome do arquivo.
+
+COMO CONFERIR SE A TROCA FUNCIONOU
+----------------------------------
+  1. Rode `npm run tauri dev` e olhe a janela: o logo do menu e o titulo
+     da aba/icone da janela.
+  2. Rode `npm run build` e veja se o build termina sem erro.
+  3. No terminal, confira o que foi gerado:
+         dir dist
+         dir dist\assets
+     O novo SVG deve aparecer em dist\assets com nome com hash.
+  4. Rode `npm run preview` e abra http://localhost:4173 para ver a versao
+     de producao (lembre: no navegador a interface nao carrega os dados do
+     Tauri, mas o logo e o favicon aparecem).
+
+================================================================================
+G. COMO EDITAR LINKS E NAVEGACAO
+================================================================================
+
+ONDE ESTAO AS DEFINICOES DAS ROTAS
+----------------------------------
+  Este projeto NAO usa biblioteca de rotas (nem react-router). A navegacao
+  e feita por um estado de texto.
+
+  src/app-principal.tsx
+      const [view, setView] = useState<AppView>("overview");
+      ...
+      {view === "overview"  && ( ... )}
+      {view === "store"      && ( ... )}
+      {view === "devices"    && ( ... )}
+      {view === "certificates" && ( ... )}
+      {view === "appids"     && ( ... )}
+      {view === "settings"   && ( ... )}
+
+  src/componentes/barra-lateral.tsx
+      export type AppView = "overview" | "store" | "devices"
+                         | "certificates" | "appids" | "settings";
+      const NAV_ITEMS: { id: AppView; icon: IconType; labelKey: string }[] = [
+        { id: "overview", icon: FaHouse, labelKey: "nav.overview" },
+        ...
+      ];
+      <button onClick={() => setView(item.id)} ...>
+
+  src/app-principal.tsx  (o titulo de cada tela)
+      const headerCopy = { overview: {...}, store: {...}, ... }[view];
+
+COMO LOCALIZAR O DESTINO DE CADA ITEM DO MENU
+---------------------------------------------
+  1. Abra src/componentes/barra-lateral.tsx e ache o array NAV_ITEMS.
+     Cada item tem: id (o destino), icon (o icone) e labelKey (a chave do
+     texto no arquivo de idioma).
+  2. O id corresponde a um dos valores do type AppView.
+  3. Em src/app-principal.tsx, procure por {view === "<id>" } para achar o conteudo
+     que aparece naquela tela.
+  4. O texto do botao esta em src/idiomas/pt_br.json, no bloco "nav".
+
+DIFERENCA ENTRE LINK INTERNO E EXTERNO NESTE PROJETO
+-----------------------------------------------------
+  INTERNO  = trocar o valor do estado `view` (setView("store")).
+             Nao existe URL, Nao existe_history, o botao do navegador nao
+             navega. Nao existe ancora <a href="#...">.
+  EXTERNO  = openUrl(url) do @tauri-apps/plugin-opener.
+             Sempre com openUrl, nunca com <a href>, porque o Tauri
+             intercepta a navegacao do webview.
+             As URLs saem de src/configuracoes/links.ts ou vem do backend
+             (item.pageUrl da loja).
+
+CUIDADOS PARA NAO QUEBRAR URLs EXISTENTES
+------------------------------------------
+  - Se voce mudar o valor padrao de REPO_URL, ISSUES_URL, SPONSOR_URL,
+    DISCORD_URL ou TRANSLATE_URL, os botoes passam a apontar para outro
+    lugar. O padrao de REPO_URL tambem e usado para montar ISSUES_URL e
+    TRANSLATE_URL, entao mexer nele arrasta os outros.
+  - Nao ha URL publica do aplicativo: ele e desktop e usa a secao I para
+    links de configuracao. Nenhuma rota da loja e publica.
+  - Os destinos da loja (item.pageUrl) vem do catalogo remoto. Se voce
+    trocar a fonte, a URL muda junto.
+
+COMO UMA NOVA PAGINA SERIA ADICIONADA (orientacao, nao aplicada aqui)
+-----------------------------------------------------------------------
+  ATENCAO: os nomes de arquivo abaixo sao EXEMPLOS. Nenhuma tela nova
+  existe no projeto, e nada foi criado para este guia.
+
+  Seguindo o padrao atual, uma tela nova seria:
+    1. Criar src/paginas/nova-tela.tsx com o componente exportado.
+    2. Criar src/paginas/nova-tela.css se precisar de estilo proprio.
+    3. Em src/componentes/barra-lateral.tsx: acrescentar o id no type
+       AppView e um item em NAV_ITEMS (com o icone e o labelKey).
+    4. Em src/idiomas/pt_br.json: acrescentar o rotulo em "nav" e o bloco
+       de textos da tela.
+    5. Em src/app-principal.tsx: acrescentar o caso em headerCopy e o bloco
+       {view === "nova-tela" && ( ... )}.
+    6. Em src/componentes/faixa-passos.tsx, se a tela entrar no passo a
+       passo, acrescentar o passo e o texto em "steps".
+  (Isto e apenas explicacao. Nenhuma tela foi criada nesta tarefa.)
+================================================================================
+H. ESTILOS E RESPONSIVIDADE
+================================================================================
+
+ONDE FICAM OS ESTILOS GLOBAIS E OS ESPECIFICOS
+------------------------------------------------
+  GLOBAIS
+    src/estilos/app.css    ->  importado uma vez por src/app-principal.tsx.
+                                Tudo que e comum a interface: .app-shell,
+                                .app-main, .app-header, .panel, .btn, .input,
+                                .pill, .card, tabelas, .spinner, .row,
+                                .text-muted, .step-*, .status-*.
+    src/estilos/tema.css    ->  importado por app.css (@import "./tema.css").
+                                Variaveis de design (:root). NAO edite os
+                                valores das regras do app.css para mudar
+                                cor/espaço geral: mude as variaveis.
+
+  ESPECIFICOS
+    O arquivo .css fica AO LADO do .tsx que ele estiliza:
+      src/componentes/barra-lateral.css  <- src/componentes/barra-lateral.tsx
+      src/componentes/modal.css         <- src/componentes/modal.tsx
+      src/componentes/dropdown.css       <- src/componentes/dropdown.tsx
+      src/componentes/vista-operacao.css <- src/componentes/vista-operacao.tsx
+      src/contextos/erro.css             <- src/contextos/erro.tsx
+      src/contextos/dialogo.css         <- src/contextos/dialogo.tsx
+      src/modulos/apple-id.css           <- src/modulos/apple-id.tsx
+      src/modulos/dispositivo.css        <- src/modulos/dispositivo.tsx
+      src/paginas/certificados.css       <- src/paginas/certificados.tsx
+                                            (tambem usado por app-ids.tsx
+                                             e pareamento.tsx)
+      src/paginas/configuracoes.css      <- src/paginas/configuracoes.tsx
+      src/paginas/loja.css               <- src/paginas/loja.tsx
+    Cada .tsx importa o proprio .css com `import "./arquivo.css";`.
+    Se voce criar um .css novo, nao esqueça essa linha.
+
+COMO IDENTIFICAR O ESTILO DE UM COMPONENTE
+------------------------------------------
+  1. Abra o .tsx do componente.
+  2. Olhe as classes do JSX (className="...").
+  3. Use Ctrl+Shift+F no VS Code e procure pela classe, por exemplo
+     ".device-card". O resultado mostra em qual .css a regra esta.
+  4. Lembre: o mesmo nome de classe pode existir em mais de um .css
+     (ex.: .panel aparece em app.css e em paginas/loja.css). A regra que
+     vale e a do arquivo especifico, e ele vem DEPOIS do app.css na ordem
+     de carregamento, por isso tem prioridade.
+
+ONDE FICAM CORES E FONTES (mesmo que estejam distribuidas)
+------------------------------------------------------------
+  Concentradas em src/estilos/tema.css (variaveis :root).
+  Mas ha valores fixos espalhados. Para uma troca real, procure no
+  projeto inteiro (Ctrl+Shift+F) por:
+      #ff2343        (vermelho da marca)
+      #d90d30        (vermelho ao pressionar)
+      rgba(255, 35, 67   (brilhos vermelhos)
+      #13d990        (verde de sucesso)
+      #f5b942        (amarelo de atencao)
+      --font-        (as tres familias de fonte)
+  Alterar so o tema.css muda o grosso da interface; o resto fica igual.
+
+ONDE SAO DEFINIDOS OS AJUSTES PARA CELULAR
+-------------------------------------------
+  src/estilos/app.css, na secao "Responsive" (no fim do arquivo):
+      @media (max-width: 1320px)  ->  esconde o rotulo dos passos
+      @media (max-width: 1180px)  ->  dashboard em uma coluna
+      @media (max-width: 980px)   ->  menu mais estreito, espacamento menor
+      @media (max-width: 760px)   ->  menu vira linha de cima, cabecalho
+                                      empilhado
+      @media (prefers-reduced-motion: reduce) ->  desliga animacoes
+  src/paginas/loja.css:
+      @media (max-width: 900px)   ->  ajustes da grade da loja
+  A janela do aplicativo tem minimo de 1024x700 (src-tauri/tauri.conf.json),
+  entao as faixas de 980px e 760px valem para o navegador e para
+  redimensionar a janela.
+
+COMO CONFERIR DESKTOP E CELULAR APOS UMA EDICAO FUTURA
+--------------------------------------------------------
+  1. `npm run tauri dev` e redimensione a janela (arraste a borda). O
+     minimo real e 1024x700.
+  2. `npm run dev` e abra http://localhost:1420 no Chrome, aperte F12 e use
+     o modo responsivo (Ctrl+Shift+M) em 760px e em 390px de largura.
+     (A interface nao carrega os dados do Tauri no navegador, mas o
+     LAYOUT responde normalmente.)
+  3. `npm run build` e depois `npm run preview`, e repita o passo 2 em
+     http://localhost:4173 para conferir a versao de producao.
+
+================================================================================
+I. INTEGRACOES E VARIAVEIS DE AMBIENTE
+================================================================================
+
+ONDE SAO CONFIGURADAS
+---------------------
+  Variaveis de ambiente (front):
+    src/configuracoes/links.ts le `import.meta.env` e usa as variaveis
+    VITE_* abaixo. Os valores padrao estao no proprio arquivo.
+  Servidores Anisette:
+    src/configuracoes/servidores-anisette.ts (lista ANISETTE_SERVERS e
+    DEFAULT_ANISETTE_SERVER). O servidor usado em runtime vem da
+    preferencia salva "newAnisetteServer".
+  Fontes do catalogo:
+    src-tauri/src/store.rs (const SOURCES) - endpoints, homepages e o tipo
+    de cada fonte.
+  Idioma:
+    src/configuracoes/i18n.ts - idioma padrao "pt_br" e fallback "pt_br".
+
+NOMES DAS VARIAVEIS (sem valores secretos)
+-------------------------------------------
+  VITE_REPO_URL
+  VITE_ISSUES_URL
+  VITE_SPONSOR_URL
+  VITE_DISCORD_URL
+  VITE_TRANSLATE_URL
+  (todas opcionais; se nao existirem, o codigo usa o padrao do arquivo)
+
+QUAIS VALORES PODEM SER PUBLICOS
+--------------------------------
+  Todas as cinco acima sao URLs publicas do projeto e ficam dentro do
+  bundle do aplicativo (o prefixo VITE_ faz o Vite embutir o valor no
+  JavaScript). Nao ha segredo aqui: qualquer um que abra o aplicativo ve
+  esses valores. E por isso que so devem ser usados para links publicos.
+
+QUAIS DEVEM PERMANECER NO SERVIDOR OU AMBIENTE PRIVADO
+-------------------------------------------------------
+  Neste projeto NAO existe nenhuma variavel de ambiente com segredo.
+  Nada de token, senha ou chave de API e lido do ambiente pelo frontend.
+  Os segredos reais do aplicativo (Apple ID, senha, token 2FA, certificado
+  de assinatura) ficam no Windows Credential Manager, gerenciados pelo
+  codigo Rust em src-tauri/src/secure_storage.rs e src-tauri/src/account.rs.
+  Os secrets do GitHub Actions (usados em build.yml e download-notifier.yml)
+  ficam no cadastro do repositorio no GitHub, nunca no codigo.
+
+QUANDO REINICIAR OU RECOMPILAR
+-------------------------------
+  Mudou o .env ou o src/configuracoes/links.ts -> reinicie o
+  `npm run tauri dev` (o Vite so injeta as variaveis na partida).
+  Mudou src/configuracoes/servidores-anisette.ts -> reinicie tambem
+  (o valor padrao e lido na inicializacao).
+  Mudou src-tauri/src/store.rs -> o `tauri dev` recompila o Rust sozinho.
+  Mudou src-tauri/tauri.conf.json -> reinicie o `tauri dev`.
+
+================================================================================
+J. VERIFICACAO E PRODUCAO
+================================================================================
+
+COMANDOS REAIS DISPONIVEIS (package.json)
+------------------------------------------
+    npm install              instala as dependencias
+    npm run dev              sobe o Vite em http://localhost:1420
+    npm run build            roda "tsc && vite build" (verifica tipos e
+                             gera a versao de producao)
+    npm run preview          serve a versao de producao em
+                             http://localhost:4173
+    npm run tauri dev        abre o aplicativo desktop em modo debug
+    npm run tauri build      gera o instalador (executa "npm run build"
+                             antes)
+    npm run bump-patch       sobe a versao em patch (usa tauri-version)
+    npm run bump-minor       sobe a versao em minor
+    npm run bump-major       sobe a versao em major
+  Nao existe comando de teste, lint ou formatacao neste projeto.
+  (Os comandos bump-* usam o executavel "tauri-version", que esta
+   instalado como devDependency em node_modules/.bin - funca depois de
+   um "npm install". Eles NAO foram executados nesta tarefa.)
+
+COMANDO DE COMPILACAO
+---------------------
+    npm run build
+  Ele roda duas etapas:
+    1. tsc  ->  verifica os tipos de todo o src/. Se houver erro de tipo,
+               o build para aqui e nada e gerado.
+    2. vite build  ->  gera a pasta dist/.
+
+ONDE A SAIDA E GERADA
+---------------------
+    dist/
+      index.html
+      assets/index-<hash>.js
+      assets/index-<hash>.css
+      assets/<nome>-<hash>.svg   (o logo e os desenhos dos aparelhos)
+      fhzipa-inject.svg            (copiado de public/)
+  A pasta dist/ esta no .gitignore: e gerada, nao versionada.
+
+COMO VISUALIZAR A VERSAO DE PRODUCAO
+-------------------------------------
+    npm run build
+    npm run preview
+  e abrir http://localhost:4173 no navegador.
+  Lembre que no navegador a interface nao tem acesso ao backend Tauri
+  (as chamadas invoke falham), entao da para conferir aparencia, textos e
+  layout, mas nao as funcoes de dispositivo e conta.
+  Para o funcionamento completo, use `npm run tauri dev`.
+
+PROCEDIMENTO DE PUBLICACAO (o que ja existe no repositorio)
+------------------------------------------------------------
+  A publicacao e feita pelo GitHub Actions, arquivo
+  .github/workflows/build.yml. Ele:
+    - roda em push, pull_request, workflow_dispatch e release publicada
+    - monta uma matriz de alvos: Windows, macOS (universal) e Linux
+      (deb, rpm, AppImage, incluindo ARM)
+    - instala o Rust e as dependencias de cada sistema
+    - compila com tauri-action, usando src-tauri/ci.conf.json nas execucoes
+      que nao sao release
+    - ao publicar uma release, assina, notariza o .dmg no macOS e cria o
+      arquivo latest.json de atualizacao
+    - sobe os artefatos (.exe, .dmg, .deb, .rpm, .AppImage) e marca a
+      release como "latest"
+  O instalador do Windows (NSIS) sai em
+  src-tauri/target/release/bundle/nsis/.
+  Para publicar de verdade: crie uma release no GitHub a partir de uma tag
+  e deixe o workflow rodar. Nao existe script local de publicacao.
+  (Nao faca isso sem querer: a tarefa de organizacao NAO publica nada.)
+
+  EXISTE TAMBEM UM INSTALADOR PROPRIO, COM A IDENTIDADE VISUAL DA MARCA
+  Ele fica no projeto vizinho "instalador fhzipa" e e uma aplicacao WPF
+  (.NET 10) que carrega este executavel como recurso e faz a instalacao
+  de verdade (copia o executavel, cria os atalhos, registra o
+  desinstalador e preserva os dados do usuario).
+      ..\instalador fhzipa\GUIA-DO-INSTALADOR.txt
+      ..\instalador fhzipa\DOCUMENTACAO-TECNICA-DO-INSTALADOR.md
+  Para gerar o executavel que ele embute, faca `npm run tauri build`
+  NESTE projeto e depois rode scripts\build.ps1 no projeto do instalador.
+  Os dois caminhos de instalacao coexistem: o NSIS continua sendo o que o
+  GitHub Actions publica, e o instalador proprio e a distribuicao com a
+  identidade da marca. O caminho de atualizacao automatica (latest.json)
+  continua apontando para o instalador NSIS.
+
+  O CI instala as dependencias com `npm ci` (o mesmo package-lock.json do
+  repositorio) e roda os scripts de CI com `node` em Node 20.
+
+AMBIENTE NIX (opcional, so para quem desenvolve em Linux)
+---------------------------------------------------------
+  O repositorio tambem traz flake.nix / shell.nix / default.nix para
+  quem usa Nix. O frontend e compilado com npm (buildNpmPackage, usando o
+  package-lock.json) e o backend com cargo, como no build normal.
+  Requisitos: Nix com flakes habilitado.
+  Para testar:
+      nix build                 # gera o pacote do aplicativo
+      nix develop               # abre um shell com as dependencias
+      nix fmt                   # formata os arquivos .nix
+  ATENCAO: o flake foi revisado estaticamente, mas nao pode ser
+  EXECUTADO no Windows (o Nix precisa de Linux/WSL). A validacao de
+  verdade precisa ser feita em uma maquina Linux.
+
+================================================================================
+K. PROBLEMAS COMUNS
+================================================================================
+
+IMAGEM QUE NAO APARECE
+-----------------------
+  1. A imagem esta no lugar certo?
+       - logo do menu  -> src/recursos/imagens/fhzipa-inject.svg
+       - favicon       -> public/fhzipa-inject.svg
+       - aparelhos     -> src/recursos/imagens/dispositivos/
+  2. O import aponta para o caminho certo? (Ctrl+Shift+F pelo nome do
+     arquivo). O Vite falha o build com "Could not resolve ..." se o
+     caminho estiver errado.
+  3. Ela esta sendo usada? Os desenhos dos aparelhos so aparecem quando ha
+     um aparelho selecionado (src/componentes/render-aparelho.tsx e
+     src/utilitarios/modelos-dispositivo.ts).
+  4. Faltou reiniciar o `npm run tauri dev` depois de criar um arquivo
+     novo? O Vite as vezes nao enxerga arquivo recem-criado.
+  5. No build de producao, o SVG e renomeado com hash (por exemplo
+     iphone-se-fhAaa5BN.svg). Isso e normal e nao e erro.
+
+LOGO DISTORCIDO
+---------------
+  1. O SVG novo tem outra proporcao (por exemplo, um logo quadrado no
+     lugar de um retangular). A regra .brand-logo em
+     src/componentes/barra-lateral.css tem width/height fixos.
+  2. Se o SVG tiver width/height internos, eles mandam na proporcao e o CSS
+     distorce. Apague o width/height do <svg> e deixe o CSS controlar.
+  3. Para o favicon, o ideal e um SVG quadrado.
+
+LINK QUEBRADO
+-------------
+  1. Link externo: confira se a URL existe e se o `openUrl` esta sendo
+     chamado (o `openUrl` do plugin opener e o que abre fora do app).
+  2. Link de projeto: o destino vem de src/configuracoes/links.ts. Se voce
+     criou um `.env`, ele tem prioridade sobre o padrao do arquivo.
+  3. Link da loja: vem de item.pageUrl (dado pelo catalogo remoto). A
+     pagina pode ter sumido; nao e bug do aplicativo.
+
+PAGINA NAO ENCONTRADA (tela em branco ou vazia)
+-------------------------------------------------
+  Este projeto nao tem rotas nem paginas de erro 404. Se uma tela ficou
+  vazia:
+  1. Confirme o `view` atual: em src/app-principal.tsx o conteudo so aparece dentro
+     de {view === "<id>" && ( ... )}. O id precisa bater com o type
+     AppView de src/componentes/barra-lateral.tsx.
+  2. A tela pode ter quebrado por um erro de dado vindo do Rust (por
+     exemplo o catalogo). Olhe o terminal do `npm run tauri dev` e o
+     painel de logs (Ajustes > Verificar registros).
+
+ALTERACAO QUE NAO APARECE
+--------------------------
+  1. Salvou o arquivo? (Ctrl+S; o VS Code mostra um circulo na aba se
+     houver alteracao nao salva.)
+  2. O hot reload pegou? O Vite recarrega sozinho; se nao, Ctrl+R na
+     janela do aplicativo.
+  3. Alterou CSS? some com o cache do navegador (Ctrl+Shift+R) e
+     reinicie o `npm run tauri dev`.
+  4. Alterou um arquivo de traducao? Precisa reiniciar o Vite: o glob
+     `import.meta.glob("../idiomas/*.json")` so e lido na partida.
+  5. Alterou Rust? O `tauri dev` recompila, mas a recompilacao pode
+     demorar. Se nao recompilar, encerre e start de novo.
+  6. Alterou index.html, vite.config.ts ou package.json? Reinicie o
+     processo inteiro.
+
+ERRO DE IMPORTACAO / "Could not resolve"
+-----------------------------------------
+  1. O caminho do import esta errado depois de uma movimentacao de arquivo.
+     Compare com o caminho real em disco (Ctrl+P no VS Code).
+  2. Extensao esquecida: o import de CSS precisa ser `import "./x.css";`
+     e o de imagem precisa existir de verdade.
+  3. `npm run build` roda o tsc primeiro: se ele acusar modulo nao
+     encontrado, o problema e um import. Rode `npx tsc --noEmit` para ver
+     a lista completa dos erros de uma vez.
+  4. Pasta nova sem arquivo: o Vite resolve por caminho exato, nao por
+     convencao de pasta.
+
+ERRO AO INSTALAR DEPENDENCIAS
+------------------------------
+  1. Use npm (o lock e package-lock.json). `npm ci` reinstala do zero
+     respeitando o lock.
+  2. "peer dependency" ou versao conflitante: apague node_modules e rode
+     `npm install` de novo.
+  3. "EACCES" ou erro de permissao no Windows: abra o terminal como
+     Administrador ou desative o antivirus momentaneamente.
+  4. Se aparecer algo relacionado a "bun" ou "pnpm", e porque algum
+     comando ou documentacao ainda usa outro gerenciador. Use npm.
+  5. "npm ci" falhou complaining que o package.json e o package-lock.json
+     nao batem: rode `npm install` uma vez (ele atualiza o lock), confira
+     a mudanca com `git diff package-lock.json` e so entao volte a usar
+     `npm ci`. Nao apague o package-lock.json para sair do problema.
+
+ERRO AO INICIAR
+---------------
+  1. "Port 1420 is already in use": ja existe um Vite rodando. Feche o
+     processo antigo (o terminal onde ele started) ou rode
+     `npx kill-port 1420`.
+  2. "linker `link.exe` not found": falta o Visual Studio Build Tools com
+     a carga "Desenvolvimento para Desktop com C++". Instale e reinicie
+     o terminal.
+  3. "failed to run custom build command" / erro do tsc: o problema e de
+     codigo, rode `npm run build` para ver a mensagem exata.
+  4. Tela branca no navegador: normal. O aplicativo precisa do runtime
+     Tauri. Use `npm run tauri dev`.
+  5. "WebView2 not installed": instale o WebView2 Runtime.
+
+DIFERENCA ENTRE FUNCIONAMENTO LOCAL E PUBLICACAO
+-------------------------------------------------
+  - Em desenvolvimento (`npm run tauri dev`) o frontend vem do servidor
+    Vite (http://localhost:1420) e voce ve as alteracoes na hora.
+  - Na versao de producao (`npm run tauri build`, ou o instalador pronto)
+    o frontend vem EMBUTIDO no executavel (a pasta dist/ e congelada
+    durante a compilacao). Se voce mexer no frontend e nao recompilar o
+    Rust, a janela continua mostrando a versao antiga.
+  - A versao local mostra o endereco do servidor na barra de status; na
+    publica mostra "app://localhost".
+  - O instalador (.exe) e assinado e.tar com as configuracoes de
+    publicacao do .github/workflows/build.yml; localmente nao ha assinatura.
+  - Antes de publicar de verdade, rode `npm run build` e `npm run preview`
+    para conferir a versao de producao.
+
+================================================================================
+L. COMO EDITAR COM SEGURANCA
+================================================================================
+
+COMO SALVAR ARQUIVOS
+--------------------
+  Ctrl+S. O VS Code salva automaticamente se voce tiver ativado
+  "files.autoSave". O indicador da aba (circulo) mostra arquivo nao salvo.
+  Formate SEMPRE com o mesmo estilo do arquivo: 2 espacos, aspas duplas,
+  ponto e virgula, LF ou CRLF conforme o arquivo original. Evite o
+  "formatar documento" automatico em arquivo grande: o VS Code pode
+  reescrever o arquivo inteiro e sujar o diff.
+
+COMO PESQUISAR UM TEXTO NO PROJETO
+-----------------------------------
+  Ctrl+Shift+F (Search across files).
+  Filtros uteis:
+    files to include:  src/          (ou src/paginas/, src/idiomas/)
+    files to exclude:  dist, node_modules, src-tauri/target
+    regex:             marque a opcao .* na busca
+  Para procurar apenas um tipo de arquivo, use a extensao no filtro
+  (ex.: include "*.tsx").
+
+COMO LOCALIZAR UM ARQUIVO
+-------------------------
+  Ctrl+P (Quick Open) e digite o nome do arquivo. Funciona sem precisar
+  lembrar a pasta.
+  Ctrl+G e Ctrl+P tambem funcionam para pular para um numero de linha ou
+  para um simbolo (funcao, classe, variavel).
+
+COMO REVISAR O QUE FOI MODIFICADO
+---------------------------------
+  Se voce usa Git (o projeto tem .git):
+    No VS Code, aba "Source Control" (Ctrl+Shift+G) mostra a lista de
+    arquivos modificados. Clique no arquivo para ver o diff, com as linhas
+    antigas em vermelho e as novas em verde.
+    No terminal:
+        git status              lista o que mudou
+        git diff                mostra as mudancas nao confirmadas
+        git diff --stat         so o resumo por arquivo
+  O diff em vermelho/verde e o jeito mais seguro de conferir que voce so
+  trocou o que queria. Conferir o diff ANTES de confirmar (commit) e
+  obrigatorio.
+
+COMO VOLTAR UMA ALTERACAO PROPRIA SEM PERDER OUTRAS MUDANCAS
+-------------------------------------------------------------
+  Do jeito mais seguro (descarta so a mudanca de um arquivo):
+    1. Source Control > clique no arquivo > gear > "Discard Changes"
+    2. O VS Code pergunta de confirmacao; confirme.
+  No terminal, o equivalente:
+    git restore -- "caminho/do/arquivo"     (descarta o arquivo inteiro)
+    git restore -p -- "caminho/do/arquivo"  (descarta pedaco a pedaco,
+                                              com o que voce escolher)
+  CUIDADO: "Discard Changes" apaga TUDO que voce fez no arquivo, nao so a
+  ultima edicao. Se o arquivo tem varias mudancas suas, prefira
+  `git restore -p`.
+  NUNCA use `git reset --hard`, `git checkout .` ou `git clean -fd` sem
+  certeza: isso apaga trabalho que nao esta no commit.
+
+ARQUIVOS QUE NAO DEVEM SER EDITADOS DIRETAMENTE
+------------------------------------------------
+  dist/                      - gerado por `npm run build`
+  node_modules/              - gerado por `npm install`
+  src-tauri/target/          - gerado pelo cargo
+  src-tauri/gen/schemas/     - gerado pelo Tauri
+  package-lock.json          - gerado pelo npm (mude o package.json)
+  src-tauri/Cargo.lock       - gerado pelo cargo
+  src/vite-env.d.ts          - e um arquivo de tipos; so mude se souber o
+                               que esta fazendo
+  src/idiomas/*.json         - edite o que voce quiser, mas MANTENHA as
+                               chaves identicas entre os idiomas (a chave
+                               e o que o codigo procura)
+
+CUIDADOS COM ARQUIVOS DE AMBIENTE
+---------------------------------
+  - O arquivo `.env` fica na raiz e NAO deve ser commitado. Confirme que
+    ele esta no .gitignore antes de dar `git add .`.
+  - Nao coloque senha, token ou chave de API em variavel VITE_*: o
+    prefixo VITE_ faz o valor ser embutido no JavaScript do aplicativo e
+    ficar visivel para qualquer pessoa.
+  - O arquivo `.env` e lido so na partida do Vite: mudei-lo, reinicie.
+  - Se o .env tiver valor errado, o botao de GitHub, o link de issues, o
+    Discord, os sponsors ou o link de traducao vao apontar para o lugar
+    errado. Confira em src/configuracoes/links.ts.
+
+================================================================================
+M. CONSULTA RAPIDA
+================================================================================
+
+QUERO ALTERAR                          ARQUIVO                              O QUE PROCURAR                            CUIDADO
+--------------------------------------  -----------------------------------  ----------------------------------------  ---------------------------------------------
+Nome do aplicativo                     src-tauri/tauri.conf.json             productName / bundle.publisher            mude junto de index.html e da barra lateral
+Nome da janela                         src-tauri/tauri.conf.json             app.windows[0].title                     o titulo da aba vem do index.html
+Titulo da aba                          index.html                            <title>                                   o arquivo nao pode ser renomeado
+Nome no menu lateral                   src/componentes/barra-lateral.tsx     <span className="brand-name">             texto fixo, nao vem do arquivo de idioma
+Identificador do app                   src-tauri/tauri.conf.json             "identifier"                              mudar move os dados do usuario
+Numero da versao                       src-tauri/tauri.conf.json             "version"                                 e o que aparece em "Versao 1.0.0"
+Titulo da tela inicial                 src/idiomas/pt_br.json                "home" -> "title" / "subtitle"             e lido em src/app-principal.tsx (headerCopy.overview)
+Rotulos do menu lateral                src/idiomas/pt_br.json                "nav"                                     e a ordem/icone em barra-lateral.tsx
+Icones do menu lateral                  src/componentes/barra-lateral.tsx     NAV_ITEMS -> icon: FaXxx                 react-icons, nao ha arquivos de icone
+Tela "Baixar apps"                     src/paginas/loja.tsx                  export const Store                        e a folha src/paginas/loja.css
+Tela "Dispositivos"                    src/modulos/dispositivo.tsx          export const DeviceList                   e o hook useDevices
+Tela "Certificados"                    src/paginas/certificados.tsx         export const Certificates                  e src/paginas/certificados.css
+Tela "IDs de App"                      src/paginas/app-ids.tsx               export const AppIds                       reusa certificados.css
+Tela "Ajustes"                         src/paginas/configuracoes.tsx        export const Preferences                   e src/paginas/configuracoes.css
+Janela de Pareamento                   src/paginas/pareamento.tsx            export const Pairing                      e o modal em src/componentes/modal.tsx
+Cabecalho (titulo e subtitulo)        src/componentes/app-header.tsx        export const AppHeader                    o texto vem de headerCopy em src/app-principal.tsx
+Faixa de passos                        src/componentes/faixa-passos.tsx     export const StepsStrip                   textos em "steps" do arquivo de idioma
+Rodape (versao)                        src/componentes/barra-lateral.tsx    className="sidebar-footer"                nao ha rodape separado
+Login com Apple ID                     src/modulos/apple-id.tsx              export const AppleID                      e src/modulos/apple-id.css
+Importar IPA                           src/componentes/painel-importacao.tsx export const ImportPanel                 e src/contextos/erro.tsx para mensagens
+Painel de dispositivo                  src/componentes/painel-dispositivo.tsx export const DevicePanel                 desenho em render-aparelho.tsx
+Desenho de cada aparelho               src/utilitarios/modelos-dispositivo.ts deviceModel -> campo "art"             aponte para um .svg de recursos/imagens/dispositivos
+Progresso da instalacao                src/componentes/vista-operacao.tsx   export default                            e src/componentes/operacoes.ts
+Confirmacao ("Tem certeza?")            src/contextos/dialogo.tsx             export const useDialog                    texto em "dialog" do idioma
+Mensagens de erro                      src/contextos/erro.tsx                export const useError                      e src/utilitarios/erros.tsx
+Sugestoes de erro                      src/utilitarios/erros.tsx             errorSuggestionKeys / getErrorSuggestions  textos em "error" do idioma
+Avisos no canto da tela                 qualquer arquivo, `toast.`            import { toast } from "sonner"             o <Toaster> fica em src/main.tsx
+Texto de qualquer tela                 src/idiomas/pt_br.json                a chave da tela (ex.: "device")            troque em todos os 28 idiomas
+Adicionar um idioma                    src/configuracoes/i18n.ts             array `languages` + src/idiomas/<cod>.json  o nome do arquivo e o codigo do idioma
+Cor principal, espacamento, fonte      src/estilos/tema.css                  bloco :root (--red, --gap, --font-...)     ha cores fixas espalhadas: use Ctrl+Shift+F
+Estilo do menu lateral                 src/componentes/barra-lateral.css     .nav / .nav-item / .brand                 largura e fundo da coluna
+Estilo dos botoes                      src/estilos/app.css                   .btn / .btn-outline / .btn-ghost          cores fixas dentro do arquivo
+Estilo dos campos                      src/estilos/app.css                   .input                                    idem
+Estilo da loja                         src/paginas/loja.css                  .store-grid / .store-toolbar              responsivo em @media 900px
+Ajustes para celular                   src/estilos/app.css                   @media (max-width: ...)                  1320, 1180, 980 e 760 px
+Animacoes / transicoes                 src/estilos/tema.css                  --t-fast / --t / --t-slow / --ease        respeite prefers-reduced-motion
+Logo da barra lateral                   src/recursos/imagens/fhzipa-inject.svg  o arquivo .svg                         import em barra-lateral.tsx
+Favicon                                 public/fhzipa-inject.svg              o arquivo .svg                            referenciado no index.html por /fhzipa-inject.svg
+Icones do instalador                    src-tauri/icons/                      PNG / .ico / .icns                       regere com: npx tauri icon logo.png
+Links externos do projeto               src/configuracoes/links.ts             REPO_URL / ISSUES_URL / SPONSOR_URL / DISCORD_URL / TRANSLATE_URL  sobrescreva por .env
+Abrir um link externo                   qualquer arquivo, openUrl(url)         import { openUrl } do plugin-opener       nunca use <a href>
+Servidores Anisette                     src/configuracoes/servidores-anisette.ts ANISETTE_SERVERS / DEFAULT_ANISETTE_SERVER  o usuario pode digitar um servidor proprio
+Fontes do catalogo de IPAs              src-tauri/src/store.rs                 const SOURCES                            id, nome, endpoint, se tem .ipa direto
+Destino de cada item do menu            src/componentes/barra-lateral.tsx     NAV_ITEMS -> id                           e o type AppView
+Conteudo de cada tela                   src/app-principal.tsx                           {view === "<id>" && ( ... )}              o estado `view` e o que troca a tela
+Atalho de teclado                      src/app-principal.tsx                           o listener de "keydown"                  Ctrl+P, Ctrl+Shift+C, Ctrl+Shift+A, Ctrl+R, Ctrl+L
+Preferencia salva em disco              src/paginas/configuracoes.tsx         useStore("newAnisetteServer") / "lang"    ficam em preferences.json
+Where o log em disco e gravado           src-tauri/src/lib.rs                  filename_prefix: "fhzipa-inject"          em %APPDATA%\app.fhzipa.inject\logs
+Comando do backend chamado              src-tauri/src/lib.rs                  tauri::generate_handler![...]            o mesmo nome tem que existir no Rust
+Scripts de build                        package.json                          "scripts"                                npm e o gerenciador oficial
+Configuracao do Tauri                   src-tauri/tauri.conf.json             bundle / build / app.windows            janela, icones e hooks de build
+Configuracao do Vite                    vite.config.ts                        server.port / build.target               porta 1420 e exigida pelo Tauri
+Permissoes da janela                    src-tauri/capabilities/default.json   "permissions"                            so as permissões listadas funcionam
+Porta e endereco local                  vite.config.ts                        server.port: 1420                         o Tauri dev usa essa porta
+Documentacao do projeto                 README.md                             o texto inteiro                           ja aponta para os caminhos novos
+Publicacao automatica                   .github/workflows/build.yml           o workflow inteiro                        instala com npm ci e roda com node 20
+Nome exibido no instalador              src-tauri/tauri.conf.json             bundle.publisher / shortDescription    o nome do shortcut e do "Programas e Recursos"
+Icone do executavel e da janela         src-tauri/icons/                      icon.ico / icon.png / Square*Logo.png  e a lista bundle.icon do tauri.conf.json
+Pasta de dados do usuario               src-tauri/tauri.conf.json             "identifier"                              mudar = usuario perde preferencias e chaveiro
+WhatsApp / telefone / e-mail / redes    NAO EXISTE neste projeto                                                   nada a alterar; nao ha link de contato
+Texto do formulario de login            src/idiomas/pt_br.json                bloco "apple_id" e "account"            e a validacao em src/modulos/apple-id.tsx
+Mensagem de erro com sugestoes          src/utilitarios/erros.tsx             errorSuggestionKeys                      as sugestoes em si vem do idioma
+Subir a versao do aplicativo            package.json                          scripts.bump-patch/minor/major          usam tauri-version; NAO foram executados
+Script de CI                            .github/scripts/*.mjs                 o corpo do script                       roda com "node"; nao usa TypeScript
+Instalacao das dependencias no CI       .github/workflows/build.yml           a etapa "Install frontend dependencies"  usa "npm ci" com o package-lock.json
+Ambiente Nix                            flake.nix                             buildNpmPackage / cargoRoot             so funciona em Linux; revisto estaticamente
+
+================================================================================
+FIM DO GUIA
+================================================================================
+Este guia foi escrito depois da reorganizacao interna dos arquivos e
+reflete a estrutura atual do projeto. Se voce mover um arquivo, atualize
+este guia junto.
