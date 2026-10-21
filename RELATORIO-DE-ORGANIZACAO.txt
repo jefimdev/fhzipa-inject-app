@@ -1423,5 +1423,96 @@ PARTE 6 - REMOCAO DOS CONTRIBUINTES (21/10/2026, 11:30-11:50)
   meantime e uma lista desatualizada, nao autoria real.
 
 ================================================================================
+PARTE 7 - SITE DE DIVULGACAO E DOWNLOAD (21/10/2026, 14:00-17:30)
+================================================================================
+
+  1. O QUE FOI FEITO
+  Cria a pasta "site divulga" com o site oficial de divulgacao e download do
+  FHZIPA INJECT: uma pagina unica, em HTML, CSS e JavaScript puro, sem build
+  e sem dependencia. A escolha de nao usar framework se deve ao tamanho da
+  pagina (menu, galeria, FAQ e um bloco de download) e a exigencia de nao
+  misturar pacotes com o aplicativo, que e React + Tauri.
+
+  Estrutura: index.html, css/estilo.css, js/site.js, favicon.ico, robots.txt,
+  sitemap.xml, img/ (logo, favicon, 5 capturas reais e a imagem de
+  compartilhamento), scripts/ (modelo e gerador da imagem social, script de
+  preparacao da distribuicao) e a documentacao propria do site.
+
+  2. COMO O DOWNLOAD FUNCIONA
+  O instalador aprovado (FHZIPA_INJECT_Setup.exe, 70.824.110 bytes, SHA-256
+  743e40a4a176962e62e50a564661e83d80af6406872dbfefe1bfb7bf6572aef5) fica
+  na pasta downloads/ do site, que e servida pelo mesmo servidor de arquivos
+  estaticos. Nao existe backend, endpoint, proxy nem token: e um link
+  direto. O repositorio do codigo-fonte continua privado e nunca e
+  necessario para o download funcionar.
+
+  O arquivo de 67 MB nao entra no git: a pasta downloads/ esta no
+  .gitignore do site, e o script scripts/preparar-distribuicao.ps1 copia o
+  artefato, compara o SHA-256 com o valor aprovado, sai com codigo 2 se nao
+  bater e so entao grava o SHA256SUMS.txt.
+
+  3. CONTEUDO: O QUE E VERDADE
+  Todas as afirmacoes do site vieram do codigo do aplicativo, do README, do
+  guia de edicao e do relatorio de validacao do instalador. Recursos
+  listados: login com Apple ID e 2FA, deteccao de aparelho por USB, loja de
+  IPAs com 5 fontes e escolha do servidor mais rapido, instalacao com
+  certificado de desenvolvimento, pareamento e App IDs, log de diagnostico.
+  Requisitos confirmados: Windows 10/11 x64, iTunes ou Apple Devices, cabo
+  USB, aparelho desbloqueado, Apple ID valida com 2FA, internet e Modo de
+  Desenvolvedor no iOS 16 ou superior.
+
+  Nao ha no site numero de usuarios, contagem de downloads, avaliacoes,
+  depoimentos, preco, garantia de seguranca, nem afirmacao de assinatura
+  digital. A assinatura ausente e dita de forma correta, e a FAQ explica o
+  aviso do Windows e a conferida pelo SHA-256.
+
+  4. CAPTURAS
+  As telas do aplicativo foram recapturadas com o app em execucao e a janela
+  redimensionada (1320x820 para Visao geral e Baixar apps; 1320x580 para
+  Dispositivos e Ajustes), para o conteudo preencher o quadro. Nenhuma
+  captura mostra e-mail, nome de conta, identificador de aparelho, token ou
+  dado pessoal.
+
+  5. TESTES REALIZADOS (todos passaram)
+  - Rolagem horizontal verificada em 7 larguras (320, 390, 430, 820, 1280,
+    1440, 1920): nenhuma estoura a largura.
+  - Download real pelo botao: 70.824.110 bytes, nome correto. Repetido sem
+    sessao autenticada, com o mesmo resultado.
+  - Zero erro de console, zero requisicao com erro.
+  - Zero token, zero cookie, zero localStorage, nenhuma chamada a
+    api.github.com.
+  - As 12 perguntas do FAQ abrem e fecham com Enter.
+  - A galeria amplia, mostra a legenda, prende o foco, fecha com Esc e
+    devolve o foco para a imagem de origem.
+  - Link "pular para o conteudo" e o primeiro elemento focavel; o foco vai
+    para o <main> quando acionado.
+  - Contrastes medidos em 13 pares de cor: minimo 4,8 (WCAG AA).
+  - Sem JavaScript, versao, tamanho, link e o texto honesto continuam
+    corretos.
+  - Nenhuma ancora interna quebrada; as 6 URLs externas respondem 200.
+  - Revisao visual em desktop, tablet e celular, com as capturas guardadas
+    em site divulga/capturas-revisao/.
+
+  6. DOCUMENTACAO
+  site divulga/GUIA-DE-EDICAO-DO-SITE.txt: como abrir, executar, publicar,
+  onde editar textos, logo, imagens, cores, links, versao, URL, tamanho e
+  SHA-256, como verificar o download e como voltar uma atualizacao.
+  site divulga/CHECKLIST-DE-PUBLICACAO-DO-SITE.txt: 16 blocos de
+  verificacao, com o que ja foi conferido e o que ainda depende do dominio
+  e da hospedagem.
+
+  7. O QUE AINDA FALTA (pendencia real, nao bloqueio do desenvolvimento)
+  - Definir o dominio e acrescentar a URL canonica.
+  - Escolher a hospedagem estatica e conferir os limites de arquivo (67 MB).
+  - Definir o endereco publico do instalador e subir o .exe.
+  - Ligar o HTTPS e os cabecalhos de seguranca.
+  - Trocar SEU-DOMINIO no sitemap.xml, deixar a og:image absoluta e
+    permitir a indexacao no robots.txt.
+  - Repetir os testes do item 5 no endereco publico.
+
+  Nada disso depende de mudanca no aplicativo: o site ja esta pronto e
+  testado localmente, com o instalador sendo servido corretamente.
+
+================================================================================
 FIM DO RELATORIO
 ================================================================================
